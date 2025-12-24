@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "updated": "2025-12-24",
+  "courses": [
+    {
+      "id": "gdb-0001",
+      "name": "Example Golf Club",
+      "country": "United Kingdom",
+      "region": "England",
+      "location": {
+        "lat": 51.5074,
+        "lng": -0.1278
+      },
+      "golf": {
+        "holes": 18,
+        "access": "public",
+        "type": "parkland"
+      },
+      "website": "https://example.com",
+      "booking": {
+        "strategy": "direct",
+        "links": [
+          {
+            "partner": "official",
+            "label": "Book on official site",
+            "url": "https://example.com/book"
+          }
+        ]
+      },
+      "sources": {
+        "status": "draft",
+        "notes": "Starter example"
+      }
+    }
+  ]
+}
