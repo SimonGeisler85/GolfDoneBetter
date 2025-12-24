@@ -45,10 +45,9 @@
       justify-content:flex-start;
       text-align:center;
       padding:24px;
-      padding-top:140px; /* shifts the whole block up */
+      padding-top:140px;
     }
 
-    /* Top right menu */
     .top-right{
       position:absolute;
       top:18px;
@@ -68,16 +67,6 @@
       align-items:center;
       justify-content:center;
       backdrop-filter:blur(10px);
-    }
-
-    .menu-btn:hover{
-      background:rgba(11,23,19,.72);
-    }
-
-    .menu-btn svg{
-      width:28px;
-      height:28px;
-      display:block;
     }
 
     .menu-panel{
@@ -100,14 +89,12 @@
       display:block;
       padding:12px 14px;
       font-weight:900;
-      opacity:.95;
       color:#ffffff;
       text-decoration:none;
     }
 
     .menu-panel a:hover{
       background:rgba(255,255,255,.08);
-      opacity:1;
     }
 
     .menu-sep{
@@ -120,7 +107,6 @@
       font-size:clamp(34px,4.2vw,60px);
       margin:14px 0 10px;
       font-weight:900;
-      text-shadow:0 12px 40px rgba(0,0,0,0.75);
     }
 
     p{
@@ -128,7 +114,6 @@
       font-size:18px;
       line-height:1.6;
       margin:0 0 34px;
-      text-shadow:0 12px 40px rgba(0,0,0,0.75);
     }
 
     .links{
@@ -136,10 +121,8 @@
       gap:22px;
       flex-wrap:wrap;
       justify-content:center;
-      margin-top:10px;
     }
 
-    /* More prominent primary actions without overpowering the logo */
     .links a{
       color:#0b1713;
       background:var(--accent);
@@ -147,75 +130,37 @@
       padding:14px 22px;
       border-radius:14px;
       font-weight:900;
-      letter-spacing:0.3px;
-      box-shadow:0 12px 30px rgba(0,0,0,0.35);
-    }
-
-    .links a:hover{
-      opacity:0.92;
     }
 
     .logo{
-      margin-bottom:18px;
-    }
-
-    .logo svg{
-      width:clamp(360px,46vw,520px);
-      height:auto;
-      display:block;
-    }
-
-    @media (max-width:520px){
-      .top-right{top:12px;right:12px}
-      p{font-size:16px}
-      .hero-content{padding-top:120px}
-      .menu-btn{width:52px;height:52px;border-radius:16px}
-      .menu-btn svg{width:26px;height:26px}
+      margin-bottom:44px;
     }
   </style>
 </head>
 <body>
 
 <div class="hero">
-  <div class="top-right" aria-label="Site menu">
-    <button class="menu-btn" id="menuBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Open menu">
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
-      </svg>
+  <div class="top-right">
+    <button class="menu-btn" id="menuBtn" type="button">
+      ☰
     </button>
-    <div class="menu-panel" id="menuPanel" role="menu" aria-label="Navigation">
-      <a role="menuitem" href="gdb_landing_page_v6_new_bg_less_cheesy.html">Home</a>
-      <a role="menuitem" href="search-courses.html.html">Search courses</a>
-      <a role="menuitem" href="plan-golf-trip.html">Plan a golf trip</a>
+    <div class="menu-panel" id="menuPanel">
+      <a href="index.html">Home</a>
+      <a href="search-courses.html">Search courses</a>
+      <a href="plan-golf-trip.html">Plan a golf trip</a>
       <div class="menu-sep"></div>
-      <a role="menuitem" href="about.html">About</a>
-      <a role="menuitem" href="contact.html">Contact</a>
-      <a role="menuitem" href="terms.html">Terms and conditions</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="terms.html">Terms and conditions</a>
     </div>
   </div>
 
-  <!-- Updated background image: same style, more believable swing -->
-  <img src="https://images.unsplash.com/photo-1752079314465-8c5ccab5f93f?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=80&w=2400"
-       alt="Golfer playing a natural tee shot on a wide fairway" />
+  <img src="https://images.unsplash.com/photo-1752079314465-8c5ccab5f93f?fm=jpg&q=80&w=2400" alt="Golf course" />
 
   <div class="hero-content">
-
-    <!-- GDB LOGO (LOCKED VARIANT A) -->
-    <div class="logo" style="margin-bottom:44px;">
-      <svg width="420" height="120" viewBox="0 0 420 120" aria-label="GDB logo" role="img">
-        <text x="210" y="70" text-anchor="middle"
-              font-family="Libre Baskerville, Georgia, serif"
-              font-size="84"
-              font-weight="700"
-              letter-spacing="-1.5"
-              fill="#ffffff">GDB</text>
-        <text x="210" y="104" text-anchor="middle"
-              font-family="Libre Baskerville, Georgia, serif"
-              font-size="20"
-              letter-spacing="1.6"
-              fill="#ffffff"
-              opacity="0.9">Golf Done Better</text>
-      </svg>
+    <div class="logo">
+      <h1>GDB</h1>
+      <p>Golf Done Better</p>
     </div>
 
     <h1>Research and plan golf with clarity</h1>
@@ -224,46 +169,25 @@
     </p>
 
     <div class="links">
-      <a href="search-courses.html.html">Search courses</a>
+      <a href="search-courses.html">Search courses</a>
       <a href="plan-golf-trip.html">Plan a golf trip</a>
     </div>
-
   </div>
 </div>
 
 <script>
-  (function(){
-    const menuBtn = document.getElementById('menuBtn');
-    const menuPanel = document.getElementById('menuPanel');
-    if(!menuBtn || !menuPanel) return;
+  const btn = document.getElementById("menuBtn");
+  const panel = document.getElementById("menuPanel");
 
-    const closeMenu = () => {
-      menuPanel.style.display = 'none';
-      menuBtn.setAttribute('aria-expanded','false');
-    };
+  btn.addEventListener("click", () => {
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+  });
 
-    const openMenu = () => {
-      menuPanel.style.display = 'block';
-      menuBtn.setAttribute('aria-expanded','true');
-    };
-
-    // Always start closed
-    closeMenu();
-
-    menuBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if(menuPanel.style.display === 'block') closeMenu();
-      else openMenu();
-    });
-
-    document.addEventListener('click', (e) => {
-      if(!menuPanel.contains(e.target) && e.target !== menuBtn) closeMenu();
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape') closeMenu();
-    });
-  })();
+  document.addEventListener("click", (e) => {
+    if (!btn.contains(e.target) && !panel.contains(e.target)) {
+      panel.style.display = "none";
+    }
+  });
 </script>
 
 </body>
