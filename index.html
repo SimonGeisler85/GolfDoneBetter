@@ -45,7 +45,32 @@
       justify-content:flex-start;
       text-align:center;
       padding:24px;
-      padding-top:140px; /* shifts the whole block up */
+      padding-top:140px;
+    }
+
+    /* Top left logo (matches Search Courses header style) */
+    .top-left{
+      position:absolute;
+      top:18px;
+      left:18px;
+      z-index:7000;
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .top-left a{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      text-decoration:none;
+      color:inherit;
+    }
+
+    .top-left svg{
+      width:132px;
+      height:auto;
+      display:block;
     }
 
     /* Top right menu */
@@ -139,7 +164,6 @@
       margin-top:10px;
     }
 
-    /* More prominent primary actions without overpowering the logo */
     .links a{
       color:#0b1713;
       background:var(--accent);
@@ -166,17 +190,31 @@
     }
 
     @media (max-width:520px){
+      .top-left{top:12px;left:12px}
       .top-right{top:12px;right:12px}
       p{font-size:16px}
       .hero-content{padding-top:120px}
       .menu-btn{width:52px;height:52px;border-radius:16px}
       .menu-btn svg{width:26px;height:26px}
+      .top-left svg{width:120px}
     }
   </style>
 </head>
 <body>
 
 <div class="hero">
+
+  <!-- Top left brand -->
+  <div class="top-left" aria-label="Brand">
+    <a href="index.html" aria-label="GDB home" style="display:flex;align-items:center;gap:14px;">
+      <svg aria-label="GDB logo" height="40" role="img" viewBox="0 0 420 120" width="132">
+        <text fill="#ffffff" font-family="Libre Baskerville, Georgia, serif" font-size="72" font-weight="700" letter-spacing="-1.5" text-anchor="middle" x="210" y="70">GDB</text>
+        <text fill="#ffffff" font-family="Libre Baskerville, Georgia, serif" font-size="18" letter-spacing="1.6" opacity="0.9" text-anchor="middle" x="210" y="104">Golf Done Better</text>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Top right menu -->
   <div class="top-right" aria-label="Site menu">
     <button class="menu-btn" id="menuBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Open menu">
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -194,13 +232,15 @@
     </div>
   </div>
 
-  <!-- Updated background image: same style, more believable swing -->
-  <img src="https://images.unsplash.com/photo-1752079314465-8c5ccab5f93f?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=80&w=2400"
-       alt="Golfer playing a natural tee shot on a wide fairway" />
+  <!-- Background image -->
+  <img
+    src="https://images.unsplash.com/photo-1752079314465-8c5ccab5f93f?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=80&w=2400"
+    alt="Golfer playing a natural tee shot on a wide fairway"
+  />
 
   <div class="hero-content">
 
-    <!-- GDB LOGO (LOCKED VARIANT A) -->
+    <!-- Main hero logo -->
     <div class="logo" style="margin-bottom:44px;">
       <svg width="420" height="120" viewBox="0 0 420 120" aria-label="GDB logo" role="img">
         <text x="210" y="70" text-anchor="middle"
@@ -220,7 +260,7 @@
 
     <h1>Research and plan golf with clarity</h1>
     <p>
-      Explore courses, compare options and build itineraries without bookings, pressure or sales noise.
+      Explore courses, compare options and build itineraries with confidence and insight.
     </p>
 
     <div class="links">
@@ -247,7 +287,6 @@
       menuBtn.setAttribute('aria-expanded','true');
     };
 
-    // Always start closed
     closeMenu();
 
     menuBtn.addEventListener('click', (e) => {
