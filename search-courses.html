@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>GDB – Search Courses</title>
+<title>Search golf courses | Golf Done Better</title>
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
 <link href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" rel="stylesheet"/>
 <style>
@@ -446,9 +446,15 @@
 
 .brand svg{width:180px;height:auto;display:block}
 .brand{display:flex;align-items:center;gap:12px;padding-left:6px}
+
+
+/* SEO and accessibility helpers */
+.skip-link{position:absolute;left:-999px;top:12px;background:#6ee7b7;color:#0b1713;padding:10px 14px;border-radius:12px;font-weight:900;z-index:9999;text-decoration:none}
+.skip-link:focus{left:12px}
+.site-footer{padding:18px;border-top:1px solid rgba(255,255,255,.12);background:rgba(11,23,19,.92);color:rgba(255,255,255,.86);font-size:13px;line-height:1.4}
 </style>
-</head>
-<body>
+<meta content="Search golf courses by map area or by location. Filter by holes, access, price range, difficulty, facilities, and vibe. No live availability or price guarantees." name="description"/><link href="https://golfdonebetter.com/search-courses" rel="canonical"/><meta content="index,follow,max-image-preview:large" name="robots"/><meta content="#0b1713" name="theme-color"/><meta content="Golf Done Better" property="og:site_name"/><meta content="website" property="og:type"/><meta content="https://golfdonebetter.com/search-courses" property="og:url"/><meta content="Search golf courses | Golf Done Better" property="og:title"/><meta content="Search golf courses by map area or by location. Filter by holes, access, price range, difficulty, facilities, and vibe. No live availability or price guarantees." property="og:description"/><meta content="summary" name="twitter:card"/><meta content="Search golf courses | Golf Done Better" name="twitter:title"/><meta content="Search golf courses by map area or by location. Filter by holes, access, price range, difficulty, facilities, and vibe. No live availability or price guarantees." name="twitter:description"/><script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebPage", "name": "Search golf courses", "url": "https://golfdonebetter.com/search-courses", "isPartOf": {"@type": "WebSite", "name": "Golf Done Better", "url": "https://golfdonebetter.com/"}, "description": "Search golf courses by map area or by location. Filter by holes, access, price range, difficulty, facilities, and vibe. No live availability or price guarantees."}]</script></head>
+<body><a class="skip-link" href="#main">Skip to main content</a>
 <header>
 <div class="header-inner">
 <a aria-label="GDB home" href="#" style="display:flex;align-items:center;gap:14px;">
@@ -475,7 +481,7 @@
 </div>
 </div>
 </header>
-<main class="wrap">
+<main class="wrap" id="main">
 <section class="intro">
 <h1>Search courses</h1>
 <p>Pick a tool first. Use map search for exploration. Use text search for known locations.</p>
@@ -487,22 +493,22 @@
 </section>
 <div class="layout" id="pageLayout">
 <div class="maincol" id="mainCol">
-<section class="text-search" id="textSearch" aria-label="Text search">
-  <div class="textbar">
-    <div class="acwrap">
-      <input type="text" id="textQuery" autocomplete="off" placeholder="Search by address, postcode, city, region, country or course name" />
-      <div class="ac-panel" id="acPanel" aria-label="Search suggestions"></div>
-    </div>
-    <select id="radiusSelect" aria-label="Search radius">
-      <option value="0">Exact</option>
-      <option value="5" selected>5 miles</option>
-      <option value="10">10 miles</option>
-      <option value="25">25 miles</option>
-      <option value="50">50 miles</option>
-    </select>
-    <button class="btn" id="textGo" type="button">Search</button>
-  </div>
-  <div class="hint" style="margin-top:10px;opacity:.75">Tip: choose Exact for a specific address. Use a radius for towns and suburbs.</div>
+<section aria-label="Text search" class="text-search" id="textSearch">
+<div class="textbar">
+<div class="acwrap">
+<input autocomplete="off" id="textQuery" placeholder="Search by address, postcode, city, region, country or course name" type="text"/>
+<div aria-label="Search suggestions" class="ac-panel" id="acPanel"></div>
+</div>
+<select aria-label="Search radius" id="radiusSelect">
+<option value="0">Exact</option>
+<option selected="" value="5">5 miles</option>
+<option value="10">10 miles</option>
+<option value="25">25 miles</option>
+<option value="50">50 miles</option>
+</select>
+<button class="btn" id="textGo" type="button">Search</button>
+</div>
+<div class="hint" style="margin-top:10px;opacity:.75">Tip: choose Exact for a specific address. Use a radius for towns and suburbs.</div>
 </section>
 <div id="mapWrap">
 <div class="live-pill" id="livePill">Select an area to load golf data</div>
@@ -525,7 +531,7 @@
 <label class="hint" for="sortSelect">Sort</label>
 <select id="sortSelect">
 <option value="recommended">Recommended</option>
-<option value="az" selected>A–Z</option>
+<option selected="" value="az">A–Z</option>
 <option value="priceAsc">Price low to high</option>
 <option value="priceDesc">Price high to low</option>
 <option value="holesDesc">Most holes</option>
@@ -540,13 +546,11 @@
 </div>
 </div>
 </div>
-
 <section class="results" id="resultsSection">
 <h2>Courses in this area</h2>
 <div id="resultsList"></div>
 </section>
 </div>
-
 <aside class="sidecol" id="sideCol" style="display:none">
 <section aria-label="Filters" class="filters-wrap" id="filtersWrap" style="display:none">
 <div class="filters-bar">
@@ -659,11 +663,9 @@
 </section>
 </aside>
 </div>
-
 <!-- /maincol -->
 <!-- /layout -->
 </main>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
@@ -3529,6 +3531,5 @@ document.querySelectorAll('#filtersPanel input[type="checkbox"]').forEach(cb => 
 
 })();
 </script>
-
-</body>
+<footer class="site-footer">© 2025 Golf Done Better. Bookings happen on partner sites.</footer></body>
 </html>
