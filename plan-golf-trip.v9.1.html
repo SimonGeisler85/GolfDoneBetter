@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plan a golf trip | Golf Done Better</title>
+  <meta name="description" content="Plan a golf trip with flexible start points. Save courses and accommodation into a local basket. No live availability or price guarantees." />
+  <link rel="canonical" href="https://golfdonebetter.com/plan-golf-trip" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="theme-color" content="#0b1713" />
+
+  <meta property="og:site_name" content="Golf Done Better" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://golfdonebetter.com/plan-golf-trip" />
+  <meta property="og:title" content="Plan a golf trip | Golf Done Better" />
+  <meta property="og:description" content="Start where you want. Use map search to save courses and accommodation into a trip basket stored on your device." />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Plan a golf trip | Golf Done Better" />
+  <meta name="twitter:description" content="Start where you want. Use map search to save courses and accommodation into a trip basket stored on your device." />
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "name":"Plan a golf trip",
+    "url":"https://golfdonebetter.com/plan-golf-trip",
+    "isPartOf":{"@type":"WebSite","name":"Golf Done Better","url":"https://golfdonebetter.com/"},
+    "description":"Plan a golf trip with flexible start points. Save courses and accommodation into a local basket. No live availability or price guarantees."
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+  <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#0b1713;
+      --fg:#f5f5f5;
+      --accent:#6ee7b7;
+      --muted:rgba(255,255,255,.72);
+      --card:rgba(255,255,255,.06);
+      --bd:rgba(255,255,255,.14);
+      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial, Helvetica, sans-serif;background:var(--bg);color:var(--fg);}
+    .page-bg{
+      min-height:100vh;
+      background:
+        radial-gradient(1100px 620px at 50% -10%, rgba(110,231,183,.12), rgba(11,23,19,.96) 55%),
+        radial-gradient(900px 520px at 10% 15%, rgba(255,255,255,.06), rgba(11,23,19,0) 60%),
+        linear-gradient(var(--bg), var(--bg));
+    }
+    a{color:inherit;text-decoration:none}
+    .skip-link{position:absolute;left:-999px;top:12px;background:var(--accent);color:#0b1713;padding:10px 14px;border-radius:12px;font-weight:900;z-index:9999;text-decoration:none}
+    .skip-link:focus{left:12px}
+
+    header{
+      position:sticky; top:0; z-index:8000;
+      background:rgba(11,23,19,.78);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .header-inner{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:18px;}
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand svg{width:132px;height:auto;display:block}
+
+    .top-right{position:relative}
+    .menu-btn{
+      width:54px;height:54px;border-radius:16px;
+      background:rgba(11,23,19,.55);
+      border:1px solid rgba(255,255,255,.22);
+      color:#ffffff;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      backdrop-filter:blur(10px);
+    }
+    .menu-btn:hover{background:rgba(11,23,19,.72)}
+    .menu-btn svg{width:28px;height:28px;display:block}
+    .menu-panel{
+      position:absolute;right:0;top:62px;min-width:240px;
+      background:rgba(11,23,19,.92);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:14px;
+      overflow:hidden;
+      display:none;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(10px);
+      text-align:left;
+      z-index:8100;
+    }
+    .menu-panel a{display:block;padding:12px 14px;font-weight:900;opacity:.95;color:#ffffff;text-decoration:none}
+    .menu-panel a:hover{background:rgba(255,255,255,.08);opacity:1}
+    .menu-sep{height:1px;background:rgba(255,255,255,.10);margin:6px 0}
+
+    main{padding:18px}
+    h1{margin:0 0 8px;font-size:30px;font-weight:900}
+    .sub{color:var(--muted);max-width:980px;line-height:1.55}
+
+    .card{border:1px solid var(--bd);background:var(--card);border-radius:var(--radius);overflow:hidden}
+    .card-pad{padding:14px}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .sp-between{justify-content:space-between}
+
+    .btn{
+      padding:12px 14px;border-radius:14px;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.22);
+      color:#fff;cursor:pointer;font-weight:900;
+    }
+    .btn:hover{background:rgba(255,255,255,.12)}
+    .btn.primary{background:rgba(110,231,183,.18);border-color:rgba(110,231,183,.55)}
+    .btn.primary:hover{background:rgba(110,231,183,.26)}
+    .btn.ghost{background:transparent;border-color:rgba(255,255,255,.18)}
+    .btn.danger{background:rgba(255,255,255,.06);border-color:rgba(255,120,120,.45)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .btn.sm{padding:9px 10px;border-radius:12px;font-size:13px}
+
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(11,23,19,.50);
+      border-radius:999px;
+      padding:6px 10px;
+      font-weight:900;
+      font-size:12px;
+      opacity:.95;
+    }
+
+    .step-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    @media (max-width:980px){.step-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:520px){.step-grid{grid-template-columns:1fr}}
+
+    .step-card{
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.04);
+      border-radius:14px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      cursor:pointer;
+      user-select:none;
+      min-height:106px;
+    }
+    .step-card:hover{background:rgba(255,255,255,.06);border-color:rgba(110,231,183,.30)}
+    .step-card.active{border-color:rgba(110,231,183,.65);background:rgba(110,231,183,.12)}
+    .step-title{font-weight:900}
+    .step-sub{color:rgba(255,255,255,.70);font-size:13px;line-height:1.35}
+
+    .layout{margin-top:14px;display:flex;gap:16px;align-items:flex-start}
+    .workspace{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:14px}
+
+    .basket-dock{
+      width:360px; flex:0 0 360px;
+      position:sticky; top:88px;
+      max-height:calc(100vh - 110px);
+      display:flex; justify-content:flex-end;
+      z-index:60;
+      transition:width .22s ease, flex-basis .22s ease;
+    }
+    .basket-dock.min{width:62px;flex-basis:62px;}
+
+    .basket{
+      width:360px;
+      border:1px solid var(--bd);
+      background:rgba(11,23,19,.82);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      transition:width .22s ease;
+    }
+    .basket.min{width:62px;}
+    .basket.min .basket-body,
+    .basket.min .basket-foot,
+    .basket.min .basket-title,
+    .basket.min #basketSummary,
+    .basket.min #exportBtn{display:none;}
+    .basket.min .basket-head{justify-content:center;}
+    .basket-head{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(11,23,19,.92);border-bottom:1px solid rgba(255,255,255,.10)}
+    .basket-title{font-weight:900}
+    .basket-body{padding:12px 14px;overflow:auto;display:grid;gap:12px}
+    .basket-block{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);border-radius:14px;overflow:hidden}
+    .basket-block h3{margin:0;padding:10px 12px;font-size:13px;letter-spacing:.6px;text-transform:uppercase;opacity:.85;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .basket-list{padding:10px 12px;display:grid;gap:10px}
+    .basket-item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;border:1px solid rgba(255,255,255,.10);background:rgba(11,23,19,.40);border-radius:12px;padding:10px}
+    .bi-title{font-weight:900;font-size:13px}
+    .bi-sub{font-size:12px;color:rgba(255,255,255,.70);margin-top:4px;line-height:1.3}
+    .icon-btn{width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;cursor:pointer;font-weight:900;display:flex;align-items:center;justify-content:center}
+    .icon-btn:hover{background:rgba(255,255,255,.10)}
+    .basket-foot{padding:12px 14px;border-top:1px solid rgba(255,255,255,.10);background:rgba(11,23,19,.92);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+
+    @media (max-width:980px){
+      .layout{flex-direction:column}
+      .basket-dock{width:100%;position:relative;top:auto;max-height:none;flex-basis:auto}
+      .basket-dock.min{width:100%;flex-basis:auto}
+      .basket{width:100%}
+      .basket.min{width:100%}
+      .basket.min .basket-body,.basket.min .basket-foot,.basket.min .basket-title,.basket.min #basketSummary,.basket.min #exportBtn{display:block}
+    }
+
+    .map-wrap{padding:0;position:relative}
+    #map{height:560px;width:100%}
+    .map-topbar{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.10);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+    .map-left{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .map-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+    .seg{display:inline-flex;border:1px solid rgba(255,255,255,.18);border-radius:999px;overflow:hidden}
+    .seg button{padding:10px 12px;background:transparent;color:#fff;border:0;cursor:pointer;font-weight:900;font-size:13px}
+    .seg button.active{background:rgba(110,231,183,.14)}
+
+    .input{height:42px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;padding:0 12px;min-width:420px;outline:none}
+    .input::placeholder{color:rgba(255,255,255,.55)}
+
+    .small{font-size:12px;color:rgba(255,255,255,.70);line-height:1.35}
+    .hidden{display:none !important}
+
+    .map-stage{position:relative}
+    .placeholder{padding:22px 14px;color:rgba(255,255,255,.78)}
+
+    .ac-wrap{position:relative;min-width:520px;flex:1 1 620px}
+    .ac-list{
+      position:absolute;left:0;right:0;top:46px;
+      background:rgba(11,23,19,.96);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      z-index:9000;
+      display:none;
+    }
+    .ac-item{padding:10px 12px;border-top:1px solid rgba(255,255,255,.08);cursor:pointer}
+    .ac-item:first-child{border-top:0}
+    .ac-item:hover{background:rgba(255,255,255,.08)}
+    .ac-title{font-weight:900;font-size:13px}
+    .ac-sub{font-size:12px;color:rgba(255,255,255,.70);margin-top:4px;line-height:1.25}
+
+    /* Filters panel on right, scrollable */
+    .float-panel{
+      position:absolute;
+      right:14px;
+      top:14px;
+      width:310px;
+      max-width:calc(100% - 28px);
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(11,23,19,.92);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(10px);
+      overflow:hidden;
+      z-index:5000;
+    }
+    .fp-head{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.10);display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .fp-title{font-weight:900}
+    .fp-body{padding:12px;display:grid;gap:10px;max-height:470px;overflow:auto}
+    .fp-tabs{display:flex;gap:8px}
+    .fp-tab{flex:1 1 auto;text-align:center;padding:9px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);cursor:pointer;font-weight:900;font-size:12px}
+    .fp-tab.active{border-color:rgba(110,231,183,.60);background:rgba(110,231,183,.14)}
+    .filters-grid{display:grid;gap:8px}
+    .checkbox{display:flex;gap:10px;align-items:center;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);border-radius:14px;padding:10px 10px}
+    .checkbox input{transform:scale(1.12)}
+    .checkbox span{font-weight:900;font-size:12px}
+    .select{height:40px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;padding:0 10px;font-weight:900}
+
+    /* Results */
+    .tabs{display:flex;gap:10px;flex-wrap:wrap}
+    .tab{padding:10px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);cursor:pointer;font-weight:900;font-size:13px}
+    .tab.active{border-color:rgba(110,231,183,.60);background:rgba(110,231,183,.14)}
+
+    .results{padding:12px 14px;display:grid;gap:10px}
+    .result-card{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(11,23,19,.45);
+      border-radius:16px;
+      overflow:hidden;
+      display:grid;
+      grid-template-columns:140px 1fr;
+      gap:0;
+      min-height:108px;
+    }
+    .thumb{
+      background:
+        radial-gradient(180px 120px at 40% 30%, rgba(110,231,183,.26), rgba(11,23,19,.55)),
+        linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,0));
+      border-right:1px solid rgba(255,255,255,.10);
+      position:relative;
+    }
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .thumb-badge{position:absolute;left:10px;top:10px;display:flex;gap:8px;flex-wrap:wrap}
+    .content{padding:12px;display:grid;gap:6px}
+    .r-title{font-weight:900;font-size:15px}
+    .r-sub{font-size:13px;color:rgba(255,255,255,.72);line-height:1.35}
+    .r-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+    .r-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+
+    footer{padding:18px;border-top:1px solid rgba(255,255,255,.12);background:rgba(11,23,19,.92);color:rgba(255,255,255,.86);font-size:13px;line-height:1.4}
+
+    dialog{border:1px solid rgba(255,255,255,.18);background:rgba(11,23,19,.98);color:var(--fg);border-radius:18px;max-width:min(760px, calc(100% - 28px));box-shadow:var(--shadow)}
+    dialog::backdrop{background:rgba(0,0,0,.55)}
+    .dlg-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.10)}
+    .dlg-title{font-weight:900}
+    .dlg-body{padding:14px}
+
+    .marker-badge{
+      width:30px;height:30px;border-radius:15px;
+      display:flex;align-items:center;justify-content:center;
+      border:2px solid rgba(255,255,255,.92);
+      box-shadow:0 10px 18px rgba(0,0,0,.35);
+      font-size:14px;line-height:1;
+      padding:0 2px;
+    }
+    .marker-badge.course{background:rgba(110,231,183,.88);color:#0b1713;}
+    .marker-badge.stay{background:rgba(255,255,255,.82);color:#0b1713;}
+    .marker-badge.combo{background:linear-gradient(135deg, rgba(110,231,183,.92), rgba(255,255,255,.92));color:#0b1713;}
+
+    /* Leaflet draw buttons: white with black shapes */
+    .leaflet-container{background:#0b1713}
+    .leaflet-bar a, .leaflet-bar a:hover{background:#ffffff;color:#0b1713;border:1px solid rgba(0,0,0,.25);}
+    .leaflet-draw-toolbar a{background-color:#ffffff !important;}
+    .leaflet-draw-toolbar a{background-image:url("https://unpkg.com/leaflet-draw@1.0.4/dist/images/spritesheet.png") !important; background-size:300px 30px !important;}
+    .leaflet-retina .leaflet-draw-toolbar a{background-image:url("https://unpkg.com/leaflet-draw@1.0.4/dist/images/spritesheet-2x.png") !important; background-size:300px 30px !important;}
+  </style>
+</head>
+
+<body>
+  <div class="page-bg">
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header>
+      <div class="header-inner">
+        <a class="brand" aria-label="GDB home" href="index.html">
+          <svg aria-label="GDB logo" height="40" role="img" viewBox="0 0 420 120" width="132">
+            <text fill="#ffffff" font-family="Libre Baskerville, Georgia, serif" font-size="72" font-weight="700" letter-spacing="-1.5" text-anchor="middle" x="210" y="70">GDB</text>
+            <text fill="#ffffff" font-family="Libre Baskerville, Georgia, serif" font-size="18" letter-spacing="1.6" opacity="0.9" text-anchor="middle" x="210" y="104">Golf Done Better</text>
+          </svg>
+        </a>
+
+        <div class="top-right" aria-label="Site menu">
+          <button class="menu-btn" id="menuBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <div class="menu-panel" id="menuPanel" role="menu" aria-label="Navigation">
+            <a role="menuitem" href="index.html">Home</a>
+            <a role="menuitem" href="search-courses.html">Search courses</a>
+            <a role="menuitem" href="plan-golf-trip.html">Plan a golf trip</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <h1>Plan a golf trip</h1>
+      <div class="sub">
+        Start where you want. Save courses and accommodation into one workspace.
+        Basket data is stored on your device only. No live availability, and no price guarantees.
+      </div>
+
+      <section class="card" style="margin-top:14px;">
+        <div class="card-pad">
+          <div class="row sp-between">
+            <div>
+              <div class="pill">Start point</div>
+              <div style="font-weight:900;font-size:18px;margin-top:10px;">Select your start point</div>
+              <div class="small" style="margin-top:6px;max-width:980px;">
+                Each start point leads to the same end state: where, when, and what. You can select items into the basket at any stage.
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn ghost" id="resetFlowBtn" type="button">Reset</button>
+            </div>
+          </div>
+
+          <div class="step-grid" style="margin-top:14px;">
+            <div class="step-card" data-step="accommodation" role="button" tabindex="0" aria-label="Start with accommodation">
+              <div class="step-title">Start with accommodation</div>
+              <div class="step-sub">Select an area, then review stays. Add to basket with nights.</div>
+            </div>
+            <div class="step-card" data-step="golf" role="button" tabindex="0" aria-label="Start with golf courses">
+              <div class="step-title">Start with golf courses</div>
+              <div class="step-sub">Select an area, then review courses. Add to basket with rounds.</div>
+            </div>
+<div class="step-card" data-step="location" role="button" tabindex="0" aria-label="Start with location">
+              <div class="step-title">Start with location</div>
+              <div class="step-sub">Pick an area and toggle between stays and courses.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="layout hidden" id="workspaceSection">
+        <div class="workspace">
+          <section class="card map-wrap" aria-label="Map workspace" id="mapCard">
+            <div class="map-topbar">
+              <div class="map-left">
+                <div>
+                  <div style="font-weight:900;">Map workspace</div>
+                  <div class="small" id="mapHint">Select draw or text to begin.</div>
+                </div>
+                <div class="seg" aria-label="Map input mode">
+                  <button id="modeDraw" type="button">Draw</button>
+                  <button id="modeText" type="button">Text</button>
+                </div>
+              </div>
+              <div class="map-right">
+                <button class="btn ghost" id="clearSelectionBtn" type="button" disabled>Clear selection</button>
+              </div>
+            </div>
+
+            <div class="map-topbar hidden" id="textSearchBar">
+              <div class="row" style="flex:1 1 auto;align-items:flex-start;">
+                <div class="ac-wrap">
+                  <input class="input" id="placeInput" placeholder="Search a destination, region, city, or address" autocomplete="off" />
+                  <div class="ac-list" id="acList" role="listbox" aria-label="Place suggestions"></div>
+                </div>
+                <select class="select" id="radiusSelect" aria-label="Search radius">
+                  <option value="5">5 km</option>
+                  <option value="10" selected>10 km</option>
+                  <option value="25">25 km</option>
+                  <option value="50">50 km</option>
+                  <option value="100">100 km</option>
+                </select>
+                <button class="btn primary" id="searchPlaceBtn" type="button">Search</button>
+              </div>
+              <div class="small" style="max-width:420px;">
+                Suggestions use OpenStreetMap Nominatim. Results are approximate.
+              </div>
+            </div>
+
+            <div class="map-stage">
+              <div class="placeholder" id="mapPlaceholder">Select draw or text to begin.</div>
+              <div id="map" class="hidden"></div>
+
+              <div class="float-panel hidden" id="floatPanel" aria-label="Filters panel">
+                <div class="fp-head">
+                  <div class="fp-title">Filters</div>
+                  <div class="pill" id="resultCountPill">0 results</div>
+                </div>
+                <div class="fp-body">
+                  <div class="fp-tabs hidden" id="filterTabs" role="tablist" aria-label="Filter tabs">
+                    <div class="fp-tab active" id="fpTabCourses" role="tab" aria-selected="true">Courses</div>
+                    <div class="fp-tab" id="fpTabStays" role="tab" aria-selected="false">Accommodation</div>
+                  </div>
+
+                  <div id="courseFilters" class="filters-grid">
+                    <select class="select" id="courseHolesFilter" style="width:100%;">
+                      <option value="any" selected>Holes: any</option>
+                      <option value="9">Holes: 9</option>
+                      <option value="18">Holes: 18</option>
+                      <option value="27">Holes: 27 plus</option>
+                    </select>
+
+                    <select class="select" id="courseAccessFilter" style="width:100%;">
+                      <option value="any" selected>Access: any</option>
+                      <option value="public">Public</option>
+                      <option value="members">Members</option>
+                      <option value="visitor">Visitor times</option>
+                    </select>
+
+                    <select class="select" id="courseTypeFilter" style="width:100%;">
+                      <option value="any" selected>Style: any</option>
+                      <option value="links">Links</option>
+                      <option value="parkland">Parkland</option>
+                      <option value="heathland">Heathland</option>
+                      <option value="desert">Desert</option>
+                      <option value="mountain">Mountain</option>
+                    </select>
+
+                    <div class="checkbox"><input id="courseDrivingRange" type="checkbox" /><span>Driving range</span></div>
+                    <div class="checkbox"><input id="coursePractice" type="checkbox" /><span>Practice facilities</span></div>
+                    <div class="checkbox"><input id="courseProShop" type="checkbox" /><span>Pro shop</span></div>
+                    <div class="checkbox"><input id="courseBuggy" type="checkbox" /><span>Buggy friendly</span></div>
+                    <div class="checkbox"><input id="courseWalkable" type="checkbox" /><span>Walkable</span></div>
+                    <div class="checkbox"><input id="courseResortOnly" type="checkbox" /><span>Resort course</span></div>
+                  </div>
+
+                  <div id="stayFilters" class="filters-grid hidden">
+                    <select class="select" id="stayTypeFilter" style="width:100%;">
+                      <option value="any" selected>Type: any</option>
+                      <option value="hotel">Hotel</option>
+                      <option value="resort">Resort</option>
+                      <option value="apartment">Apartment</option>
+                      <option value="guest_house">Guest house</option>
+                      <option value="hostel">Hostel</option>
+                      <option value="motel">Motel</option>
+                      <option value="chalet">Chalet</option>
+                      <option value="camp_site">Camp site</option>
+                      <option value="camp_pitch">Camp pitch</option>
+                      <option value="caravan_site">Caravan site</option>
+                    </select>
+
+                    <select class="select" id="stayStarsFilter" style="width:100%;">
+                      <option value="any" selected>Stars: any</option>
+                      <option value="5">5 star</option>
+                      <option value="4">4 star</option>
+                      <option value="3">3 star</option>
+                      <option value="2">2 star</option>
+                    </select>
+
+                    <select class="select" id="stayBedsFilter" style="width:100%;">
+                      <option value="any" selected>Beds: any</option>
+                      <option value="1">1 plus</option>
+                      <option value="2">2 plus</option>
+                      <option value="3">3 plus</option>
+                      <option value="4">4 plus</option>
+                    </select>
+
+                    <div class="checkbox"><input id="stayWifi" type="checkbox" /><span>Wifi</span></div>
+                    <div class="checkbox"><input id="stayParking" type="checkbox" /><span>Parking</span></div>
+                    <div class="checkbox"><input id="stayPool" type="checkbox" /><span>Pool</span></div>
+                    <div class="checkbox"><input id="stayBreakfast" type="checkbox" /><span>Breakfast</span></div>
+                    <div class="checkbox"><input id="stayAircon" type="checkbox" /><span>Air conditioning</span></div>
+                    <div class="checkbox"><input id="stayKitchen" type="checkbox" /><span>Kitchen or kitchenette</span></div>
+                    <div class="checkbox"><input id="stayFamilyRooms" type="checkbox" /><span>Family rooms</span></div>
+                    <div class="checkbox"><input id="stayResortOnly" type="checkbox" /><span>Resort stay</span></div>
+                  </div>
+
+                  <button class="btn ghost" id="resetFiltersBtn" type="button" style="width:100%;">Reset filters</button>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <section class="card" aria-label="Results">
+            <div class="card-pad">
+              <div class="row sp-between">
+                <div>
+                  <div style="font-weight:900;">Results</div>
+                  <div class="small" id="resultsHint">Select a start point above.</div>
+                </div>
+                <div class="tabs hidden" id="resultTabs" role="tablist" aria-label="Result tabs">
+                  <div class="tab active" id="tabCourses" role="tab" aria-selected="true">Courses</div>
+                  <div class="tab" id="tabStays" role="tab" aria-selected="false">Accommodation</div>
+                </div>
+              </div>
+            </div>
+            <div class="results" id="resultsList" aria-live="polite"></div>
+          </section>
+</div>
+
+        <aside class="basket-dock" id="basketDock" aria-label="Trip basket dock">
+          <div class="basket" id="basketBox" aria-label="Trip basket">
+            <div class="basket-head">
+              <button class="icon-btn" id="basketToggleBtn" type="button" aria-label="Minimise basket">⟩</button>
+              <div style="flex:1 1 auto;">
+                <div class="basket-title">Trip basket</div>
+                <div class="small" id="basketSummary">0 items saved</div>
+              </div>
+              <button class="btn ghost" id="exportBtn" type="button">Export</button>
+            </div>
+
+            <div class="basket-body">
+              <div class="basket-block">
+                <h3><span>Location</span><span class="pill" id="locCount">0</span></h3>
+                <div class="basket-list" id="locList"><div class="small">No location saved yet</div></div>
+              </div>
+
+              <div class="basket-block">
+                <h3><span>Courses</span><span class="pill" id="courseCount">0</span></h3>
+                <div class="basket-list" id="courseList"><div class="small">No courses saved yet</div></div>
+              </div>
+
+              <div class="basket-block">
+                <h3><span>Accommodation</span><span class="pill" id="stayCount">0</span></h3>
+                <div class="basket-list" id="stayList"><div class="small">No stays saved yet</div></div>
+              </div>
+            </div>
+
+            <div class="basket-foot">
+              <div class="small" style="max-width:240px;">
+                Stored locally in your browser storage. Clear basket to remove saved items from this device.
+              </div>
+              <div class="row">
+                <button class="btn danger" id="clearBasketBtn" type="button">Clear basket</button>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <footer>© 2025 Golf Done Better. Bookings happen on partner sites.</footer>
+
+    <dialog id="modal">
+      <div class="dlg-head">
+        <div class="dlg-title" id="modalTitle">Item</div>
+        <button class="icon-btn" id="modalClose" type="button" aria-label="Close">✕</button>
+      </div>
+      <div class="dlg-body" id="modalBody"></div>
+    </dialog>
+
+    <dialog id="exportModal">
+      <div class="dlg-head">
+        <div class="dlg-title">Export or import basket</div>
+        <button class="icon-btn" id="exportClose" type="button" aria-label="Close">✕</button>
+      </div>
+      <div class="dlg-body">
+        <div class="small" style="margin-bottom:10px;">
+          Export gives you a JSON snapshot. Import will replace the current basket on this device.
+        </div>
+        <textarea id="basketJson" style="width:100%;min-height:220px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:#fff;padding:12px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;"></textarea>
+        <div class="row" style="justify-content:flex-end;margin-top:12px;">
+          <button class="btn ghost" id="copyBtn" type="button">Copy</button>
+          <button class="btn primary" id="importBtn" type="button">Import</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script>
+      (function() {
+        const menuBtn = document.getElementById('menuBtn');
+        const menuPanel = document.getElementById('menuPanel');
+        const closeMenu = () => {
+          menuPanel.style.display = 'none';
+          menuBtn.setAttribute('aria-expanded','false');
+        };
+        const openMenu = () => {
+          menuPanel.style.display = 'block';
+          menuBtn.setAttribute('aria-expanded','true');
+        };
+        closeMenu();
+
+        menuBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if(menuPanel.style.display === 'block') closeMenu();
+          else openMenu();
+        });
+        document.addEventListener('click', (e) => {
+          if(!menuPanel.contains(e.target) && e.target !== menuBtn) closeMenu();
+        });
+        document.addEventListener('keydown', (e) => {
+          if(e.key === 'Escape') closeMenu();
+        });
+      })();
+    </script>
+
+    <script>
+      (function() {
+        const STORAGE_KEY = 'gdb_trip_v8_fixed';
+
+        const defaultBasket = () => ({
+          version: 8,
+          updatedAt: new Date().toISOString(),
+          flow: { currentStep: null },
+          location: null,
+          courses: [],
+          stays: []
+        });
+
+        const safeJsonParse = (s) => { try{ return JSON.parse(s); } catch(e){ return null; } };
+        const loadBasket = () => {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          const data = raw ? safeJsonParse(raw) : null;
+          if(!data || typeof data !== 'object') return defaultBasket();
+          const b = defaultBasket();
+          b.updatedAt = data.updatedAt || b.updatedAt;
+          b.flow = data.flow && typeof data.flow === 'object' ? { currentStep: data.flow.currentStep || null } : b.flow;
+          b.location = data.location || null;
+          b.courses = Array.isArray(data.courses) ? data.courses : [];
+          b.stays = Array.isArray(data.stays) ? data.stays : [];
+          return b;
+        };
+        const saveBasket = (b) => {
+          b.updatedAt = new Date().toISOString();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(b));
+        };
+
+        const el = (id) => document.getElementById(id);
+        const escapeHtml = (s) => String(s || '').replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+        const modal = el('modal');
+        const exportModal = el('exportModal');
+        const openModal = (title, html) => {
+          el('modalTitle').textContent = title;
+          el('modalBody').innerHTML = html;
+          modal.showModal();
+        };
+        el('modalClose').addEventListener('click', () => modal.close());
+        el('exportClose').addEventListener('click', () => exportModal.close());
+
+        const idOf = (x) => String((x && x.id) ? x.id : '').trim();
+        const addOrUpdate = (list, item) => {
+          const id = idOf(item);
+          if(!id) return list;
+          const idx = list.findIndex(x => idOf(x) === id);
+          if(idx === -1) return [...list, item];
+          const copy = [...list];
+          copy[idx] = {...copy[idx], ...item};
+          return copy;
+        };
+        const removeById = (list, id) => list.filter(x => idOf(x) !== String(id));
+
+        const state = {
+          basket: loadBasket(),
+          basketMin: localStorage.getItem('gdb_basket_min_v1') === '1',
+          activeTab: 'courses',
+          filterTab: 'courses',
+          inputMode: null,
+          selection: null,
+results: { courses: [], stays: [] },
+          resortIds: { course: new Set(), stay: new Set() }
+        };
+
+        const applyBasketMin = () => {
+          const box = el('basketBox');
+          const dock = el('basketDock');
+          box.classList.toggle('min', state.basketMin);
+          dock.classList.toggle('min', state.basketMin);
+          el('basketToggleBtn').textContent = state.basketMin ? '⟨' : '⟩';
+          setTimeout(() => { try{ map.invalidateSize(); } catch(e){} }, 260);
+        };
+        applyBasketMin();
+        el('basketToggleBtn').addEventListener('click', () => {
+          state.basketMin = !state.basketMin;
+          localStorage.setItem('gdb_basket_min_v1', state.basketMin ? '1' : '0');
+          applyBasketMin();
+        });
+
+        const showWorkspace = (on) => {
+          el('workspaceSection').classList.toggle('hidden', !on);
+          setTimeout(() => { try{ map.invalidateSize(); } catch(e){} }, 200);
+        };
+
+        // Tabs (results)
+        const setTab = (tab) => {
+          state.activeTab = tab;
+          el('tabCourses').classList.toggle('active', tab === 'courses');
+          el('tabStays').classList.toggle('active', tab === 'stays');
+          el('tabCourses').setAttribute('aria-selected', tab === 'courses' ? 'true' : 'false');
+          el('tabStays').setAttribute('aria-selected', tab === 'stays' ? 'true' : 'false');
+          renderResults();
+          syncMapMarkers();
+        };
+        el('tabCourses').addEventListener('click', () => setTab('courses'));
+        el('tabStays').addEventListener('click', () => setTab('stays'));
+
+        // Filter tabs (only for location step)
+        const setFilterTab = (tab) => {
+          state.filterTab = tab;
+          el('fpTabCourses').classList.toggle('active', tab === 'courses');
+          el('fpTabStays').classList.toggle('active', tab === 'stays');
+          el('courseFilters').classList.toggle('hidden', tab !== 'courses');
+          el('stayFilters').classList.toggle('hidden', tab !== 'stays');
+        };
+        el('fpTabCourses').addEventListener('click', () => setFilterTab('courses'));
+        el('fpTabStays').addEventListener('click', () => setFilterTab('stays'));
+
+        const filterIds = [
+          'courseHolesFilter','courseAccessFilter','courseTypeFilter','courseDrivingRange','coursePractice','courseProShop','courseWalkable','courseBuggy','courseResortOnly',
+          'stayTypeFilter','stayStarsFilter','stayBedsFilter','stayWifi','stayParking','stayPool','stayBreakfast','stayAircon','stayKitchen','stayFamilyRooms','stayResortOnly'
+        ];
+
+        el('resetFiltersBtn').addEventListener('click', () => {
+          el('courseHolesFilter').value = 'any';
+          el('courseAccessFilter').value = 'any';
+          el('courseTypeFilter').value = 'any';
+          el('courseDrivingRange').checked = false;
+          el('coursePractice').checked = false;
+          el('courseProShop').checked = false;
+          el('courseBuggy').checked = false;
+          el('courseWalkable').checked = false;
+          el('courseResortOnly').checked = false;
+
+          el('stayTypeFilter').value = 'any';
+          el('stayStarsFilter').value = 'any';
+          el('stayBedsFilter').value = 'any';
+          el('stayWifi').checked = false;
+          el('stayParking').checked = false;
+          el('stayPool').checked = false;
+          el('stayBreakfast').checked = false;
+          el('stayAircon').checked = false;
+          el('stayKitchen').checked = false;
+          el('stayFamilyRooms').checked = false;
+          el('stayResortOnly').checked = false;
+
+          renderResults();
+          syncMapMarkers();
+        });
+        filterIds.forEach(id => el(id).addEventListener('change', () => { renderResults(); syncMapMarkers(); }));
+
+        const fmtDate = (d) => {
+          if(!d) return '';
+          const dt = new Date(d);
+          if(String(dt) === 'Invalid Date') return String(d);
+          return dt.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'2-digit' });
+        };
+
+        // Map init
+        const map = L.map('map', { zoomControl:true });
+        map.setView([51.5072, -0.1276], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        const selectionLayerGroup = new L.LayerGroup().addTo(map);
+        const centerMarkerGroup = new L.LayerGroup().addTo(map);
+        const markerGroupCourses = new L.LayerGroup().addTo(map);
+        const markerGroupStays = new L.LayerGroup().addTo(map);
+
+        let drawControl = null;
+
+        const mkBadgeIcon = (cls, emoji) => L.divIcon({
+          className: '',
+          html: `<div class="marker-badge ${cls}">${emoji}</div>`,
+          iconSize: [30,30],
+          iconAnchor: [15,15],
+          popupAnchor: [0, -14]
+        });
+        const courseIcon = mkBadgeIcon('course', '⛳');
+        const comboCourseIcon = mkBadgeIcon('combo', '⛳🏨');
+
+        const stayIcon = (type, combo) => {
+          if(combo) return mkBadgeIcon('combo', '🏨⛳');
+          const t = String(type || '').toLowerCase();
+          const emoji = (t === 'apartment') ? '🏢'
+                     : (t === 'guest_house') ? '🏠'
+                     : (t === 'hostel') ? '🛏️'
+                     : (t === 'resort') ? '🏝️'
+                     : (t === 'camp_site' || t === 'camp_pitch' || t === 'caravan_site') ? '⛺'
+                     : (t === 'chalet') ? '🛖'
+                     : '🏨';
+          return mkBadgeIcon('stay', emoji);
+        };
+
+        const showMap = (on) => {
+          el('map').classList.toggle('hidden', !on);
+          el('mapPlaceholder').classList.toggle('hidden', on);
+          if(on) setTimeout(() => { try{ map.invalidateSize(); } catch(e){} }, 220);
+          if(!on) el('floatPanel').classList.add('hidden');
+        };
+
+        const ensureDrawEnabled = (enabled) => {
+          if(enabled) {
+            if(!drawControl) {
+              drawControl = new L.Control.Draw({
+                position: 'topleft',
+                draw: {
+                  polygon: true,
+                  rectangle: true,
+                  circle: false,
+                  circlemarker: false,
+                  marker: false,
+                  polyline: false
+                },
+                edit: { featureGroup: drawnItems, edit: true, remove: true }
+              });
+              map.addControl(drawControl);
+            }
+            document.querySelectorAll('.leaflet-draw').forEach(x => x.style.display = 'block');
+          } else {
+            document.querySelectorAll('.leaflet-draw').forEach(x => x.style.display = 'none');
+          }
+        };
+        ensureDrawEnabled(false);
+
+        const clearSelection = () => {
+          drawnItems.clearLayers();
+          selectionLayerGroup.clearLayers();
+          centerMarkerGroup.clearLayers();
+          markerGroupCourses.clearLayers();
+          markerGroupStays.clearLayers();
+          state.selection = null;
+          state.results = { courses: [], stays: [] };
+          state.resortIds = { course: new Set(), stay: new Set() };
+          el('clearSelectionBtn').disabled = true;
+          el('resultCountPill').textContent = '0 results';
+          el('floatPanel').classList.add('hidden');
+          el('resultTabs').classList.add('hidden');
+          el('filterTabs').classList.add('hidden');
+        };
+        el('clearSelectionBtn').addEventListener('click', () => { clearSelection(); renderResults(); });
+
+        const setInputMode = (mode) => {
+          state.inputMode = mode;
+          el('modeDraw').classList.toggle('active', mode === 'draw');
+          el('modeText').classList.toggle('active', mode === 'text');
+          el('textSearchBar').classList.toggle('hidden', mode !== 'text');
+          clearSelection();
+
+          if(mode === 'draw') {
+            showMap(true);
+            ensureDrawEnabled(true);
+            el('mapHint').textContent = 'Draw an area on the map to load results.';
+          } else if(mode === 'text') {
+            showMap(false);
+            ensureDrawEnabled(false);
+            el('mapHint').textContent = 'Search a place first. Map appears after you confirm a selection.';
+          } else {
+            showMap(false);
+            ensureDrawEnabled(false);
+            el('mapHint').textContent = 'Select draw or text to begin.';
+          }
+          renderResults();
+        };
+        el('modeDraw').addEventListener('click', () => setInputMode('draw'));
+        el('modeText').addEventListener('click', () => setInputMode('text'));
+
+        const geometryFromLeafletLayer = (layer) => {
+          const gj = layer.toGeoJSON();
+          return gj && gj.geometry ? gj.geometry : null;
+        };
+        const circleGeometryKm = (center, radiusKm) => turf.circle([center.lng, center.lat], radiusKm, { steps: 64, units: 'kilometers' }).geometry;
+
+        const overpassFetch = async (query) => {
+          const url = 'https://overpass-api.de/api/interpreter';
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: 'data=' + encodeURIComponent(query)
+          });
+          if(!res.ok) return null;
+          return await res.json();
+        };
+        const bboxToQuery = (bbox) => {
+          const [minX, minY, maxX, maxY] = bbox;
+          return { minLat: minY, minLon: minX, maxLat: maxY, maxLon: maxX };
+        };
+        const overpassCoursesQuery = (bbox) => {
+          const b = bboxToQuery(bbox);
+          return `[out:json][timeout:25];
+            (
+              node["leisure"="golf_course"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
+              way["leisure"="golf_course"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
+              relation["leisure"="golf_course"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
+            );
+            out center 200 tags;`;
+        };
+
+        // Wider accommodation coverage than just tourism=hotel etc
+        const overpassStaysQuery = (bbox) => {
+          const b = bboxToQuery(bbox);
+          return `[out:json][timeout:25];
+            (
+              node["tourism"~"hotel|motel|hostel|guest_house|apartment|resort|chalet|camp_site|caravan_site|camp_pitch"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
+              way["tourism"~"hotel|motel|hostel|guest_house|apartment|resort|chalet|camp_site|caravan_site|camp_pitch"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
+              relation["tourism"~"hotel|motel|hostel|guest_house|apartment|resort|chalet|camp_site|caravan_site|camp_pitch"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
+
+              node["building"="hotel"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
+              way["building"="hotel"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
+              relation["building"="hotel"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
+            );
+            out center 240 tags;`;
+        };
+
+        const filterInPoly = (items, poly) => items.filter(it => {
+          try{ return turf.booleanPointInPolygon([it.lng, it.lat], poly); }
+          catch(e){ return false; }
+        });
+        const pickImageFromTags = (tags) => {
+          const direct = tags?.image || tags?.['website:image'] || tags?.wikimedia_commons || '';
+          return (direct && String(direct).startsWith('http')) ? String(direct) : '';
+        };
+        const pickWebsiteFromTags = (tags) => {
+          const w = tags?.website || tags?.url || tags?.contact_website || tags?.['contact:website'] || '';
+          return (w && String(w).startsWith('http')) ? String(w) : '';
+        };
+        const toCourseModel = (e) => {
+          const tags = e.tags || {};
+          const name = tags.name || '';
+          const lat = (typeof e.lat === 'number') ? e.lat : e.center?.lat;
+          const lng = (typeof e.lon === 'number') ? e.lon : e.center?.lon;
+          if(!name || typeof lat !== 'number' || typeof lng !== 'number') return null;
+
+          const accessRaw = String(tags.access || tags['golf:access'] || tags.membership || '').toLowerCase();
+          const access = accessRaw.includes('private') ? 'members'
+                       : accessRaw.includes('members') ? 'members'
+                       : accessRaw.includes('public') ? 'public'
+                       : 'visitor';
+          const holes = parseInt(tags.holes || tags['golf:holes'] || '18', 10) || 18;
+
+          return {
+            id: `osm_${e.type}_${e.id}`,
+            name,
+            place: state.selection?.name || '',
+            lat, lng,
+            holes, access,
+            website: pickWebsiteFromTags(tags),
+            image: pickImageFromTags(tags),
+            tags,
+            isResort: false
+          };
+        };
+        const toStayModel = (e) => {
+          const tags = e.tags || {};
+          const name = tags.name || '';
+          const type = String(tags.tourism || (tags.building === 'hotel' ? 'hotel' : 'accommodation')).toLowerCase();
+          const stars = String(tags.stars || tags['hotel:stars'] || '').trim();
+          const lat = (typeof e.lat === 'number') ? e.lat : e.center?.lat;
+          const lng = (typeof e.lon === 'number') ? e.lon : e.center?.lon;
+          if(!name || typeof lat !== 'number' || typeof lng !== 'number') return null;
+
+          const wifi = String(tags.internet_access || '').toLowerCase().includes('wlan') || String(tags.wifi || '').toLowerCase() === 'yes';
+          const parking = String(tags.parking || '').toLowerCase() === 'yes';
+          const pool = String(tags.pool || '').toLowerCase() === 'yes';
+          const breakfast = String(tags.breakfast || '').toLowerCase() === 'yes';
+          const aircon = ['yes','true','1'].includes(String(tags.air_conditioning || tags.aircon || '').toLowerCase());
+          const kitchen = ['yes','true','1'].includes(String(tags.kitchen || tags.kitchenette || '').toLowerCase());
+          const family = ['yes','true','1'].includes(String(tags.family_rooms || '').toLowerCase());
+
+          return {
+            id: `osm_${e.type}_${e.id}`,
+            name,
+            type, stars,
+            place: state.selection?.name || '',
+            lat, lng,
+            website: pickWebsiteFromTags(tags),
+            image: pickImageFromTags(tags),
+            amenities: { wifi, parking, pool, breakfast, aircon, kitchen, family },
+            tags,
+            isResort: false
+          };
+        };
+
+        const computeResortLinks = (courses, stays) => {
+          const thresholdKm = 0.6;
+          const cRes = new Set();
+          const sRes = new Set();
+          if(!courses.length || !stays.length) return { cRes, sRes };
+          for(const c of courses) {
+            const cp = turf.point([c.lng, c.lat]);
+            for(const s of stays) {
+              const sp = turf.point([s.lng, s.lat]);
+              const d = turf.distance(cp, sp, { units:'kilometers' });
+              if(d <= thresholdKm) { cRes.add(c.id); sRes.add(s.id); }
+            }
+          }
+          return { cRes, sRes };
+        };
+
+        const loadResultsForSelection = async () => {
+          if(!state.selection?.geometry) {
+            state.results = { courses: [], stays: [] };
+            return;
+          }
+          const poly = state.selection.geometry;
+          const bbox = turf.bbox(poly);
+          let courses = [];
+          let stays = [];
+          try {
+            const jsonCourses = await overpassFetch(overpassCoursesQuery(bbox));
+            courses = filterInPoly((jsonCourses?.elements || []).map(toCourseModel).filter(Boolean), poly).slice(0, 220);
+          } catch(e) {}
+          try {
+            const jsonStays = await overpassFetch(overpassStaysQuery(bbox));
+            stays = filterInPoly((jsonStays?.elements || []).map(toStayModel).filter(Boolean), poly).slice(0, 260);
+          } catch(e) {}
+
+          const { cRes, sRes } = computeResortLinks(courses, stays);
+          state.resortIds = { course: cRes, stay: sRes };
+          state.results = {
+            courses: courses.map(c => ({...c, isResort: cRes.has(c.id)})),
+            stays: stays.map(s => ({...s, isResort: sRes.has(s.id)}))
+          };
+          el('resultCountPill').textContent = `${state.results.courses.length + state.results.stays.length} results`;
+        };
+
+        const setSelection = async (sel) => {
+          state.selection = sel;
+          el('clearSelectionBtn').disabled = false;
+
+          selectionLayerGroup.clearLayers();
+          centerMarkerGroup.clearLayers();
+
+          if(sel?.center && typeof sel.center.lat === 'number') {
+            const m = L.circleMarker([sel.center.lat, sel.center.lng], { radius: 6, weight: 2, opacity: 0.95, fillOpacity: 0.9 });
+            centerMarkerGroup.addLayer(m);
+          }
+          if(sel?.geometry) {
+            const layer = L.geoJSON(sel.geometry, { style: { weight: 2, opacity: 0.9 } });
+            selectionLayerGroup.addLayer(layer);
+            setTimeout(() => {
+              try{ map.invalidateSize(); } catch(e){}
+              try{ map.fitBounds(layer.getBounds().pad(0.15)); } catch(e){}
+            }, 80);
+          }
+
+          await loadResultsForSelection();
+          maybeAutoSaveLocation();
+          configurePanelsForStep();
+          renderResults();
+          syncMapMarkers();
+        };
+
+        map.on(L.Draw.Event.CREATED, async (event) => {
+          if(state.inputMode !== 'draw') return;
+          const layer = event.layer;
+          drawnItems.clearLayers();
+          drawnItems.addLayer(layer);
+
+          const geom = geometryFromLeafletLayer(layer);
+          let center = null;
+          try {
+            const c = layer.getBounds().getCenter();
+            center = { lat: c.lat, lng: c.lng };
+          } catch(e){}
+          await setSelection({ type:'draw', name:'Custom area', center, radiusKm:null, geometry: geom });
+        });
+        map.on(L.Draw.Event.EDITED, async () => {
+          if(state.inputMode !== 'draw') return;
+          const layers = drawnItems.getLayers();
+          if(!layers.length) return;
+          const geom = geometryFromLeafletLayer(layers[0]);
+          let center = null;
+          try {
+            const c = layers[0].getBounds().getCenter();
+            center = { lat: c.lat, lng: c.lng };
+          } catch(e){}
+          await setSelection({ ...(state.selection || {}), type:'draw', name: state.selection?.name || 'Custom area', center, geometry: geom });
+        });
+        map.on(L.Draw.Event.DELETED, () => { clearSelection(); renderResults(); });
+
+        // Text search autocomplete and highlighting logic
+        let acTimer = null;
+        let acItems = [];
+        let acSelected = null;
+
+        const closeAc = () => { el('acList').style.display = 'none'; };
+        const openAc = () => { if(acItems.length) el('acList').style.display = 'block'; };
+
+        const fetchSuggestions = async (q) => {
+          // addressdetails for display, polygon_geojson for boundaries, limit for speed
+          const url = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=7&polygon_geojson=1&q=' + encodeURIComponent(q);
+          const res = await fetch(url, { headers: { 'Accept':'application/json' } });
+          if(!res.ok) return [];
+          const data = await res.json();
+          return Array.isArray(data) ? data : [];
+        };
+        const buildAcRow = (item, idx) => {
+          const parts = String(item.display_name || '').split(',');
+          const title = parts.slice(0,2).join(',').trim();
+          const sub = parts.slice(2).join(',').trim();
+          return `<div class="ac-item" data-idx="${idx}"><div class="ac-title">${escapeHtml(title)}</div><div class="ac-sub">${escapeHtml(sub)}</div></div>`;
+        };
+
+        el('placeInput').addEventListener('input', () => {
+          const q = (el('placeInput').value || '').trim();
+          acSelected = null;
+          if(acTimer) clearTimeout(acTimer);
+          if(q.length < 3) { acItems = []; closeAc(); return; }
+          acTimer = setTimeout(async () => {
+            try {
+              acItems = await fetchSuggestions(q);
+              const box = el('acList');
+              if(!acItems.length) { box.innerHTML = ''; closeAc(); return; }
+              box.innerHTML = acItems.map(buildAcRow).join('');
+              openAc();
+              box.querySelectorAll('.ac-item').forEach(node => {
+                node.addEventListener('click', () => {
+                  const idx = parseInt(node.getAttribute('data-idx') || '0', 10);
+                  const pick = acItems[idx];
+                  if(!pick) return;
+                  acSelected = pick;
+                  el('placeInput').value = pick.display_name;
+                  closeAc();
+                });
+              });
+            } catch(e) {
+              acItems = [];
+              closeAc();
+            }
+          }, 220);
+        });
+        el('placeInput').addEventListener('focus', () => openAc());
+        document.addEventListener('click', (e) => { if(!el('textSearchBar').contains(e.target)) closeAc(); });
+
+        const geojsonToGeometry = (gj) => {
+          if(!gj) return null;
+          if(gj.type === 'Feature') return gj.geometry || null;
+          if(gj.type === 'FeatureCollection') {
+            const feat = gj.features && gj.features[0];
+            return feat ? feat.geometry : null;
+          }
+          if(gj.type === 'Polygon' || gj.type === 'MultiPolygon' || gj.type === 'Point' || gj.type === 'LineString') return gj;
+          return null;
+        };
+
+        el('searchPlaceBtn').addEventListener('click', async () => {
+          if(state.inputMode !== 'text') return;
+          const q = (el('placeInput').value || '').trim();
+          if(!q) { openModal('Search', '<div class="small">Enter a place name to search.</div>'); return; }
+          el('searchPlaceBtn').disabled = true;
+          el('searchPlaceBtn').textContent = 'Searching';
+          try {
+            const pick = acSelected || (await fetchSuggestions(q))[0];
+            if(!pick) { openModal('Search', '<div class="small">No results found. Try a broader query.</div>'); return; }
+
+            const center = { lat: parseFloat(pick.lat), lng: parseFloat(pick.lon) };
+            const radiusKm = parseFloat(el('radiusSelect').value || '10') || 10;
+
+            // If Nominatim returns a polygon boundary, use it, else circle based on radius
+            let geom = null;
+            try {
+              geom = geojsonToGeometry(pick.geojson);
+              if(geom && (geom.type === 'Point')) geom = null;
+            } catch(e){ geom = null; }
+
+            if(!geom) geom = circleGeometryKm(center, radiusKm);
+
+            showMap(true);
+            await setSelection({ type:'text', name: pick.display_name, center, radiusKm: geom.type === 'Polygon' || geom.type === 'MultiPolygon' ? null : radiusKm, geometry: geom });
+          } catch(e) {
+            openModal('Search', '<div class="small">Search failed. This can happen due to network or rate limits.</div>');
+          } finally {
+            el('searchPlaceBtn').disabled = false;
+            el('searchPlaceBtn').textContent = 'Search';
+          }
+        });
+
+        const cardThumb = (item, kind) => {
+          const badge = kind === 'course' ? '<span class="pill">⛳ Course</span>' : '<span class="pill">🏨 Stay</span>';
+          const resort = item.isResort ? '<span class="pill">Resort</span>' : '';
+          const img = item.image ? `<img alt="" loading="lazy" src="${escapeHtml(item.image)}" onerror="this.remove()">` : '';
+          return `<div class="thumb">${img}<div class="thumb-badge">${badge}${resort}</div></div>`;
+        };
+
+        const courseSummary = (c) => {
+          const meta = [];
+          if(c.holes) meta.push(`<span class="pill">${c.holes} holes</span>`);
+          if(c.access) meta.push(`<span class="pill">${escapeHtml(String(c.access).toUpperCase())}</span>`);
+          if(c.website) meta.push(`<span class="pill">Website</span>`);
+          return meta.join('');
+        };
+
+        const staySummary = (s) => {
+          const meta = [];
+          if(s.type) meta.push(`<span class="pill">${escapeHtml(String(s.type).replaceAll('_',' '))}</span>`);
+          if(s.stars) meta.push(`<span class="pill">${escapeHtml(s.stars)} star</span>`);
+          if(s.website) meta.push(`<span class="pill">Website</span>`);
+          return meta.join('');
+        };
+
+        const popupHtmlForItem = (item, kind) => {
+          const isCourse = kind === 'course';
+          const sub = isCourse
+            ? `${escapeHtml(item.place || '')}`
+            : `${escapeHtml(item.place || '')}`;
+          const meta = isCourse ? courseSummary(item) : staySummary(item);
+          return `<div style="min-width:260px;max-width:320px;">
+              <div style="border:1px solid rgba(255,255,255,.14);background:rgba(11,23,19,.55);border-radius:16px;overflow:hidden;">
+                <div style="height:120px;position:relative;background:rgba(255,255,255,.05);">
+                  ${item.image ? `<img alt="" src="${escapeHtml(item.image)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.remove()">` : ''}
+                  <div style="position:absolute;left:10px;top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+                    ${isCourse ? '<span class="pill">⛳ Course</span>' : '<span class="pill">🏨 Stay</span>'}
+                    ${item.isResort ? '<span class="pill">Resort</span>' : ''}
+                  </div>
+                </div>
+                <div style="padding:10px 12px;">
+                  <div style="font-weight:900;margin-bottom:4px;">${escapeHtml(item.name)}</div>
+                  <div style="font-size:12px;color:rgba(255,255,255,.78);line-height:1.25;">${sub}</div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">${meta}</div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+                    <button class="btn primary sm" data-add="${kind}" data-id="${escapeHtml(item.id)}">Add to basket</button>
+                    <button class="btn sm" data-view="${kind}" data-id="${escapeHtml(item.id)}">View</button>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+        };
+
+        const bindPopupButtons = () => {
+          document.querySelectorAll('[data-view]').forEach(btn => {
+            btn.onclick = null;
+            btn.addEventListener('click', () => {
+              const kind = btn.getAttribute('data-view');
+              const id = btn.getAttribute('data-id');
+              const src = kind === 'course' ? state.results.courses : state.results.stays;
+              const item = src.find(x => x.id === id);
+              if(item) openItemModal(item, kind);
+            });
+          });
+          document.querySelectorAll('[data-add]').forEach(btn => {
+            btn.onclick = null;
+            btn.addEventListener('click', () => {
+              const kind = btn.getAttribute('data-add');
+              const id = btn.getAttribute('data-id');
+              const src = kind === 'course' ? state.results.courses : state.results.stays;
+              const item = src.find(x => x.id === id);
+              if(item) handleSelect(item, kind);
+            });
+          });
+        };
+
+        const openItemModal = (item, kind) => {
+          const img = item.image ? `<img alt="" src="${escapeHtml(item.image)}" style="width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.10);margin-bottom:10px;" onerror="this.remove()">` : '';
+          const resort = item.isResort ? '<div style="margin-top:10px;"><span class="pill">Resort combo</span> <span class="small">Stay and course appear within the same area</span></div>' : '';
+          if(kind === 'course') {
+            openModal('Course', `<div class="small">${img}
+                <div style="font-weight:900;font-size:16px;margin-bottom:8px;">${escapeHtml(item.name)}</div>
+                <div>${escapeHtml(item.place || '')}</div>
+                <div style="margin-top:10px;">Holes: <strong>${item.holes}</strong></div>
+                <div style="margin-top:6px;">Access: <strong>${escapeHtml(String(item.access || '').toUpperCase())}</strong></div>
+                ${item.website ? `<div style="margin-top:10px;">Website: <a href="${escapeHtml(item.website)}" target="_blank" rel="noopener" style="text-decoration:underline;">Open</a></div>` : ''}
+                ${resort}
+                <div style="margin-top:12px;">No live availability and no price guarantees.</div>
+              </div>`);
+          } else {
+            openModal('Accommodation', `<div class="small">${img}
+                <div style="font-weight:900;font-size:16px;margin-bottom:8px;">${escapeHtml(item.name)}</div>
+                <div>${escapeHtml(item.place || '')}</div>
+                <div style="margin-top:10px;">Type: <strong>${escapeHtml(String(item.type || '').replaceAll('_',' '))}</strong></div>
+                <div style="margin-top:6px;">Stars: <strong>${escapeHtml(item.stars || 'n/a')}</strong></div>
+                ${item.website ? `<div style="margin-top:10px;">Website: <a href="${escapeHtml(item.website)}" target="_blank" rel="noopener" style="text-decoration:underline;">Open</a></div>` : ''}
+                ${resort}
+                <div style="margin-top:12px;">No live availability and no price guarantees.</div>
+              </div>`);
+          }
+        };
+
+        const hasTagYes = (tags, keys) => keys.some(k => ['yes','true','1'].includes(String(tags?.[k] || '').toLowerCase()));
+        const passesCourseFilters = (c) => {
+          const holes = el('courseHolesFilter').value;
+          const access = el('courseAccessFilter').value;
+          const style = el('courseTypeFilter').value;
+          const drivingRange = el('courseDrivingRange').checked;
+          const practice = el('coursePractice').checked;
+          const proshop = el('courseProShop').checked;
+          const walkable = el('courseWalkable').checked;
+          const buggy = el('courseBuggy').checked;
+          const resortOnly = el('courseResortOnly').checked;
+
+          const okHoles = holes === 'any' ? true : (holes === '9' ? Number(c.holes) === 9 : (holes === '18' ? Number(c.holes) === 18 : Number(c.holes) >= 27));
+          const okAccess = access === 'any' ? true : String(c.access || '') === access;
+
+          const styleStr = String(c.tags?.['golf:style'] || c.tags?.style || c.tags?.surface || '').toLowerCase();
+          const okStyle = style === 'any' ? true : styleStr.includes(style);
+
+          const okDriving = drivingRange ? hasTagYes(c.tags, ['driving_range','golf:driving_range']) : true;
+          const okPractice = practice ? hasTagYes(c.tags, ['practice','golf:practice_facility']) : true;
+          const okShop = proshop ? hasTagYes(c.tags, ['pro_shop','shop']) : true;
+
+          const okWalkable = walkable ? hasTagYes(c.tags, ['walking','walkable']) : true;
+          const okBuggy = buggy ? (hasTagYes(c.tags, ['buggy','cart','golf_cart']) || String(c.tags?.buggy || '').toLowerCase() === 'recommended') : true;
+          const okResort = resortOnly ? !!c.isResort : true;
+
+          return okHoles && okAccess && okStyle && okDriving && okPractice && okShop && okWalkable && okBuggy && okResort;
+        };
+
+        const passesStayFilters = (s) => {
+          const type = el('stayTypeFilter').value;
+          const stars = el('stayStarsFilter').value;
+          const beds = el('stayBedsFilter').value;
+          const wifi = el('stayWifi').checked;
+          const parking = el('stayParking').checked;
+          const pool = el('stayPool').checked;
+          const breakfast = el('stayBreakfast').checked;
+          const aircon = el('stayAircon').checked;
+          const kitchen = el('stayKitchen').checked;
+          const family = el('stayFamilyRooms').checked;
+          const resortOnly = el('stayResortOnly').checked;
+
+          const okType = type === 'any' ? true : String(s.type || '') === type;
+          const okStars = stars === 'any' ? true : String(s.stars || '') === String(stars);
+
+          const bedCount = parseInt(String(s.tags?.beds || s.tags?.bed || s.tags?.rooms || ''), 10);
+          const okBeds = beds === 'any' ? true : (isNaN(bedCount) ? false : bedCount >= parseInt(beds, 10));
+
+          const okWifi = wifi ? !!s.amenities?.wifi : true;
+          const okParking = parking ? !!s.amenities?.parking : true;
+          const okPool = pool ? !!s.amenities?.pool : true;
+          const okBreakfast = breakfast ? !!s.amenities?.breakfast : true;
+          const okAircon = aircon ? !!s.amenities?.aircon : true;
+          const okKitchen = kitchen ? !!s.amenities?.kitchen : true;
+          const okFamily = family ? !!s.amenities?.family : true;
+
+          const okResort = resortOnly ? !!s.isResort : true;
+
+          return okType && okStars && okBeds && okWifi && okParking && okPool && okBreakfast && okAircon && okKitchen && okFamily && okResort;
+        };
+
+        const getFilteredCourses = () => state.results.courses.filter(passesCourseFilters);
+        const getFilteredStays = () => state.results.stays.filter(passesStayFilters);
+
+        const syncMapMarkers = () => {
+          markerGroupCourses.clearLayers();
+          markerGroupStays.clearLayers();
+
+          if(!state.selection) return;
+
+          const step = state.basket.flow.currentStep;
+          const showCourses = (step === 'golf') || (step === 'location' && state.activeTab === 'courses') || (step === 'location' && state.filterTab === 'courses');
+          const showStays = (step === 'accommodation') || (step === 'location' && state.activeTab === 'stays') || (step === 'location' && state.filterTab === 'stays');
+
+          const courses = getFilteredCourses();
+          const stays = getFilteredStays();
+
+          if(showCourses) {
+            courses.forEach(c => {
+              if(typeof c.lat !== 'number' || typeof c.lng !== 'number') return;
+              const m = L.marker([c.lat, c.lng], { icon: c.isResort ? comboCourseIcon : courseIcon });
+              m.bindPopup(popupHtmlForItem(c, 'course'));
+              m.on('popupopen', () => setTimeout(bindPopupButtons, 0));
+              markerGroupCourses.addLayer(m);
+            });
+            map.addLayer(markerGroupCourses);
+          } else {
+            map.removeLayer(markerGroupCourses);
+          }
+
+          if(showStays) {
+            stays.forEach(s => {
+              if(typeof s.lat !== 'number' || typeof s.lng !== 'number') return;
+              const m = L.marker([s.lat, s.lng], { icon: stayIcon(s.type, s.isResort) });
+              m.bindPopup(popupHtmlForItem(s, 'stay'));
+              m.on('popupopen', () => setTimeout(bindPopupButtons, 0));
+              markerGroupStays.addLayer(m);
+            });
+            map.addLayer(markerGroupStays);
+          } else {
+            map.removeLayer(markerGroupStays);
+          }
+
+          const count = courses.length + stays.length;
+          el('resultCountPill').textContent = `${count} results`;
+
+          if(state.selection && count > 0) el('floatPanel').classList.remove('hidden');
+          else el('floatPanel').classList.add('hidden');
+        };
+
+        const renderResults = async () => {
+          const step = state.basket.flow.currentStep;
+          const list = el('resultsList');
+
+          if(!step) {
+            el('resultsHint').textContent = 'Select a start point above.';
+            list.innerHTML = '<div class="small">Select a start point to begin.</div>';
+            return;
+          }
+
+          if(false) {
+            el('resultsHint').textContent = 'Confirm dates, then choose whether to view accommodation or courses.';
+            list.innerHTML = '<div class="small">Confirm dates. Then choose whether to view accommodation or courses.</div>';
+            return;
+          }
+
+          if(!state.inputMode) {
+            el('resultsHint').textContent = 'Select draw or text, then select an area.';
+            list.innerHTML = '<div class="small">Select draw or text. Then select an area to load results.</div>';
+            return;
+          }
+
+          if(!state.selection) {
+            el('resultsHint').textContent = state.inputMode === 'draw' ? 'Draw an area to load results.' : 'Search a place to load results.';
+            list.innerHTML = '<div class="small">No search results yet. Make a selection to load results.</div>';
+            return;
+          }
+
+          if(state.selection && !state.results.courses.length && !state.results.stays.length) {
+            await loadResultsForSelection();
+            syncMapMarkers();
+          }
+
+          const items = state.activeTab === 'courses' ? getFilteredCourses() : getFilteredStays();
+          if(!items.length) {
+            list.innerHTML = '<div class="small">No results matched your filters in this selection.</div>';
+            return;
+          }
+
+          list.innerHTML = items.slice(0, 50).map(item => {
+            const kind = state.activeTab === 'courses' ? 'course' : 'stay';
+            const sub = (kind === 'course')
+              ? `${escapeHtml(item.place || '')}`
+              : `${escapeHtml(item.place || '')}`;
+            const meta = (kind === 'course') ? courseSummary(item) : staySummary(item);
+            return `<div class="result-card">
+                ${cardThumb(item, kind)}
+                <div class="content">
+                  <div class="r-title">${escapeHtml(item.name)}</div>
+                  <div class="r-sub">${sub}</div>
+                  <div class="r-meta">${meta}</div>
+                  <div class="r-actions">
+                    <button class="btn primary sm" data-add="${kind}" data-id="${escapeHtml(item.id)}">Add to basket</button>
+                    <button class="btn sm" data-view="${kind}" data-id="${escapeHtml(item.id)}">View</button>
+                  </div>
+                </div>
+              </div>`;
+          }).join('');
+
+          list.querySelectorAll('[data-view]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const kind = btn.getAttribute('data-view');
+              const id = btn.getAttribute('data-id');
+              const src = kind === 'course' ? state.results.courses : state.results.stays;
+              const item = src.find(x => x.id === id);
+              if(item) openItemModal(item, kind);
+            });
+          });
+          list.querySelectorAll('[data-add]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const kind = btn.getAttribute('data-add');
+              const id = btn.getAttribute('data-id');
+              const src = kind === 'course' ? state.results.courses : state.results.stays;
+              const item = src.find(x => x.id === id);
+              if(item) handleSelect(item, kind);
+            });
+          });
+        };
+
+        const handleSelect = (item, kind) => {
+          if(kind === 'course') {
+            const current = state.basket.courses.find(x => idOf(x) === item.id);
+            const rounds = current?.rounds || 1;
+            openModal('Add to basket', `<div class="small">
+                <div style="font-weight:900;font-size:16px;margin-bottom:8px;">${escapeHtml(item.name)}</div>
+                <div>${escapeHtml(item.place || '')}</div>
+                <div style="margin-top:12px;font-weight:900;">Number of rounds</div><div class="small" style="margin-top:6px;">Optional: preferred date</div><input id="courseDateOpt" type="date" class="input" style="margin-top:6px;min-width:200px;">
+                <div class="row" style="margin-top:10px;">
+                  <input id="roundsInput" class="input" type="number" min="1" max="30" value="${rounds}" style="min-width:140px;">
+                  <button class="btn primary" id="confirmSelectBtn" type="button">Confirm</button>
+                </div>
+              </div>`);
+            setTimeout(() => {
+              document.getElementById('confirmSelectBtn')?.addEventListener('click', () => {
+                const v = Math.max(1, Math.min(30, parseInt(document.getElementById('roundsInput').value || '1', 10) || 1));
+                const d = (document.getElementById('courseDateOpt')?.value || '').trim();
+                state.basket.courses = addOrUpdate(state.basket.courses, {...item, rounds: v, preferredDate: d || null});
+                saveBasket(state.basket);
+                renderBasket();
+                modal.close();
+              });
+            }, 0);
+          } else {
+            const current = state.basket.stays.find(x => idOf(x) === item.id);
+            const nights = current?.nights || 3;
+            openModal('Add to basket', `<div class="small">
+                <div style="font-weight:900;font-size:16px;margin-bottom:8px;">${escapeHtml(item.name)}</div>
+                <div>${escapeHtml(item.place || '')}</div>
+                <div style="margin-top:12px;font-weight:900;">Number of nights</div><div class="small" style="margin-top:6px;">Optional: check in date</div><input id="stayDateOpt" type="date" class="input" style="margin-top:6px;min-width:200px;">
+                <div class="row" style="margin-top:10px;">
+                  <input id="nightsInput" class="input" type="number" min="1" max="60" value="${nights}" style="min-width:140px;">
+                  <button class="btn primary" id="confirmSelectBtn" type="button">Confirm</button>
+                </div>
+              </div>`);
+            setTimeout(() => {
+              document.getElementById('confirmSelectBtn')?.addEventListener('click', () => {
+                const v = Math.max(1, Math.min(60, parseInt(document.getElementById('nightsInput').value || '1', 10) || 1));
+                const d = (document.getElementById('stayDateOpt')?.value || '').trim();
+                state.basket.stays = addOrUpdate(state.basket.stays, {...item, nights: v, checkInDate: d || null});
+                saveBasket(state.basket);
+                renderBasket();
+                modal.close();
+              });
+            }, 0);
+          }
+        };
+
+        const renderBasket = () => {
+          const b = state.basket;
+          el('locCount').textContent = b.location ? '1' : '0';
+          el('courseCount').textContent = String(b.courses.length || 0);
+          el('stayCount').textContent = String(b.stays.length || 0);
+          const total = (b.location ? 1 : 0) + (b.courses.length || 0) + (b.stays.length || 0);
+          el('basketSummary').textContent = `${total} item${total === 1 ? '' : 's'} saved`;
+
+          const locList = el('locList');
+          if(!b.location) {
+            locList.innerHTML = '<div class="small">No location saved yet</div>';
+          } else {
+            const radius = b.location.radiusKm ? ` • Radius ${b.location.radiusKm} km` : '';
+            locList.innerHTML = `<div class="basket-item">
+                <div>
+                  <div class="bi-title">${escapeHtml(b.location.name)}</div>
+                  <div class="bi-sub">${escapeHtml(b.location.type)}${radius}</div>
+                </div>
+                <button class="icon-btn" data-rm="location" aria-label="Remove location">✕</button>
+              </div>`;
+          }
+
+          const courseList = el('courseList');
+          if(!b.courses.length) {
+            courseList.innerHTML = '<div class="small">No courses saved yet</div>';
+          } else {
+            courseList.innerHTML = b.courses.map(c => `<div class="basket-item">
+                  <div>
+                    <div class="bi-title">${escapeHtml(c.name)}</div>
+                    <div class="bi-sub">${escapeHtml(c.place || '')} • ${c.holes || 18} holes • ${escapeHtml(String(c.access || '').toUpperCase())} • Rounds ${c.rounds || 1}${c.preferredDate ? ' • ' + fmtDate(c.preferredDate) : ''}${c.isResort ? ' • Resort' : ''}</div>
+                  </div>
+                  <button class="icon-btn" data-rm="course" data-id="${escapeHtml(c.id)}" aria-label="Remove course">✕</button>
+                </div>`).join('');
+          }
+
+          const stayList = el('stayList');
+          if(!b.stays.length) {
+            stayList.innerHTML = '<div class="small">No stays saved yet</div>';
+          } else {
+            stayList.innerHTML = b.stays.map(s => `<div class="basket-item">
+                  <div>
+                    <div class="bi-title">${escapeHtml(s.name)}</div>
+                    <div class="bi-sub">${escapeHtml(s.place || '')} • ${escapeHtml(String(s.type || '').replaceAll('_',' '))} • Nights ${s.nights || 1}${s.checkInDate ? ' • ' + fmtDate(s.checkInDate) : ''}${s.isResort ? ' • Resort' : ''}</div>
+                  </div>
+                  <button class="icon-btn" data-rm="stay" data-id="${escapeHtml(s.id)}" aria-label="Remove accommodation">✕</button>
+                </div>`).join('');
+          }
+
+          document.querySelectorAll('[data-rm]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const kind = btn.getAttribute('data-rm');
+              if(kind === 'location') state.basket.location = null;
+              if(kind === 'course') state.basket.courses = removeById(state.basket.courses, btn.getAttribute('data-id'));
+              if(kind === 'stay') state.basket.stays = removeById(state.basket.stays, btn.getAttribute('data-id'));
+              saveBasket(state.basket);
+              renderBasket();
+            });
+          });
+        };
+
+        const maybeAutoSaveLocation = () => {
+          if(state.basket.flow.currentStep !== 'location') return;
+          if(state.basket.location) return;
+          if(!state.selection) return;
+          state.basket.location = {
+            name: state.selection.name || 'Selected area',
+            type: state.selection.type || 'selection',
+            center: state.selection.center || null,
+            radiusKm: state.selection.radiusKm || null,
+            geometry: state.selection.geometry || null
+          };
+          saveBasket(state.basket);
+          renderBasket();
+        };
+
+        // Export / import
+        el('exportBtn').addEventListener('click', () => {
+          el('basketJson').value = JSON.stringify(state.basket, null, 2);
+          exportModal.showModal();
+        });
+        el('copyBtn').addEventListener('click', async () => {
+          try { await navigator.clipboard.writeText(el('basketJson').value || ''); openModal('Copied', '<div class="small">Basket JSON copied to clipboard.</div>'); }
+          catch(e) { openModal('Copy not available', '<div class="small">Clipboard access blocked by the browser. You can copy manually.</div>'); }
+        });
+        el('importBtn').addEventListener('click', () => {
+          const data = safeJsonParse(el('basketJson').value || '');
+          if(!data || typeof data !== 'object') { openModal('Import failed', '<div class="small">JSON could not be parsed.</div>'); return; }
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          state.basket = loadBasket();
+          saveBasket(state.basket);
+          renderBasket();
+          setActiveStepUI();
+          openModal('Imported', '<div class="small">Basket imported on this device.</div>');
+          exportModal.close();
+        });
+        el('clearBasketBtn').addEventListener('click', () => {
+          state.basket = defaultBasket();
+          saveBasket(state.basket);
+          renderBasket();
+          openModal('Basket cleared', '<div class="small">All saved items removed from this device.</div>');
+        });
+
+        const configurePanelsForStep = () => {
+          const step = state.basket.flow.currentStep;
+
+          // show result tabs and filter tabs only when meaningful
+          if(step === 'location') {
+            el('resultTabs').classList.remove('hidden');
+            el('filterTabs').classList.remove('hidden');
+          } else {
+            el('resultTabs').classList.add('hidden');
+            el('filterTabs').classList.add('hidden');
+          }
+
+          // filters show only matching dataset unless location step
+          if(step === 'accommodation') {
+            el('courseFilters').classList.add('hidden');
+            el('stayFilters').classList.remove('hidden');
+            setFilterTab('stays');
+            setTab('stays');
+          } else if(step === 'golf') {
+            el('stayFilters').classList.add('hidden');
+            el('courseFilters').classList.remove('hidden');
+            setFilterTab('courses');
+            setTab('courses');
+          } else if(step === 'location') {
+            // allow toggle
+            setFilterTab(state.filterTab || 'courses');
+          }
+        };
+
+        const setActiveStepUI = () => {
+          const step = state.basket.flow.currentStep;
+          document.querySelectorAll('.step-card').forEach(card => {
+            const s = card.getAttribute('data-step');
+            card.classList.toggle('active', step === s);
+          });
+
+          showWorkspace(!!step);
+
+          el('mapCard').classList.toggle('hidden', false);
+          
+
+          if(step && step !== 'date') setInputMode(null);
+
+          if(false) {
+            el('resultsHint').textContent = 'Confirm dates, then choose whether to view accommodation or courses.';
+            el('dateStatus').textContent = state.dateAnchor ? `Selected: ${fmtDate(state.dateAnchor.start)} to ${fmtDate(state.dateAnchor.end)}` : 'No dates selected';
+          } else {
+            el('resultsHint').textContent = 'Select draw or text, then select an area.';
+          }
+
+          configurePanelsForStep();
+          maybeAutoSaveLocation();
+          renderResults();
+        };
+
+        document.querySelectorAll('.step-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const step = card.getAttribute('data-step');
+            state.basket.flow.currentStep = step;
+            saveBasket(state.basket);
+            clearSelection();
+            setActiveStepUI();
+          });
+          card.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+          });
+        });
+
+        el('resetFlowBtn').addEventListener('click', () => {
+          state.basket.flow.currentStep = null;
+          saveBasket(state.basket);
+          clearSelection();
+          setInputMode(null);
+          setActiveStepUI();
+        });
+// Init
+        renderBasket();
+        setActiveStepUI();
+      })();
+    </script>
+  </div>
+</body>
+</html>
