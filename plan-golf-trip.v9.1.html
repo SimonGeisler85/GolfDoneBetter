@@ -46,6 +46,8 @@
       --bd:rgba(255,255,255,.14);
       --shadow:0 18px 60px rgba(0,0,0,.45);
       --radius:16px;
+    
+      --fpSpace:0px;
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Arial, Helvetica, sans-serif;background:var(--bg);color:var(--fg);}
@@ -57,7 +59,7 @@
         linear-gradient(var(--bg), var(--bg));
     }
     a{color:inherit;text-decoration:none}
-    .skip-link{position:absolute;left:-999px;top:12px;background:var(--accent);color:#0b1713;padding:10px 14px;border-radius:12px;font-weight:900;z-index:9999;text-decoration:none}
+    .skip-link{position:fixed;left:-999px;top:12px;background:var(--accent);color:#0b1713;padding:10px 14px;border-radius:12px;font-weight:900;z-index:9999;text-decoration:none}
     .skip-link:focus{left:12px}
 
     header{
@@ -131,7 +133,7 @@
       opacity:.95;
     }
 
-    .step-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .step-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
     @media (max-width:980px){.step-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media (max-width:520px){.step-grid{grid-template-columns:1fr}}
 
@@ -142,6 +144,8 @@
       padding:12px;
       display:flex;
       flex-direction:column;
+      height:100%;
+      max-height:100%;
       gap:8px;
       cursor:pointer;
       user-select:none;
@@ -149,6 +153,7 @@
     }
     .step-card:hover{background:rgba(255,255,255,.06);border-color:rgba(110,231,183,.30)}
     .step-card.active{border-color:rgba(110,231,183,.65);background:rgba(110,231,183,.12)}
+    .step-card[data-step="date"]{display:none}
     .step-title{font-weight:900}
     .step-sub{color:rgba(255,255,255,.70);font-size:13px;line-height:1.35}
 
@@ -156,17 +161,19 @@
     .workspace{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:14px}
 
     .basket-dock{
-      width:360px; flex:0 0 360px;
+      width:320px; flex:0 0 320px;
       position:sticky; top:88px;
+      height:calc(100vh - 110px);
       max-height:calc(100vh - 110px);
+      overflow:hidden;
       display:flex; justify-content:flex-end;
       z-index:60;
       transition:width .22s ease, flex-basis .22s ease;
-    }
+}
     .basket-dock.min{width:62px;flex-basis:62px;}
 
     .basket{
-      width:360px;
+      width:340px;
       border:1px solid var(--bd);
       background:rgba(11,23,19,.82);
       border-radius:var(--radius);
@@ -174,19 +181,33 @@
       overflow:hidden;
       display:flex;
       flex-direction:column;
+      height:100%;
+      max-height:100%;
+      min-height:0;
       transition:width .22s ease;
-    }
+}
     .basket.min{width:62px;}
     .basket.min .basket-body,
     .basket.min .basket-foot,
     .basket.min .basket-title,
     .basket.min #basketSummary,
     .basket.min #exportBtn{display:none;}
-    .basket.min .basket-head{justify-content:center;}
+    .basket.min .basket-head{flex:0 0 auto;}
     .basket-head{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(11,23,19,.92);border-bottom:1px solid rgba(255,255,255,.10)}
     .basket-title{font-weight:900}
-    .basket-body{padding:12px 14px;overflow:auto;display:grid;gap:12px}
+    .basket-body{
+      padding:12px 14px;
+      overflow-y:auto;
+      overflow-x:hidden;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      flex:1 1 auto;
+      min-height:0;
+      scrollbar-gutter:stable;
+}
     .basket-block{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);border-radius:14px;overflow:hidden}
+    #basketLocationBlock{display:none}
     .basket-block h3{margin:0;padding:10px 12px;font-size:13px;letter-spacing:.6px;text-transform:uppercase;opacity:.85;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;gap:10px}
     .basket-list{padding:10px 12px;display:grid;gap:10px}
     .basket-item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;border:1px solid rgba(255,255,255,.10);background:rgba(11,23,19,.40);border-radius:12px;padding:10px}
@@ -194,7 +215,11 @@
     .bi-sub{font-size:12px;color:rgba(255,255,255,.70);margin-top:4px;line-height:1.3}
     .icon-btn{width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;cursor:pointer;font-weight:900;display:flex;align-items:center;justify-content:center}
     .icon-btn:hover{background:rgba(255,255,255,.10)}
-    .basket-foot{padding:12px 14px;border-top:1px solid rgba(255,255,255,.10);background:rgba(11,23,19,.92);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+    .basket-foot{flex:0 0 auto; padding:12px 14px;border-top:1px solid rgba(255,255,255,.08);display:block;}
+.basket-foot .basket-note{font-size:12px;line-height:1.35;color:rgba(255,255,255,.78);margin-bottom:10px}
+.basket-foot .row{display:flex;justify-content:space-between;gap:10px;flex-wrap:nowrap}
+    .basket-foot .row .btn{flex:1}
+
 
     @media (max-width:980px){
       .layout{flex-direction:column}
@@ -242,8 +267,14 @@
     .ac-sub{font-size:12px;color:rgba(255,255,255,.70);margin-top:4px;line-height:1.25}
 
     /* Filters panel on right, scrollable */
+    .float-panel.min{width:62px;}
+    .float-panel.min .fp-body{display:none;}
+    .float-panel.min .fp-title{display:none;}
+    .float-panel.min #resultCountPill{display:none;}
+    .float-panel.min #fpMinBtn{transform:rotate(180deg);}
+
     .float-panel{
-      position:absolute;
+      position:fixed;
       right:14px;
       top:14px;
       width:310px;
@@ -274,6 +305,9 @@
     .tab.active{border-color:rgba(110,231,183,.60);background:rgba(110,231,183,.14)}
 
     .results{padding:12px 14px;display:grid;gap:10px}
+
+    /* Reserve space so result cards never sit under the floating filters panel */
+    #resultsCard{max-width:calc(100% - var(--fpSpace));margin-right:var(--fpSpace);}
     .result-card{
       border:1px solid rgba(255,255,255,.14);
       background:rgba(11,23,19,.45);
@@ -308,11 +342,14 @@
     .dlg-body{padding:14px}
 
     .marker-badge{
-      width:30px;height:30px;border-radius:15px;
+      background:#ffffff !important;
+      color:#0b1720 !important;
+      width:30px;height:30px;border-radius:999px;
       display:flex;align-items:center;justify-content:center;
-      border:2px solid rgba(255,255,255,.92);
+      border:2px solid rgba(0,0,0,.35) !important;
       box-shadow:0 10px 18px rgba(0,0,0,.35);
       font-size:14px;line-height:1;
+      font-weight:950;
       padding:0 2px;
     }
     .marker-badge.course{background:rgba(110,231,183,.88);color:#0b1713;}
@@ -325,7 +362,96 @@
     .leaflet-draw-toolbar a{background-color:#ffffff !important;}
     .leaflet-draw-toolbar a{background-image:url("https://unpkg.com/leaflet-draw@1.0.4/dist/images/spritesheet.png") !important; background-size:300px 30px !important;}
     .leaflet-retina .leaflet-draw-toolbar a{background-image:url("https://unpkg.com/leaflet-draw@1.0.4/dist/images/spritesheet-2x.png") !important; background-size:300px 30px !important;}
-  </style>
+  
+
+/* Ensure map pins are visible */
+.marker-badge{background:#ffffff !important;color:#0b1720 !important;border:2px solid rgba(0,0,0,.35) !important;border-radius:999px !important;width:30px !important;height:30px !important;display:flex !important;align-items:center !important;justify-content:center !important;font-weight:950 !important;box-shadow:0 6px 18px rgba(0,0,0,.28) !important}
+.marker-badge.course-badge{border-color:rgba(34,197,94,.9) !important}
+.marker-badge.stay-badge{border-color:rgba(59,130,246,.9) !important}
+.marker-badge.both-badge{border-color:rgba(168,85,247,.9) !important}
+
+
+        .map-layer-toggles{
+          color:#ffffff;
+          position:absolute;
+          left:12px;
+          bottom:12px;
+          z-index:600;
+          background:#000000;
+          border:1px solid rgba(255,255,255,0.18);
+          border-radius:12px;
+          padding:10px 10px;
+          box-shadow:0 8px 22px rgba(0,0,0,0.12);
+          display:flex;
+          flex-direction:column;
+          gap:8px;
+          pointer-events:auto;
+        }
+        .map-layer-toggles .mlt-item{
+          display:flex;
+          align-items:center;
+          gap:8px;
+          font-size:13px;
+          color:#ffffff;
+          user-select:none;
+          cursor:pointer;
+          white-space:nowrap;
+        }
+        .map-layer-toggles input[type="checkbox"]{
+          width:16px;
+          height:16px;
+        }
+    
+
+    .map-layer-toggles input[type="checkbox"]{accent-color:#ffffff;}
+
+  .sortbar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:10px;
+    margin-bottom:10px;
+  }
+  .sortbar.hidden{ display:none; }
+  .sortbar-label{
+    font-weight:800;
+    font-size:13px;
+    color:#111;
+    opacity:.9;
+  }
+  #sortSelect{
+    width:100%;
+    max-width:260px;
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid rgba(0,0,0,.16);
+    background:#fff;
+    font-weight:700;
+  }
+
+
+    .basket-item-title{font-size:13px;line-height:1.25}
+    .basket-item-sub{font-size:12px;opacity:.86}
+
+/* --- Basket scroll + alignment (v61) --- */
+.basket{display:flex;flex-direction:column;height:100%;min-height:0;}
+.basket-head,.basket-foot{flex:0 0 auto;}
+.basket-body{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:scroll; /* always show */
+  overflow-x:hidden;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  padding-right:12px;
+}
+/* Critical: do not clip growing lists inside blocks */
+.basket-block{overflow:visible;}
+/* Neat separation */
+.basket-block + .basket-block{margin-top:14px;}
+
+</style>
 </head>
 
 <body>
@@ -359,18 +485,16 @@
     <main id="main">
       <h1>Plan a golf trip</h1>
       <div class="sub">
-        Start where you want. Save courses and accommodation into one workspace.
-        Basket data is stored on your device only. No live availability, and no price guarantees.
+        Start how you want and where you want. Save courses, accommodation, and extras into one workspace to build a trip plan you can compare and refine.
       </div>
 
       <section class="card" style="margin-top:14px;">
         <div class="card-pad">
           <div class="row sp-between">
             <div>
-              <div class="pill">Start point</div>
-              <div style="font-weight:900;font-size:18px;margin-top:10px;">Select your start point</div>
+              <div style="font-weight:900;font-size:18px;margin-top:10px;">Select your search tool</div>
               <div class="small" style="margin-top:6px;max-width:980px;">
-                Each start point leads to the same end state: where, when, and what. You can select items into the basket at any stage.
+                Use map draw or text search to explore. Review results on the map or list, then add the options you like to your basket.
               </div>
             </div>
             <div class="row">
@@ -379,19 +503,29 @@
           </div>
 
           <div class="step-grid" style="margin-top:14px;">
-            <div class="step-card" data-step="accommodation" role="button" tabindex="0" aria-label="Start with accommodation">
-              <div class="step-title">Start with accommodation</div>
-              <div class="step-sub">Select an area, then review stays. Add to basket with nights.</div>
+            <div class="step-card" data-step="accommodation" role="button" tabindex="0" aria-label="Search accommodation">
+              <div class="step-title">Search accommodation</div>
+              <div class="step-sub">Select an area, review and filter options, then add to basket.</div>
             </div>
-            <div class="step-card" data-step="golf" role="button" tabindex="0" aria-label="Start with golf courses">
-              <div class="step-title">Start with golf courses</div>
-              <div class="step-sub">Select an area, then review courses. Add to basket with rounds.</div>
+            <div class="step-card" data-step="golf" role="button" tabindex="0" aria-label="Search golf courses">
+              <div class="step-title">Search golf courses</div>
+              <div class="step-sub">Select an area, review and filter options, then add to basket.</div>
             </div>
-<div class="step-card" data-step="location" role="button" tabindex="0" aria-label="Start with location">
-              <div class="step-title">Start with location</div>
-              <div class="step-sub">Pick an area and toggle between stays and courses.</div>
+            <div class="step-card" data-step="date" role="button" tabindex="0" aria-label="Search dates">
+              <div class="step-title">Search dates</div>
+              <div class="step-sub">Optional. Add dates when saving items.</div>
             </div>
-          </div>
+            <div class="step-card" data-step="location" role="button" tabindex="0" aria-label="Search a location or region">
+              <div class="step-title">Search a location or region</div>
+              <div class="step-sub">Select an area, toggle between accommodation and courses, then add to basket.</div>
+            </div>
+          
+            <div class="step-card disabled" data-step="transport" role="button" tabindex="0" aria-label="Search transport">
+              <div style="font-weight:900;">Search transport</div>
+              <div class="small" style="margin-top:6px;">Car hire and transfers will be added here</div>
+              <div class="pill" style="margin-top:10px;">Coming soon</div>
+            </div>
+</div>
         </div>
       </section>
 
@@ -437,11 +571,18 @@
             <div class="map-stage">
               <div class="placeholder" id="mapPlaceholder">Select draw or text to begin.</div>
               <div id="map" class="hidden"></div>
+              <div id="mapLayerToggles" class="map-layer-toggles hidden" aria-label="Map layer toggles">
+                <label class="mlt-item"><input type="checkbox" id="toggleMapCourses" checked> <span>Show courses</span></label>
+                <label class="mlt-item"><input type="checkbox" id="toggleMapStays" checked> <span>Show accommodation</span></label>
+              </div>
 
               <div class="float-panel hidden" id="floatPanel" aria-label="Filters panel">
                 <div class="fp-head">
                   <div class="fp-title">Filters</div>
-                  <div class="pill" id="resultCountPill">0 results</div>
+                  <div class="row" style="gap:8px;">
+                    <div class="pill" id="resultCountPill">0 results</div>
+                    <button class="icon-btn" id="fpMinBtn" type="button" aria-label="Minimise filters">⟩</button>
+                  </div>
                 </div>
                 <div class="fp-body">
                   <div class="fp-tabs hidden" id="filterTabs" role="tablist" aria-label="Filter tabs">
@@ -529,7 +670,7 @@
             </div>
           </section>
 
-          <section class="card" aria-label="Results">
+          <section class="card hidden" id="resultsCard" aria-label="Results">
             <div class="card-pad">
               <div class="row sp-between">
                 <div>
@@ -542,9 +683,40 @@
                 </div>
               </div>
             </div>
+            <div class="sortbar hidden" id="sortBar">
+              <div class="sortbar-label">Sort</div>
+              <select id="sortSelect" aria-label="Sort results">
+                <option value="az" selected>A to Z</option>
+                <option value="za">Z to A</option>
+                <option value="distance">Distance (soon)</option>
+                <option value="rating">Rating (soon)</option>
+                <option value="popularity">Popularity (soon)</option>
+                <option value="price">Price (not used)</option>
+              </select>
+            </div>
             <div class="results" id="resultsList" aria-live="polite"></div>
           </section>
-</div>
+
+          <section class="card hidden" id="dateCard">
+            <div class="card-pad">
+              <div style="font-weight:900;">Dates</div>
+              <div class="small" style="margin-top:8px;max-width:980px;">
+                Date selection sets a planning anchor only. It does not run availability checks, and it is not stored in the basket.
+              </div>
+
+              <div class="row" style="margin-top:12px;">
+                <label class="pill">Start <input id="dateStart" type="date" style="margin-left:10px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;padding:8px 10px;"></label>
+                <label class="pill">End <input id="dateEnd" type="date" style="margin-left:10px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;padding:8px 10px;"></label>
+                <button class="btn primary" id="saveDatesBtn" type="button">Confirm dates</button>
+              </div>
+
+              <div class="row" style="margin-top:12px;">
+                <div class="pill" id="dateStatus">No dates selected</div>
+                <div class="small">After you confirm dates, choose whether to view accommodation or courses.</div>
+              </div>
+            </div>
+          </section>
+        </div>
 
         <aside class="basket-dock" id="basketDock" aria-label="Trip basket dock">
           <div class="basket" id="basketBox" aria-label="Trip basket">
@@ -554,13 +726,14 @@
                 <div class="basket-title">Trip basket</div>
                 <div class="small" id="basketSummary">0 items saved</div>
               </div>
-              <button class="btn ghost" id="exportBtn" type="button">Export</button>
+              <button class="btn ghost" id="exportBtn" type="button">View itinerary</button>
             </div>
 
             <div class="basket-body">
+              
               <div class="basket-block">
-                <h3><span>Location</span><span class="pill" id="locCount">0</span></h3>
-                <div class="basket-list" id="locList"><div class="small">No location saved yet</div></div>
+                <h3><span>Accommodation</span><span class="pill" id="stayCount">0</span></h3>
+                <div class="basket-list" id="stayList"><div class="small">No stays saved yet</div></div>
               </div>
 
               <div class="basket-block">
@@ -569,19 +742,20 @@
               </div>
 
               <div class="basket-block">
-                <h3><span>Accommodation</span><span class="pill" id="stayCount">0</span></h3>
-                <div class="basket-list" id="stayList"><div class="small">No stays saved yet</div></div>
+                <h3><span>Transport</span><span class="pill" id="transportCount">0</span></h3>
+                <div class="basket-list" id="transportList"><div class="small">Transport planning coming soon</div></div>
               </div>
-            </div>
+
+
+</div>
 
             <div class="basket-foot">
-              <div class="small" style="max-width:240px;">
-                Stored locally in your browser storage. Clear basket to remove saved items from this device.
-              </div>
+              <div class="basket-note">Stored locally in your browser storage. Clear basket to remove saved items from this device.</div>
               <div class="row">
                 <button class="btn danger" id="clearBasketBtn" type="button">Clear basket</button>
+                <button class="btn primary" id="viewItineraryBtn" type="button">View itinerary</button>
               </div>
-            </div>
+</div>
           </div>
         </aside>
       </section>
@@ -589,7 +763,22 @@
 
     <footer>© 2025 Golf Done Better. Bookings happen on partner sites.</footer>
 
-    <dialog id="modal">
+    
+    <dialog id="clearConfirm">
+      <div class="dlg-head">
+        <div class="dlg-title">Clear basket</div>
+        <button class="icon-btn" type="button" data-close>✕</button>
+      </div>
+      <div class="dlg-body">
+        <div style="margin-bottom:12px;">Are you sure you want to clear the basket on this device?</div>
+        <div class="row" style="justify-content:flex-end;">
+          <button class="btn ghost" id="clearNoBtn" type="button">No</button>
+          <button class="btn danger" id="clearYesBtn" type="button">Yes</button>
+        </div>
+      </div>
+    </dialog>
+
+<dialog id="modal">
       <div class="dlg-head">
         <div class="dlg-title" id="modalTitle">Item</div>
         <button class="icon-btn" id="modalClose" type="button" aria-label="Close">✕</button>
@@ -676,6 +865,70 @@
         const el = (id) => document.getElementById(id);
         const escapeHtml = (s) => String(s || '').replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
+        const syncFloatingUI = () => {
+          const mapCard = el('mapCard');
+          const panel = el('floatPanel');
+          if(!mapCard || !panel) return;
+
+          // Align the floating filters panel with the right edge of the map card,
+          // even when the basket changes the map width.
+          const rect = mapCard.getBoundingClientRect();
+          const rightGap = Math.max(0, Math.round(window.innerWidth - rect.right));
+          panel.style.right = `${rightGap}px`;
+
+          // Reserve horizontal space for result cards so they never sit under the floating panel.
+          const isPanelVisible = !panel.classList.contains('hidden');
+          const panelW = isPanelVisible ? panel.getBoundingClientRect().width : 0;
+          const space = isPanelVisible ? (panelW + 16) : 0;
+          document.documentElement.style.setProperty('--fpSpace', `${space}px`);
+        };
+
+
+        const applySortToResults = () => {
+          const sortSelect = el('sortSelect');
+          const list = el('resultsList');
+          if(!sortSelect || !list) return;
+
+          const mode = sortSelect.value || 'az';
+          if(mode !== 'az' && mode !== 'za') return; // stubs for now
+
+          const cards = Array.from(list.querySelectorAll('.result-card'));
+          if(cards.length < 2) return;
+
+          const key = (card) => {
+            const t = card.querySelector('.r-title');
+            return (t ? t.textContent : '').trim().toLowerCase();
+          };
+
+          cards.sort((a,b) => {
+            const ka = key(a), kb = key(b);
+            if(ka < kb) return mode === 'az' ? -1 : 1;
+            if(ka > kb) return mode === 'az' ? 1 : -1;
+            return 0;
+          });
+
+          cards.forEach(c => list.appendChild(c));
+        };
+
+        const updateSortBarVisibility = () => {
+          const sb = el('sortBar');
+          const list = el('resultsList');
+          if(!sb || !list) return;
+
+          const hasCards = !!list.querySelector('.result-card');
+          if(hasCards) sb.classList.remove('hidden');
+          else sb.classList.add('hidden');
+        };
+
+        // Sort when changed (A-Z and Z-A live; others are placeholders).
+        document.addEventListener('change', (e) => {
+          if(e.target && e.target.id === 'sortSelect') {
+            applySortToResults();
+          }
+        });
+
+
+
         const modal = el('modal');
         const exportModal = el('exportModal');
         const openModal = (title, html) => {
@@ -705,8 +958,10 @@
           filterTab: 'courses',
           inputMode: null,
           selection: null,
-results: { courses: [], stays: [] },
-          resortIds: { course: new Set(), stay: new Set() }
+          dateAnchor: null,
+          results: { courses: [], stays: [] },
+          resortIds: { course: new Set(), stay: new Set() },
+          mapLayers: { courses: true, stays: true }
         };
 
         const applyBasketMin = () => {
@@ -718,6 +973,28 @@ results: { courses: [], stays: [] },
           setTimeout(() => { try{ map.invalidateSize(); } catch(e){} }, 260);
         };
         applyBasketMin();
+        // Filters panel minimise
+        state.filtersMin = localStorage.getItem('gdb_filters_min_v1') === '1';
+        const applyFiltersMin = () => {
+          const panel = el('floatPanel');
+          if(!panel) return;
+          panel.classList.toggle('min', !!state.filtersMin);
+          const btn = el('fpMinBtn');
+          if(btn) {
+            btn.textContent = state.filtersMin ? '⟨' : '⟩';
+            btn.setAttribute('aria-label', state.filtersMin ? 'Maximise filters' : 'Minimise filters');
+          }
+          syncFloatingUI();
+          setTimeout(() => { try{ map.invalidateSize(); } catch(e){} }, 40);
+        };
+        const fpBtn = el('fpMinBtn');
+        if(fpBtn) fpBtn.addEventListener('click', () => {
+          state.filtersMin = !state.filtersMin;
+          localStorage.setItem('gdb_filters_min_v1', state.filtersMin ? '1' : '0');
+          applyFiltersMin();
+        });
+        applyFiltersMin();
+
         el('basketToggleBtn').addEventListener('click', () => {
           state.basketMin = !state.basketMin;
           localStorage.setItem('gdb_basket_min_v1', state.basketMin ? '1' : '0');
@@ -801,6 +1078,20 @@ results: { courses: [], stays: [] },
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
+        // Keep floating UI aligned to the map width as the basket is minimised/maximised or the layout changes.
+        try{
+          const ro = new ResizeObserver(() => syncFloatingUI());
+          const mapCardEl = el('mapCard');
+          const basketEl = el('basketDock');
+          if(mapCardEl) ro.observe(mapCardEl);
+          if(basketEl) ro.observe(basketEl);
+          const panelEl = el('floatPanel');
+          if(panelEl) ro.observe(panelEl);
+        } catch(e) {
+          // no-op (older browsers)
+        }
+
+
         const drawnItems = new L.FeatureGroup();
         map.addLayer(drawnItems);
 
@@ -879,6 +1170,14 @@ results: { courses: [], stays: [] },
           el('floatPanel').classList.add('hidden');
           el('resultTabs').classList.add('hidden');
           el('filterTabs').classList.add('hidden');
+          el('mapLayerToggles').classList.add('hidden');
+          // reset layer toggles to defaults
+          el('toggleMapCourses').checked = true;
+          el('toggleMapStays').checked = true;
+          state.mapLayers.courses = true;
+          state.mapLayers.stays = true;
+          const rc = document.getElementById('resultsCard');
+          if(rc) rc.classList.add('hidden');
         };
         el('clearSelectionBtn').addEventListener('click', () => { clearSelection(); renderResults(); });
 
@@ -1068,6 +1367,11 @@ results: { courses: [], stays: [] },
 
         const setSelection = async (sel) => {
           state.selection = sel;
+          // Always treat a new selection as a fresh search context
+          state.results = { courses: [], stays: [] };
+          state.resortIds = { course: new Set(), stay: new Set() };
+          markerGroupCourses.clearLayers();
+          markerGroupStays.clearLayers();
           el('clearSelectionBtn').disabled = false;
 
           selectionLayerGroup.clearLayers();
@@ -1090,6 +1394,9 @@ results: { courses: [], stays: [] },
           maybeAutoSaveLocation();
           configurePanelsForStep();
           renderResults();
+          syncMapMarkers();
+
+          await renderResults();
           syncMapMarkers();
         };
 
@@ -1295,7 +1602,7 @@ results: { courses: [], stays: [] },
         const openItemModal = (item, kind) => {
           const img = item.image ? `<img alt="" src="${escapeHtml(item.image)}" style="width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.10);margin-bottom:10px;" onerror="this.remove()">` : '';
           const resort = item.isResort ? '<div style="margin-top:10px;"><span class="pill">Resort combo</span> <span class="small">Stay and course appear within the same area</span></div>' : '';
-          if(kind === 'course') {
+          if(kind === 'course' || Number.isFinite(Number(item?.holes)) || (item && typeof item.access !== 'undefined')) {
             openModal('Course', `<div class="small">${img}
                 <div style="font-weight:900;font-size:16px;margin-bottom:8px;">${escapeHtml(item.name)}</div>
                 <div>${escapeHtml(item.place || '')}</div>
@@ -1389,16 +1696,17 @@ results: { courses: [], stays: [] },
           if(!state.selection) return;
 
           const step = state.basket.flow.currentStep;
-          const showCourses = (step === 'golf') || (step === 'location' && state.activeTab === 'courses') || (step === 'location' && state.filterTab === 'courses');
-          const showStays = (step === 'accommodation') || (step === 'location' && state.activeTab === 'stays') || (step === 'location' && state.filterTab === 'stays');
+          const showCourses = (step === 'golf') || (step === 'location' && state.mapLayers.courses);
+          const showStays = (step === 'accommodation') || (step === 'location' && state.mapLayers.stays);
 
           const courses = getFilteredCourses();
           const stays = getFilteredStays();
 
           if(showCourses) {
             courses.forEach(c => {
-              if(typeof c.lat !== 'number' || typeof c.lng !== 'number') return;
-              const m = L.marker([c.lat, c.lng], { icon: c.isResort ? comboCourseIcon : courseIcon });
+              const lat = Number(c.lat); const lng = Number(c.lng);
+              if(!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+              const m = L.marker([lat, lng], { icon: c.isResort ? comboCourseIcon : courseIcon });
               m.bindPopup(popupHtmlForItem(c, 'course'));
               m.on('popupopen', () => setTimeout(bindPopupButtons, 0));
               markerGroupCourses.addLayer(m);
@@ -1410,8 +1718,9 @@ results: { courses: [], stays: [] },
 
           if(showStays) {
             stays.forEach(s => {
-              if(typeof s.lat !== 'number' || typeof s.lng !== 'number') return;
-              const m = L.marker([s.lat, s.lng], { icon: stayIcon(s.type, s.isResort) });
+              const lat = Number(s.lat); const lng = Number(s.lng);
+              if(!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+              const m = L.marker([lat, lng], { icon: stayIcon(s.type, s.isResort) });
               m.bindPopup(popupHtmlForItem(s, 'stay'));
               m.on('popupopen', () => setTimeout(bindPopupButtons, 0));
               markerGroupStays.addLayer(m);
@@ -1422,23 +1731,39 @@ results: { courses: [], stays: [] },
           }
 
           const count = courses.length + stays.length;
+          // map layer toggles should only appear once location results exist
+          if(step === 'location') {
+            if(count > 0) el('mapLayerToggles').classList.remove('hidden');
+            else el('mapLayerToggles').classList.add('hidden');
+          }
+
           el('resultCountPill').textContent = `${count} results`;
 
-          if(state.selection && count > 0) el('floatPanel').classList.remove('hidden');
-          else el('floatPanel').classList.add('hidden');
+          if(state.selection && count > 0) {
+            el('floatPanel').classList.remove('hidden');
+            try{ positionPanel(); }catch(e){}
+          } else {
+            el('floatPanel').classList.add('hidden');
+          }
+
+          syncFloatingUI();
+          updateSortBarVisibility();
+          applySortToResults();
         };
 
         const renderResults = async () => {
+          const rc = document.getElementById('resultsCard');
           const step = state.basket.flow.currentStep;
           const list = el('resultsList');
 
           if(!step) {
             el('resultsHint').textContent = 'Select a start point above.';
+            if(rc) rc.classList.add('hidden');
             list.innerHTML = '<div class="small">Select a start point to begin.</div>';
             return;
           }
 
-          if(false) {
+          if(step === 'date') {
             el('resultsHint').textContent = 'Confirm dates, then choose whether to view accommodation or courses.';
             list.innerHTML = '<div class="small">Confirm dates. Then choose whether to view accommodation or courses.</div>';
             return;
@@ -1446,12 +1771,14 @@ results: { courses: [], stays: [] },
 
           if(!state.inputMode) {
             el('resultsHint').textContent = 'Select draw or text, then select an area.';
+            if(rc) rc.classList.add('hidden');
             list.innerHTML = '<div class="small">Select draw or text. Then select an area to load results.</div>';
             return;
           }
 
           if(!state.selection) {
             el('resultsHint').textContent = state.inputMode === 'draw' ? 'Draw an area to load results.' : 'Search a place to load results.';
+            if(rc) rc.classList.add('hidden');
             list.innerHTML = '<div class="small">No search results yet. Make a selection to load results.</div>';
             return;
           }
@@ -1463,12 +1790,14 @@ results: { courses: [], stays: [] },
 
           const items = state.activeTab === 'courses' ? getFilteredCourses() : getFilteredStays();
           if(!items.length) {
+            if(rc) rc.classList.remove('hidden');
             list.innerHTML = '<div class="small">No results matched your filters in this selection.</div>';
             return;
           }
 
+          if(rc) rc.classList.remove('hidden');
           list.innerHTML = items.slice(0, 50).map(item => {
-            const kind = state.activeTab === 'courses' ? 'course' : 'stay';
+            const kind = (step === 'golf') ? 'course' : (step === 'accommodation') ? 'stay' : (state.activeTab === 'courses' ? 'course' : 'stay');
             const sub = (kind === 'course')
               ? `${escapeHtml(item.place || '')}`
               : `${escapeHtml(item.place || '')}`;
@@ -1514,7 +1843,7 @@ results: { courses: [], stays: [] },
             openModal('Add to basket', `<div class="small">
                 <div style="font-weight:900;font-size:16px;margin-bottom:8px;">${escapeHtml(item.name)}</div>
                 <div>${escapeHtml(item.place || '')}</div>
-                <div style="margin-top:12px;font-weight:900;">Number of rounds</div><div class="small" style="margin-top:6px;">Optional: preferred date</div><input id="courseDateOpt" type="date" class="input" style="margin-top:6px;min-width:200px;">
+                <div style="margin-top:12px;font-weight:900;">Number of rounds</div>
                 <div class="row" style="margin-top:10px;">
                   <input id="roundsInput" class="input" type="number" min="1" max="30" value="${rounds}" style="min-width:140px;">
                   <button class="btn primary" id="confirmSelectBtn" type="button">Confirm</button>
@@ -1523,8 +1852,7 @@ results: { courses: [], stays: [] },
             setTimeout(() => {
               document.getElementById('confirmSelectBtn')?.addEventListener('click', () => {
                 const v = Math.max(1, Math.min(30, parseInt(document.getElementById('roundsInput').value || '1', 10) || 1));
-                const d = (document.getElementById('courseDateOpt')?.value || '').trim();
-                state.basket.courses = addOrUpdate(state.basket.courses, {...item, rounds: v, preferredDate: d || null});
+                state.basket.courses = addOrUpdate(state.basket.courses, {...item, rounds: v});
                 saveBasket(state.basket);
                 renderBasket();
                 modal.close();
@@ -1536,7 +1864,7 @@ results: { courses: [], stays: [] },
             openModal('Add to basket', `<div class="small">
                 <div style="font-weight:900;font-size:16px;margin-bottom:8px;">${escapeHtml(item.name)}</div>
                 <div>${escapeHtml(item.place || '')}</div>
-                <div style="margin-top:12px;font-weight:900;">Number of nights</div><div class="small" style="margin-top:6px;">Optional: check in date</div><input id="stayDateOpt" type="date" class="input" style="margin-top:6px;min-width:200px;">
+                <div style="margin-top:12px;font-weight:900;">Number of nights</div>
                 <div class="row" style="margin-top:10px;">
                   <input id="nightsInput" class="input" type="number" min="1" max="60" value="${nights}" style="min-width:140px;">
                   <button class="btn primary" id="confirmSelectBtn" type="button">Confirm</button>
@@ -1545,8 +1873,7 @@ results: { courses: [], stays: [] },
             setTimeout(() => {
               document.getElementById('confirmSelectBtn')?.addEventListener('click', () => {
                 const v = Math.max(1, Math.min(60, parseInt(document.getElementById('nightsInput').value || '1', 10) || 1));
-                const d = (document.getElementById('stayDateOpt')?.value || '').trim();
-                state.basket.stays = addOrUpdate(state.basket.stays, {...item, nights: v, checkInDate: d || null});
+                state.basket.stays = addOrUpdate(state.basket.stays, {...item, nights: v});
                 saveBasket(state.basket);
                 renderBasket();
                 modal.close();
@@ -1556,59 +1883,65 @@ results: { courses: [], stays: [] },
         };
 
         const renderBasket = () => {
-          const b = state.basket;
-          el('locCount').textContent = b.location ? '1' : '0';
-          el('courseCount').textContent = String(b.courses.length || 0);
-          el('stayCount').textContent = String(b.stays.length || 0);
-          const total = (b.location ? 1 : 0) + (b.courses.length || 0) + (b.stays.length || 0);
-          el('basketSummary').textContent = `${total} item${total === 1 ? '' : 's'} saved`;
+          const b = state.basket || defaultBasket();
 
-          const locList = el('locList');
-          if(!b.location) {
-            locList.innerHTML = '<div class="small">No location saved yet</div>';
-          } else {
-            const radius = b.location.radiusKm ? ` • Radius ${b.location.radiusKm} km` : '';
-            locList.innerHTML = `<div class="basket-item">
-                <div>
-                  <div class="bi-title">${escapeHtml(b.location.name)}</div>
-                  <div class="bi-sub">${escapeHtml(b.location.type)}${radius}</div>
-                </div>
-                <button class="icon-btn" data-rm="location" aria-label="Remove location">✕</button>
-              </div>`;
-          }
+          const setText = (id, val) => {
+            const n = el(id);
+            if(n) n.textContent = val;
+          };
 
+          // Counts
+          setText('courseCount', String((b.courses || []).length || 0));
+          setText('stayCount', String((b.stays || []).length || 0));
+          if(el('transportCount')) setText('transportCount', String((b.transport || []).length || 0));
+
+          const total = ((b.courses || []).length || 0) + ((b.stays || []).length || 0) + ((b.transport || []).length || 0);
+          setText('basketSummary', `${total} item${total === 1 ? '' : 's'} saved`);
+
+          // Courses
           const courseList = el('courseList');
-          if(!b.courses.length) {
-            courseList.innerHTML = '<div class="small">No courses saved yet</div>';
-          } else {
-            courseList.innerHTML = b.courses.map(c => `<div class="basket-item">
-                  <div>
-                    <div class="bi-title">${escapeHtml(c.name)}</div>
-                    <div class="bi-sub">${escapeHtml(c.place || '')} • ${c.holes || 18} holes • ${escapeHtml(String(c.access || '').toUpperCase())} • Rounds ${c.rounds || 1}${c.preferredDate ? ' • ' + fmtDate(c.preferredDate) : ''}${c.isResort ? ' • Resort' : ''}</div>
-                  </div>
-                  <button class="icon-btn" data-rm="course" data-id="${escapeHtml(c.id)}" aria-label="Remove course">✕</button>
-                </div>`).join('');
+          if(courseList) {
+            if(!(b.courses || []).length) {
+              courseList.innerHTML = '<div class="small">No courses added yet</div>';
+            } else {
+              courseList.innerHTML = (b.courses || []).map(c => {
+                const rounds = c.rounds ? ` • ${c.rounds} round${c.rounds === 1 ? '' : 's'}` : '';
+                return `<div class="basket-item">
+                  <div class="basket-item-title">${escapeHtml(c.name || '')}</div>
+                  <div class="basket-item-sub">${rounds ? rounds.replace(/^\s*•\s*/,"") : ""}</div>
+                  <button class="icon-btn" data-remove="course" data-id="${escapeHtml(idOf(c))}" title="Remove">✕</button>
+                </div>`;
+              }).join('');
+            }
           }
 
+          // Accommodation
           const stayList = el('stayList');
-          if(!b.stays.length) {
-            stayList.innerHTML = '<div class="small">No stays saved yet</div>';
-          } else {
-            stayList.innerHTML = b.stays.map(s => `<div class="basket-item">
-                  <div>
-                    <div class="bi-title">${escapeHtml(s.name)}</div>
-                    <div class="bi-sub">${escapeHtml(s.place || '')} • ${escapeHtml(String(s.type || '').replaceAll('_',' '))} • Nights ${s.nights || 1}${s.checkInDate ? ' • ' + fmtDate(s.checkInDate) : ''}${s.isResort ? ' • Resort' : ''}</div>
-                  </div>
-                  <button class="icon-btn" data-rm="stay" data-id="${escapeHtml(s.id)}" aria-label="Remove accommodation">✕</button>
-                </div>`).join('');
+          if(stayList) {
+            if(!(b.stays || []).length) {
+              stayList.innerHTML = '<div class="small">No accommodation added yet</div>';
+            } else {
+              stayList.innerHTML = (b.stays || []).map(s => {
+                const nights = s.nights ? ` • ${s.nights} night${s.nights === 1 ? '' : 's'}` : '';
+                return `<div class="basket-item">
+                  <div class="basket-item-title">${escapeHtml(s.name || '')}</div>
+                  <div class="basket-item-sub">${nights ? nights.replace(/^\s*•\s*/,"") : ""}</div>
+                  <button class="icon-btn" data-remove="stay" data-id="${escapeHtml(idOf(s))}" title="Remove">✕</button>
+                </div>`;
+              }).join('');
+            }
           }
 
-          document.querySelectorAll('[data-rm]').forEach(btn => {
+          // Remove buttons
+          document.querySelectorAll('[data-remove]').forEach(btn => {
+            btn.onclick = null;
             btn.addEventListener('click', () => {
-              const kind = btn.getAttribute('data-rm');
-              if(kind === 'location') state.basket.location = null;
-              if(kind === 'course') state.basket.courses = removeById(state.basket.courses, btn.getAttribute('data-id'));
-              if(kind === 'stay') state.basket.stays = removeById(state.basket.stays, btn.getAttribute('data-id'));
+              const kind = btn.getAttribute('data-remove');
+              const id = btn.getAttribute('data-id');
+              if(!id) return;
+              if(kind === 'course') state.basket.courses = removeById(state.basket.courses || [], id);
+              if(kind === 'stay') state.basket.stays = removeById(state.basket.stays || [], id);
+              if(kind === 'transport') state.basket.transport = removeById(state.basket.transport || [], id);
               saveBasket(state.basket);
               renderBasket();
             });
@@ -1651,14 +1984,60 @@ results: { courses: [], stays: [] },
           exportModal.close();
         });
         el('clearBasketBtn').addEventListener('click', () => {
-          state.basket = defaultBasket();
-          saveBasket(state.basket);
-          renderBasket();
-          openModal('Basket cleared', '<div class="small">All saved items removed from this device.</div>');
+          const dlg = document.getElementById('clearConfirm');
+          if (dlg && typeof dlg.showModal === 'function') dlg.showModal();
+          else {
+            const ok = window.confirm('Clear basket on this device?');
+            if (ok) {
+              state.basket = defaultBasket();
+              saveBasket(state.basket);
+              renderBasket();
+            }
+          }
         });
 
-        const configurePanelsForStep = () => {
+        const clearConfirm = document.getElementById('clearConfirm');
+        if (clearConfirm) {
+          clearConfirm.addEventListener('click', (e) => {
+            if (e.target && e.target.hasAttribute('data-close')) clearConfirm.close();
+          });
+        }
+
+        el('clearNoBtn')?.addEventListener('click', () => {
+          document.getElementById('clearConfirm')?.close();
+        });
+
+        el('viewItineraryBtn')?.addEventListener('click', () => {
+          // Placeholder: reuse existing export modal as itinerary view for now
+          const exportModal = document.getElementById('exportModal');
+          if (exportModal && typeof exportModal.showModal === 'function') exportModal.showModal();
+        });
+
+        el('clearYesBtn')?.addEventListener('click', () => {
+          const keepStep = state.basket?.flow?.currentStep || null;
+          state.basket = defaultBasket();
+          state.basket.flow.currentStep = keepStep;
+          saveBasket(state.basket);
+          renderBasket();
+          document.getElementById('clearConfirm')?.close();
+          // Ensure map/results remain stable after clearing basket
+          try{ configurePanelsForStep(); }catch(e){}
+          try{ renderResults(); }catch(e){}
+          try{ syncMapMarkers(); }catch(e){}
+        });
+
+        el('viewItineraryBtn')?.addEventListener('click', () => {
+          // Placeholder: reuse existing export modal as itinerary view for now
+          const exportModal = document.getElementById('exportModal');
+          if (exportModal && typeof exportModal.showModal === 'function') exportModal.showModal();
+        });
+const configurePanelsForStep = () => {
           const step = state.basket.flow.currentStep;
+
+          // map layer toggles (location step only, only once results exist)
+          const hasLocationResults = (step === 'location') && !!state.selection && ((state.results.courses?.length||0) + (state.results.stays?.length||0) > 0);
+          if(hasLocationResults) el('mapLayerToggles').classList.remove('hidden');
+          else el('mapLayerToggles').classList.add('hidden');
 
           // show result tabs and filter tabs only when meaningful
           if(step === 'location') {
@@ -1695,12 +2074,12 @@ results: { courses: [], stays: [] },
 
           showWorkspace(!!step);
 
-          el('mapCard').classList.toggle('hidden', false);
-          
+          el('mapCard').classList.toggle('hidden', step === 'date');
+          el('dateCard').classList.toggle('hidden', step !== 'date');
 
           if(step && step !== 'date') setInputMode(null);
 
-          if(false) {
+          if(step === 'date') {
             el('resultsHint').textContent = 'Confirm dates, then choose whether to view accommodation or courses.';
             el('dateStatus').textContent = state.dateAnchor ? `Selected: ${fmtDate(state.dateAnchor.start)} to ${fmtDate(state.dateAnchor.end)}` : 'No dates selected';
           } else {
@@ -1708,6 +2087,10 @@ results: { courses: [], stays: [] },
           }
 
           configurePanelsForStep();
+          if(state.basket.flow.currentStep === 'location') {
+            el('toggleMapCourses').checked = !!state.mapLayers.courses;
+            el('toggleMapStays').checked = !!state.mapLayers.stays;
+          }
           maybeAutoSaveLocation();
           renderResults();
         };
@@ -1715,6 +2098,7 @@ results: { courses: [], stays: [] },
         document.querySelectorAll('.step-card').forEach(card => {
           card.addEventListener('click', () => {
             const step = card.getAttribute('data-step');
+            if(step === 'transport' || card.classList.contains('disabled')) return;
             state.basket.flow.currentStep = step;
             saveBasket(state.basket);
             clearSelection();
@@ -1723,6 +2107,25 @@ results: { courses: [], stays: [] },
           card.addEventListener('keydown', (e) => {
             if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
           });
+
+        // location map layer toggles
+        const bindMapLayerToggles = () => {
+          const c = el('toggleMapCourses');
+          const s = el('toggleMapStays');
+          if(!c || !s) return;
+
+          const apply = () => {
+            state.mapLayers = state.mapLayers || { courses: true, stays: true };
+            state.mapLayers.courses = !!c.checked;
+            state.mapLayers.stays = !!s.checked;
+            syncMapMarkers();
+          };
+
+          c.addEventListener('change', apply);
+          s.addEventListener('change', apply);
+        };
+        bindMapLayerToggles();
+
         });
 
         el('resetFlowBtn').addEventListener('click', () => {
@@ -1732,11 +2135,195 @@ results: { courses: [], stays: [] },
           setInputMode(null);
           setActiveStepUI();
         });
-// Init
+
+        el('saveDatesBtn').addEventListener('click', () => {
+          const start = (el('dateStart').value || '').trim();
+          const end = (el('dateEnd').value || '').trim();
+          if(!start || !end) { openModal('Dates', '<div class="small">Set both start and end dates.</div>'); return; }
+          state.dateAnchor = { start, end };
+          el('dateStatus').textContent = `Selected: ${fmtDate(start)} to ${fmtDate(end)}`;
+          openModal('Dates confirmed', '<div class="small">Dates confirmed. Now choose whether to view accommodation or courses.</div>');
+        });
+
+        // Init
         renderBasket();
         setActiveStepUI();
+        syncFloatingUI();
       })();
-    </script>
+    
+
+// Confirm before clearing basket
+(() => {
+  const btn = document.getElementById('clearBasketBtn');
+  if (!btn) return;
+
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    // Guard: modal helpers must exist
+    if (typeof openModal !== 'function' || typeof modal === 'undefined') return;
+
+    openModal('Clear basket', `
+      <div class="small">Are you sure you want to clear the basket on this device?</div>
+      <div class="row" style="margin-top:14px;justify-content:flex-end;gap:10px;">
+        <button class="btn ghost" id="clearNoBtn" type="button">No</button>
+        <button class="btn danger" id="clearYesBtn" type="button">Yes</button>
+      </div>
+    `);
+
+    // Wire up buttons after DOM insert
+    requestAnimationFrame(() => {
+      const yes = document.getElementById('clearYesBtn');
+      const no  = document.getElementById('clearNoBtn');
+
+      if (no)  no.addEventListener('click', () => { modal.close();
+          try { if (window.map && typeof map.invalidateSize==='function') map.invalidateSize(true); if (typeof syncMapMarkers==='function') syncMapMarkers(); } catch(e){}
+ try { if (window.map && typeof map.invalidateSize==='function') map.invalidateSize(true); if (typeof syncMapMarkers==='function') syncMapMarkers(); } catch(e){} }, { once: true });
+      if (yes) yes.addEventListener('click', () => {
+        try {
+          state.basket = defaultBasket();
+          saveBasket(state.basket);
+          renderBasket();
+        } finally {
+          modal.close();
+          try { if (window.map && typeof map.invalidateSize==='function') map.invalidateSize(true); if (typeof syncMapMarkers==='function') syncMapMarkers(); } catch(e){}
+
+        }
+      }, { once: true });
+    });
+  });
+})();
+
+
+</script>
   </div>
+
+
+
+
+<script>
+(function () {
+  const panel = document.getElementById('floatPanel');
+  const mapEl = document.getElementById('map');
+  if (!panel || !mapEl) return;
+
+  // Ensure fixed positioning. We manually align it to the map top-right corner.
+  panel.style.position = 'fixed';
+
+  const marginTop = 10;   // hugs the top edge of the map
+  const marginRight = 6;  // tucks into the top-right corner of the map
+  const minViewportPadding = 6;
+
+  function positionPanel() {
+    const mapRect = mapEl.getBoundingClientRect();
+
+    // Keep the panel below the sticky header, and never above the map top edge (when the map is in view).
+    const headerEl = document.querySelector('header');
+    const headerBottom = headerEl ? headerEl.getBoundingClientRect().bottom : 0;
+
+    // When the map is visible and its top is below the header, hug the map.
+    // Once the map scrolls up behind the header, keep the panel pinned just below the header.
+    const top = Math.max(mapRect.top + marginTop, headerBottom + 8, minViewportPadding);
+    panel.style.top = Math.round(top) + 'px';
+
+    // Hug the right edge of the map (relative to viewport).
+    const panelRect = panel.getBoundingClientRect();
+    let left = mapRect.right - panelRect.width - marginRight;
+
+    // Keep inside viewport just in case.
+    left = Math.max(left, minViewportPadding);
+    const maxLeft = window.innerWidth - panelRect.width - minViewportPadding;
+    left = Math.min(left, maxLeft);
+
+    panel.style.left = Math.round(left) + 'px';
+  }
+
+  // Update on scroll/resize.
+  window.addEventListener('scroll', positionPanel, { passive: true });
+  window.addEventListener('resize', positionPanel);
+
+  // Also update when layout changes (basket minimize/maximize can resize the map).
+  const ro = new ResizeObserver(() => positionPanel());
+  ro.observe(mapEl);
+
+  // Initial position after layout settles.
+  setTimeout(positionPanel, 0)
+
+  // Ensure the floating panel positions correctly the moment it becomes visible (not only after scroll).
+  const panelMO = new MutationObserver(() => {
+    // If panel just became visible, position it and sync spacing.
+    if(!panel.classList.contains('hidden')) {
+      requestAnimationFrame(() => {
+        positionPanel();
+        if(typeof syncFloatingUI === 'function') syncFloatingUI();
+        if(typeof updateSortBarVisibility === 'function') updateSortBarVisibility();
+      });
+    }
+  });
+  panelMO.observe(panel, { attributes:true, attributeFilter:['class','style'] });
+;
+  setTimeout(positionPanel, 150);
+})();
+</script>
+
+
+<script>
+(function(){
+  function headerHeight(){
+    const h = document.querySelector('header') || document.querySelector('.header') || document.querySelector('#header');
+    return h ? Math.ceil(h.getBoundingClientRect().height || 0) : 0;
+  }
+  function syncBasketScroll(){
+    const dock = document.getElementById('basketDock') || document.querySelector('.basket-dock');
+    const box  = document.getElementById('basketBox') || document.querySelector('.basket');
+    const head = box?.querySelector('.basket-head');
+    const foot = box?.querySelector('.basket-foot');
+    const body = box?.querySelector('.basket-body');
+    if(!dock || !box || !head || !foot || !body) return;
+
+    const hH = headerHeight();
+    const topGap = 16;
+    const bottomGap = 16;
+    const avail = Math.max(280, window.innerHeight - hH - topGap - bottomGap);
+
+    dock.style.top = (hH + topGap) + 'px';
+    dock.style.height = avail + 'px';
+    dock.style.maxHeight = avail + 'px';
+
+    box.style.height = '100%';
+
+    const headH = Math.ceil(head.getBoundingClientRect().height);
+    const footH = Math.ceil(foot.getBoundingClientRect().height);
+    const bodyH = Math.max(160, avail - headH - footH);
+
+    body.style.height = bodyH + 'px';
+    body.style.maxHeight = bodyH + 'px';
+    body.style.overflowY = 'scroll';
+  }
+
+  window.addEventListener('load', () => { syncBasketScroll(); setTimeout(syncBasketScroll, 250); });
+  window.addEventListener('resize', () => { syncBasketScroll(); });
+
+  document.addEventListener('click', (e) => {
+    const t = e.target;
+    if(!t) return;
+    if (t.id === 'basketMinBtn' || t.id === 'basketMaxBtn' || t.id === 'clearBasketBtn' || t.id === 'clearYesBtn' || t.id === 'clearNoBtn') {
+      setTimeout(syncBasketScroll, 0);
+      setTimeout(syncBasketScroll, 250);
+    }
+  });
+
+  // Re-sync after basket rendering
+  const _rb = window.renderBasket;
+  if (typeof _rb === 'function') {
+    window.renderBasket = function(){
+      const r = _rb.apply(this, arguments);
+      try{ syncBasketScroll(); }catch(e){}
+      return r;
+    };
+  }
+})();
+</script>
+
 </body>
 </html>
