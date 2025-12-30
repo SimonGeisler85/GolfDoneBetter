@@ -232,6 +232,18 @@
 
     .map-wrap{padding:0;position:relative}
     #map{height:560px;width:100%}
+
+    /* Leaflet popup should not force white UI; our card provides the background */
+    .leaflet-popup-content-wrapper{background:rgba(11,23,19,.95);box-shadow:var(--shadow);border-radius:16px;padding:0;border:1px solid rgba(255,255,255,.18)}
+    .leaflet-popup-tip{background:rgba(11,23,19,.95);box-shadow:var(--shadow)}
+    .leaflet-popup-content{margin:0}
+    .leaflet-container a{color:inherit}
+    
+    .leaflet-popup-tip{background:transparent;box-shadow:none}
+    .leaflet-popup-content{margin:0}
+    .leaflet-popup-close-button{color:rgba(255,255,255,.85)}
+    .leaflet-popup-close-button:hover{color:#fff}
+
     .map-topbar{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.10);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
     .map-left{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
     .map-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -416,7 +428,7 @@
   .sortbar-label{
     font-weight:800;
     font-size:13px;
-    color:#111;
+    color:#fff;
     opacity:.9;
   }
   #sortSelect{
@@ -451,6 +463,249 @@
 /* Neat separation */
 .basket-block + .basket-block{margin-top:14px;}
 
+
+
+/* === Search Courses card styles (copied) === */
+.course-card{margin:0;transform:none}
+    .map-sidepanel .course-card:hover{transform:none}
+        .map-sidepanel .img-badge{display:none !important;}
+.map-sidepanel .course-card.panel-card{
+      display:block !important;
+      grid-template-columns:none !important;
+    }
+    .map-sidepanel .save{
+      position:absolute;
+      top:10px;
+      right:10px;
+      z-index:8;
+      background:rgba(11,23,19,.72);
+      border:1px solid rgba(255,255,255,.22);
+    }
+
+        /* Popup uses panel-card markup, keep spacing tight */
+    .map-sidepanel .course-card{margin:0;transform:none}
+    .map-sidepanel .course-card:hover{transform:none}
+        .map-sidepanel .img-badge{display:none !important;}
+.map-sidepanel .course-card.panel-card{
+      display:block !important;
+      grid-template-columns:none !important;
+    }
+    .map-sidepanel .save{
+      position:absolute;
+      top:10px;
+      right:10px;
+      z-index:8;
+      background:rgba(11,23,19,.72);
+      border:1px solid rgba(255,255,255,.22);
+    }
+
+    @media (max-width:920px){
+      .map-sidepanel{top:auto;bottom:12px;right:12px;left:12px;width:auto}
+    }
+.results{display:grid;padding:14px 18px 60px}
+    .results h2{margin:0 0 14px;font-size:20px}
+    .course-card{position:relative;background:var(--card);border:1px solid var(--bd);border-radius:16px;margin-bottom:14px;display:grid;grid-template-columns:220px 1fr;overflow:hidden;transition:background .15s,border-color .15s,transform .12s}
+    .course-card:hover{background:rgba(255,255,255,.07);border-color:rgba(110,231,183,.35);transform:translateY(-1px)}
+    .course-img{width:100%;height:100%;min-height:190px;object-fit:cover;display:block;background:linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.02));filter:saturate(1.05) contrast(1.05)}
+    .course-body{padding:16px;display:grid;gap:12px;min-width:0}
+    .save{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(11,23,19,.60);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;user-select:none;z-index:5}
+    .save:hover{background:rgba(255,255,255,.10)}
+    .course-name{font-weight:900;font-size:18px;line-height:1.15}
+    .pill{display:inline-block;margin-left:8px;padding:2px 8px;border:1px solid rgba(255,255,255,.18);border-radius:999px;font-size:11px;opacity:.9;vertical-align:middle}
+    .course-location{font-size:13px;opacity:.75;margin-top:2px}
+    .meta-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:10px}
+    .meta-label{font-size:11px;letter-spacing:.6px;text-transform:uppercase;opacity:.65}
+    .meta-value{font-size:13px;font-weight:900;margin-top:3px;opacity:.95;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .meta-value.wrap{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25}
+    .img-badge{position:absolute;left:12px;top:12px;z-index:6;background:rgba(11,23,19,.60);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px);border-radius:999px;padding:6px 10px;font-weight:900;font-size:12px;opacity:.92}
+
+    @media (max-width:860px){.course-card{grid-template-columns:160px 1fr}.meta-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:540px){.course-card{grid-template-columns:1fr}.course-img{min-height:180px}.meta-grid{grid-template-columns:1fr}}
+    @media (max-width:768px){#map{height:340px}}
+  
+    
+    
+/* === End Search Courses card styles === */
+
+
+/* Popup card layout: tidy, use compact thumb (copied from Search Courses) */
+.panel-card{display:block}
+.panel-body{
+  padding:14px;
+  display:grid;
+  grid-template-columns:78px 1fr;
+  column-gap:12px;
+  row-gap:12px;
+  min-width:0;
+}
+.panel-badges{
+  grid-column:1 / -1;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:10px;
+}
+.panel-body .img-badge{
+  position:static;
+  left:auto;
+  top:auto;
+  display:inline-flex;
+  align-items:center;
+}
+.panel-thumb{
+  width:78px;
+  height:78px;
+  border-radius:12px;
+  object-fit:cover;
+  flex:0 0 auto;
+  background:linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+  filter:saturate(1.05) contrast(1.05);
+  display:block;
+}
+.panel-titlewrap{
+  min-width:0;
+  align-self:center;
+}
+.panel-titlewrap .course-name{
+  font-size:18px;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+}
+.panel-titlewrap .course-location{margin-top:4px}
+.panel-meta{
+  grid-column:1 / -1;
+  margin-top:0;
+}
+.panel-body .course-actions{
+  grid-column:1 / -1;
+  margin-top:0;
+}
+
+
+
+
+/* Plan page overrides to ensure list results are visible and popup cards are solid */
+#resultsList{display:grid;gap:12px}
+.leaflet-popup-content .course-card{background:rgba(11,23,19,.92);border-color:rgba(255,255,255,.18)}
+
+/* Ensure course images never overflow their grid cell */
+.course-img{max-height:100%;}
+
+/* Leaflet popup: prevent content width from forcing large images */
+.leaflet-popup-content{margin:12px 14px;max-width:360px}
+
+
+
+/* === Course action buttons (match Search Courses, 2-button layout) === */
+.course-actions{
+  display:flex;
+  flex-wrap:nowrap;
+  gap:10px;
+  margin-top:auto;
+  padding-top:12px;
+  justify-content:flex-start;
+}
+.course-actions .link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:10px 14px;
+  border-radius:12px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  font-size:13px;
+  font-weight:900;
+  line-height:1.15;
+  opacity:.98;
+  cursor:pointer;
+  user-select:none;
+  white-space:nowrap;
+}
+.course-actions .link:hover{background:rgba(255,255,255,.12);text-decoration:none}
+.course-actions .link.primary{background:rgba(255,255,255,.14);}
+.course-actions .link.primary:hover{background:rgba(255,255,255,.18);}
+
+/* === Leaflet popup styling (dark, readable, no double-card look) === */
+.leaflet-popup-content-wrapper{
+  background:rgba(11,23,19,.96);
+  color:#fff;
+  border-radius:16px;
+  padding:0;
+  box-shadow:0 10px 30px rgba(0,0,0,.45);
+}
+.leaflet-popup-content{
+  margin:0;
+  color:#fff;
+}
+.leaflet-popup-tip{background:rgba(11,23,19,.96);}
+.leaflet-container a{color:#fff;}
+
+.leaflet-popup-content .course-card, .leaflet-popup-content .course-card *{color:#fff;}
+.leaflet-popup-content .course-card .pill{color:#fff;}
+
+
+/* === Results header + sort control === */
+.results-head-row{ gap:14px; }
+.results-head-left{ min-width:220px; }
+.sortbar{ display:flex; align-items:center; gap:10px; margin-left:auto; margin-right:auto; padding:0; background:transparent; border:0; }
+.sortbar-label{ font-weight:800; }
+#sortSelect{
+  appearance:auto;
+  background:#ffffff;
+  color:#000000;
+  border:1px solid rgba(255,255,255,.35);
+  border-radius:12px;
+  padding:8px 12px;
+  font-weight:700;
+  line-height:1;
+  min-width:220px;
+}
+#sortSelect:focus{ outline:2px solid rgba(255,255,255,.6); outline-offset:2px; }
+
+/* Hide helper text when results are present */
+#resultsHint.hidden{ display:none !important; }
+
+/* === Leaflet popup: remove default frame so the card is the popup === */
+.leaflet-popup-content-wrapper{ background:transparent !important; box-shadow:none !important; padding:0 !important; border-radius:0 !important; }
+.leaflet-popup-content{ margin:0 !important; }
+.leaflet-popup-tip{ background:transparent !important; box-shadow:none !important; }
+
+
+
+/* --- Fixes: sort label + Leaflet zoom icons always visible --- */
+.sortbar-label{color:#fff;}
+.leaflet-control-zoom a{
+  color:#0b1713 !important;
+  background:#ffffff !important;
+  opacity:1 !important;
+}
+.leaflet-control-zoom a:hover{
+  color:#0b1713 !important;
+  background:#ffffff !important;
+  opacity:1 !important;
+}
+/* --- Accommodation cards: align with course card typography --- */
+.stay-card .course-name{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.panel-img{
+  width:78px;
+  height:78px;
+  border-radius:14px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 10px 22px rgba(0,0,0,.28);
+  filter:saturate(1.05) contrast(1.05);
+  display:block;
+}
+
+
+/* Hide stay popup image badge */
+.leaflet-popup-content .stay-card .img-badge{display:none;}
 </style>
 </head>
 
@@ -672,29 +927,32 @@
 
           <section class="card hidden" id="resultsCard" aria-label="Results">
             <div class="card-pad">
-              <div class="row sp-between">
-                <div>
+              <div class="row sp-between results-head-row">
+                <div class="results-head-left">
                   <div style="font-weight:900;">Results</div>
                   <div class="small" id="resultsHint">Select a start point above.</div>
                 </div>
+
+                <div class="sortbar hidden" id="sortBar" aria-label="Sort results">
+                  <div class="sortbar-label">Sort</div>
+                  <select id="sortSelect" aria-label="Sort results">
+                    <option value="az" selected>Alphabetical (A to Z)</option>
+                    <option value="za">Alphabetical (Z to A)</option>
+                    <option value="distance">Distance (soon)</option>
+                    <option value="rating">Rating (soon)</option>
+                    <option value="popularity">Popularity (soon)</option>
+                    <option value="difficulty">Difficulty (soon)</option>
+                    <option value="rank">Rank (soon)</option>
+                  </select>
+                </div>
+
                 <div class="tabs hidden" id="resultTabs" role="tablist" aria-label="Result tabs">
                   <div class="tab active" id="tabCourses" role="tab" aria-selected="true">Courses</div>
                   <div class="tab" id="tabStays" role="tab" aria-selected="false">Accommodation</div>
                 </div>
               </div>
             </div>
-            <div class="sortbar hidden" id="sortBar">
-              <div class="sortbar-label">Sort</div>
-              <select id="sortSelect" aria-label="Sort results">
-                <option value="az" selected>A to Z</option>
-                <option value="za">Z to A</option>
-                <option value="distance">Distance (soon)</option>
-                <option value="rating">Rating (soon)</option>
-                <option value="popularity">Popularity (soon)</option>
-                <option value="price">Price (not used)</option>
-              </select>
-            </div>
-            <div class="results" id="resultsList" aria-live="polite"></div>
+<div class="results" id="resultsList" aria-live="polite"></div>
           </section>
 
           <section class="card hidden" id="dateCard">
@@ -832,6 +1090,33 @@
     </script>
 
     <script>
+  (function() {
+        const menuBtn = document.getElementById('menuBtn');
+        const menuPanel = document.getElementById('menuPanel');
+        const closeMenu = () => {
+          menuPanel.style.display = 'none';
+          menuBtn.setAttribute('aria-expanded','false');
+        };
+        const openMenu = () => {
+          menuPanel.style.display = 'block';
+          menuBtn.setAttribute('aria-expanded','true');
+        };
+        closeMenu();
+
+        menuBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if(menuPanel.style.display === 'block') closeMenu();
+          else openMenu();
+        });
+        document.addEventListener('click', (e) => {
+          if(!menuPanel.contains(e.target) && e.target !== menuBtn) closeMenu();
+        });
+        document.addEventListener('keydown', (e) => {
+          if(e.key === 'Escape') closeMenu();
+        });
+      })();
+    
+
       (function() {
         const STORAGE_KEY = 'gdb_trip_v8_fixed';
 
@@ -883,6 +1168,271 @@
           document.documentElement.style.setProperty('--fpSpace', `${space}px`);
         };
 
+  // --- Search Courses course card system (copied as-is, minimal wiring) ---
+const PLACEHOLDER_IMG = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#153126" />
+      <stop offset="1" stop-color="#0b1713" />
+    </linearGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#g)"/>
+  <g fill="#ffffff" opacity="0.78" font-family="Arial, Helvetica, sans-serif" font-weight="900">
+    <text x="50%" y="48%" font-size="28" text-anchor="middle">Golf Done Better</text>
+    <text x="50%" y="58%" font-size="14" text-anchor="middle" opacity="0.75">Image loading</text>
+  </g>
+</svg>`);
+  // Expose for inline onerror handlers
+const SC_titleCase = (x) => {
+    const s = String(x || '').replace(/_/g,' ').trim();
+    if(!s) return '';
+    return s.split(' ').filter(Boolean).map(w => w.slice(0,1).toUpperCase() + w.slice(1)).join(' ');
+  };
+
+  const SC_priceLabel = (c) => {
+    const v = c && (c.price || c.estPrice || c.priceEur || c.greenFee || c.cost);
+    if(v == null || v === '') return '—';
+    const n = Number(v);
+    if(Number.isFinite(n)) return '€' + Math.round(n);
+    return String(v);
+  };
+
+  const SC_hydrateImages = (list) => {
+    (list||[]).forEach(item => {
+      const id = item && item.id;
+      if(!id) return;
+      const url = item.imageUrl || item.image || item.img || '';
+      const imgs = document.querySelectorAll(`[data-img="${CSS.escape(id)}"]`);
+      const badge = document.querySelector(`[data-imgbadge="${CSS.escape(id)}"]`);
+      if(url){
+        imgs.forEach(img => { img.src = url; });
+        if(badge) badge.style.display = 'none';
+      }else{
+        if(badge) badge.textContent = 'No image';
+      }
+    });
+  };
+
+  const SC_courseCardHTML = (c, variant='list') => {
+    const access =
+      c.access==='public' ? 'Public' :
+      c.access==='visitor' ? 'Visitor access' :
+      c.access==='members' ? 'Members' :
+      (c.access ? SC_titleCase(c.access) : 'Unknown');
+
+    const holesDisplay = c.holes ? String(c.holes) : 'Unknown';
+    const parDisplay = c.par ? String(c.par) : 'Unknown';
+    const lengthDisplay = c.lengthM ? (Math.round(c.lengthM/10)*10 + " m") : (c.length ? String(c.length) : "Unknown");
+
+    const styleDisplay = c.style ? String(c.style).replace(/_/g,' ').replace(/\b\w/g, s => s.toUpperCase()) : '—';
+
+    const walkOrCart = c.walkOrCart ? SC_titleCase(c.walkOrCart) : (c.walkability ? SC_titleCase(c.walkability) : '—');
+    const practice = c.practice ? SC_titleCase(c.practice) : '—';
+    const fac = Array.isArray(c.facilities) ? c.facilities.map(SC_titleCase).join(', ') : (c.facilities ? String(c.facilities) : '—');
+
+    const pill = (c.kind && String(c.kind).toLowerCase() === 'range') ? ' <span class="pill">Driving range</span>' : '';
+
+    // Actions for Plan a Golf Trip
+    const actions = `
+      <div class="course-actions">
+        <span class="link primary" role="button" tabindex="0" data-add="course" data-id="${escapeHtml(c.id)}">Add to basket</span>
+        <span class="link secondary" role="button" tabindex="0" data-view="course" data-id="${escapeHtml(c.id)}">View info</span>
+      </div>
+    `;
+
+    return (variant === 'panel') ? `
+      <div class="course-card panel-card">
+        <div class="course-body panel-body">
+          <div class="panel-badges">
+            <div class="img-badge" data-imgbadge="${escapeHtml(c.id)}">Loading image</div>
+          </div>
+
+          <img class="panel-thumb" src="${PLACEHOLDER_IMG}" data-img="${escapeHtml(c.id)}"
+               loading="lazy" decoding="async" alt=""
+               onerror="this.onerror=null;this.src=window.PLACEHOLDER_IMG||this.src;" />
+
+          <div class="panel-titlewrap">
+            <div class="course-name">${escapeHtml(c.name || 'Golf')}${pill}</div>
+            <div class="course-location">${escapeHtml(c.place || '—')}</div>
+          </div>
+
+          <div class="meta-grid panel-meta">
+            <div><div class="meta-label">Holes</div><div class="meta-value">${escapeHtml(holesDisplay)}</div></div>
+            <div><div class="meta-label">Par</div><div class="meta-value">${escapeHtml(parDisplay)}</div></div>
+            <div><div class="meta-label">Length</div><div class="meta-value">${escapeHtml(lengthDisplay)}</div></div>
+            <div><div class="meta-label">Est price</div><div class="meta-value">${escapeHtml(SC_priceLabel(c))}</div></div>
+
+            <div><div class="meta-label">Access</div><div class="meta-value">${escapeHtml(access)}</div></div>
+            <div><div class="meta-label">Style</div><div class="meta-value">${escapeHtml(styleDisplay)}</div></div>
+            <div><div class="meta-label">Walk or cart</div><div class="meta-value">${escapeHtml(walkOrCart)}</div></div>
+            <div><div class="meta-label">Practice</div><div class="meta-value">${escapeHtml(practice)}</div></div>
+
+            <div style="grid-column:span 2"><div class="meta-label">Facilities</div><div class="meta-value wrap">${escapeHtml(fac)}</div></div>
+          </div>
+
+          ${actions}
+        </div>
+      </div>
+    ` : `
+      <div class="course-card">
+        <div class="img-badge" data-imgbadge="${escapeHtml(c.id)}">Loading image</div>
+        <img class="course-img" src="${PLACEHOLDER_IMG}" data-img="${escapeHtml(c.id)}"
+             loading="lazy" decoding="async" alt=""
+             onerror="this.onerror=null;this.src=window.PLACEHOLDER_IMG||this.src;" />
+        <div class="course-body">
+          <div style="min-width:0">
+            <div class="course-name">${escapeHtml(c.name || 'Golf')}${pill}</div>
+            <div class="course-location">${escapeHtml(c.place || '—')}</div>
+
+            <div class="meta-grid">
+              <div><div class="meta-label">Holes</div><div class="meta-value">${escapeHtml(holesDisplay)}</div></div>
+              <div><div class="meta-label">Par</div><div class="meta-value">${escapeHtml(parDisplay)}</div></div>
+              <div><div class="meta-label">Length</div><div class="meta-value">${escapeHtml(lengthDisplay)}</div></div>
+              <div><div class="meta-label">Est price</div><div class="meta-value">${escapeHtml(SC_priceLabel(c))}</div></div>
+
+              <div><div class="meta-label">Access</div><div class="meta-value">${escapeHtml(access)}</div></div>
+              <div><div class="meta-label">Style</div><div class="meta-value">${escapeHtml(styleDisplay)}</div></div>
+              <div><div class="meta-label">Walk or cart</div><div class="meta-value">${escapeHtml(walkOrCart)}</div></div>
+              <div><div class="meta-label">Practice</div><div class="meta-value">${escapeHtml(practice)}</div></div>
+
+              <div style="grid-column:span 2"><div class="meta-label">Facilities</div><div class="meta-value wrap">${escapeHtml(fac)}</div></div>
+            </div>
+
+            ${actions}
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+
+  
+
+  // Accommodation card system (mirrors Search Courses card styling)
+  const ST_titleCase = (s) => String(s||'').toLowerCase().replace(/\b\w/g, ch => ch.toUpperCase());
+
+  const ST_stayCardHTML = (s, variant='list') => {
+    const typeDisplay = s.type ? ST_titleCase(String(s.type).replace(/_/g,' ')) : 'Accommodation';
+    const starsDisplay = s.stars ? `${escapeHtml(String(s.stars))} star` : 'Unknown';
+    const websiteDisplay = s.website ? 'Website' : '—';
+
+    // Try to show a small set of useful tags if present
+    const tags = s.tags || {};
+
+    const isYes = (v) => {
+      if(v === undefined || v === null || v === '') return null;
+      const t = String(v).trim().toLowerCase();
+      if(['yes','y','true','1','available','free','public'].includes(t)) return true;
+      if(['no','n','false','0','none','unavailable','private'].includes(t)) return false;
+      return null;
+    };
+    const yn = (b) => (b === null ? '—' : (b ? 'Yes' : 'No'));
+
+    const parkingDisplay = yn(isYes(tags['parking'] ?? tags['parking:fee'] ?? tags['parking_spaces']));
+    const poolDisplay = yn(isYes(tags['swimming_pool'] ?? tags['pool'] ?? tags['leisure:swimming_pool']));
+    const spaDisplay = yn(isYes(tags['spa'] ?? tags['sauna'] ?? tags['hammam'] ?? tags['massage']));
+    const gymDisplay = yn(isYes(tags['fitness_centre'] ?? tags['gym'] ?? tags['fitness_station']));
+    const restaurantDisplay = yn(isYes(tags['restaurant'] ?? tags['food'] ?? tags['dining']));
+    const barDisplay = yn(isYes(tags['bar'] ?? tags['pub'] ?? tags['cocktail_bar']));
+    const petsDisplay = yn(isYes(tags['pets'] ?? tags['dog'] ?? tags['pet_friendly']));
+    const accessibleDisplay = yn(isYes(tags['wheelchair'] ?? tags['accessible'] ?? tags['toilets:wheelchair']));
+
+    const fac = tags['hotel:facilities'] || tags['facilities'] || tags['features'] || tags['services'] || tags['amenity'] || '';
+    const facDisplay = fac ? String(fac).replace(/_/g,' ') : '—';
+
+    const actions = `
+      <div class="course-actions">
+        <span class="link primary" role="button" tabindex="0" data-add="stay" data-id="${escapeHtml(s.id)}">Add to basket</span>
+        <span class="link secondary" role="button" tabindex="0" data-view="stay" data-id="${escapeHtml(s.id)}">View info</span>
+      </div>
+    `;
+
+    // Panel variant used inside Leaflet popups
+    if(variant === 'panel'){
+      return `
+        <div class="course-card panel-card stay-card">
+          <div class="course-body panel-body">
+            <div class="panel-badges">
+              <img class="panel-img" src="${PLACEHOLDER_IMG}" data-img="${escapeHtml(s.id)}"
+                   loading="lazy" decoding="async" alt=""
+                   onerror="this.onerror=null;this.src=window.PLACEHOLDER_IMG||this.src;" />
+              <div class="panel-titlewrap">
+                <div class="course-name">${escapeHtml(s.name)}</div>
+                <div class="course-location">${escapeHtml(s.place || '')}</div>
+              </div>
+            </div>
+
+            <div class="meta-grid panel-meta">
+              <div><div class="meta-label">Type</div><div class="meta-value">${escapeHtml(typeDisplay)}</div></div>
+              <div><div class="meta-label">Stars</div><div class="meta-value">${starsDisplay}</div></div>
+
+              <div><div class="meta-label">Parking</div><div class="meta-value">${parkingDisplay}</div></div>
+              <div><div class="meta-label">Pool</div><div class="meta-value">${poolDisplay}</div></div>
+
+              <div><div class="meta-label">Spa</div><div class="meta-value">${spaDisplay}</div></div>
+              <div><div class="meta-label">Gym</div><div class="meta-value">${gymDisplay}</div></div>
+
+              <div><div class="meta-label">Restaurant</div><div class="meta-value">${restaurantDisplay}</div></div>
+              <div><div class="meta-label">Bar</div><div class="meta-value">${barDisplay}</div></div>
+
+              <div><div class="meta-label">Pets</div><div class="meta-value">${petsDisplay}</div></div>
+              <div><div class="meta-label">Accessible</div><div class="meta-value">${accessibleDisplay}</div></div>
+
+              <div><div class="meta-label">Website</div><div class="meta-value">${escapeHtml(websiteDisplay)}</div></div>
+              <div style="grid-column:span 2"><div class="meta-label">Facilities</div><div class="meta-value wrap">${escapeHtml(facDisplay)}</div></div>
+            </div>
+
+            ${actions}
+          </div>
+        </div>
+      `;
+    }
+
+    // List variant used under the map
+    return `
+      <div class="course-card stay-card">
+        <div class="img-badge" data-imgbadge="${escapeHtml(s.id)}">Loading image</div>
+        <img class="course-img" src="${PLACEHOLDER_IMG}" data-img="${escapeHtml(s.id)}"
+             loading="lazy" decoding="async" alt=""
+             onerror="this.onerror=null;this.src=window.PLACEHOLDER_IMG||this.src;" />
+        <div class="course-body">
+          <div style="min-width:0;">
+            <div class="course-name">${escapeHtml(s.name)}</div>
+            <div class="course-location">${escapeHtml(s.place || '')}</div>
+
+            <div class="meta-grid panel-meta">
+              <div><div class="meta-label">Type</div><div class="meta-value">${escapeHtml(typeDisplay)}</div></div>
+              <div><div class="meta-label">Stars</div><div class="meta-value">${starsDisplay}</div></div>
+
+              <div><div class="meta-label">Parking</div><div class="meta-value">${parkingDisplay}</div></div>
+              <div><div class="meta-label">Pool</div><div class="meta-value">${poolDisplay}</div></div>
+
+              <div><div class="meta-label">Spa</div><div class="meta-value">${spaDisplay}</div></div>
+              <div><div class="meta-label">Gym</div><div class="meta-value">${gymDisplay}</div></div>
+
+              <div><div class="meta-label">Restaurant</div><div class="meta-value">${restaurantDisplay}</div></div>
+              <div><div class="meta-label">Bar</div><div class="meta-value">${barDisplay}</div></div>
+
+              <div><div class="meta-label">Pets</div><div class="meta-value">${petsDisplay}</div></div>
+              <div><div class="meta-label">Accessible</div><div class="meta-value">${accessibleDisplay}</div></div>
+
+              <div><div class="meta-label">Website</div><div class="meta-value">${escapeHtml(websiteDisplay)}</div></div>
+              <div style="grid-column:span 2"><div class="meta-label">Facilities</div><div class="meta-value wrap">${escapeHtml(facDisplay)}</div></div>
+            </div>
+          </div>
+
+          ${actions}
+        </div>
+      </div>
+    `;
+  };
+
+
+// --- End Search Courses course card system ---
+
+
+
 
         const applySortToResults = () => {
           const sortSelect = el('sortSelect');
@@ -892,11 +1442,11 @@
           const mode = sortSelect.value || 'az';
           if(mode !== 'az' && mode !== 'za') return; // stubs for now
 
-          const cards = Array.from(list.querySelectorAll('.result-card'));
+          const cards = Array.from(list.querySelectorAll('.course-card, .result-card'));
           if(cards.length < 2) return;
 
           const key = (card) => {
-            const t = card.querySelector('.r-title');
+            const t = card.querySelector('.r-title') || card.querySelector('.course-name');
             return (t ? t.textContent : '').trim().toLowerCase();
           };
 
@@ -915,7 +1465,7 @@
           const list = el('resultsList');
           if(!sb || !list) return;
 
-          const hasCards = !!list.querySelector('.result-card');
+          const hasCards = !!list.querySelector('.course-card, .result-card');
           if(hasCards) sb.classList.remove('hidden');
           else sb.classList.add('hidden');
         };
@@ -1550,30 +2100,10 @@
 
         const popupHtmlForItem = (item, kind) => {
           const isCourse = kind === 'course';
-          const sub = isCourse
-            ? `${escapeHtml(item.place || '')}`
-            : `${escapeHtml(item.place || '')}`;
-          const meta = isCourse ? courseSummary(item) : staySummary(item);
-          return `<div style="min-width:260px;max-width:320px;">
-              <div style="border:1px solid rgba(255,255,255,.14);background:rgba(11,23,19,.55);border-radius:16px;overflow:hidden;">
-                <div style="height:120px;position:relative;background:rgba(255,255,255,.05);">
-                  ${item.image ? `<img alt="" src="${escapeHtml(item.image)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.remove()">` : ''}
-                  <div style="position:absolute;left:10px;top:10px;display:flex;gap:8px;flex-wrap:wrap;">
-                    ${isCourse ? '<span class="pill">⛳ Course</span>' : '<span class="pill">🏨 Stay</span>'}
-                    ${item.isResort ? '<span class="pill">Resort</span>' : ''}
-                  </div>
-                </div>
-                <div style="padding:10px 12px;">
-                  <div style="font-weight:900;margin-bottom:4px;">${escapeHtml(item.name)}</div>
-                  <div style="font-size:12px;color:rgba(255,255,255,.78);line-height:1.25;">${sub}</div>
-                  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">${meta}</div>
-                  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
-                    <button class="btn primary sm" data-add="${kind}" data-id="${escapeHtml(item.id)}">Add to basket</button>
-                    <button class="btn sm" data-view="${kind}" data-id="${escapeHtml(item.id)}">View</button>
-                  </div>
-                </div>
-              </div>
-            </div>`;
+          if(isCourse){
+            return `<div style="min-width:320px;max-width:360px;">${SC_courseCardHTML(item, 'panel')}</div>`;
+          }
+          return `<div style="min-width:320px;max-width:360px;">${ST_stayCardHTML(item, 'panel')}</div>`;
         };
 
         const bindPopupButtons = () => {
@@ -1708,7 +2238,7 @@
               if(!Number.isFinite(lat) || !Number.isFinite(lng)) return;
               const m = L.marker([lat, lng], { icon: c.isResort ? comboCourseIcon : courseIcon });
               m.bindPopup(popupHtmlForItem(c, 'course'));
-              m.on('popupopen', () => setTimeout(bindPopupButtons, 0));
+              m.on('popupopen', () => setTimeout(() => { bindPopupButtons(); SC_hydrateImages([c]); }, 0));
               markerGroupCourses.addLayer(m);
             });
             map.addLayer(markerGroupCourses);
@@ -1722,7 +2252,7 @@
               if(!Number.isFinite(lat) || !Number.isFinite(lng)) return;
               const m = L.marker([lat, lng], { icon: stayIcon(s.type, s.isResort) });
               m.bindPopup(popupHtmlForItem(s, 'stay'));
-              m.on('popupopen', () => setTimeout(bindPopupButtons, 0));
+              m.on('popupopen', () => setTimeout(() => { bindPopupButtons(); SC_hydrateImages([s]); }, 0));
               markerGroupStays.addLayer(m);
             });
             map.addLayer(markerGroupStays);
@@ -1758,6 +2288,7 @@
 
           if(!step) {
             el('resultsHint').textContent = 'Select a start point above.';
+            el('resultsHint').classList.remove('hidden');
             if(rc) rc.classList.add('hidden');
             list.innerHTML = '<div class="small">Select a start point to begin.</div>';
             return;
@@ -1765,12 +2296,14 @@
 
           if(step === 'date') {
             el('resultsHint').textContent = 'Confirm dates, then choose whether to view accommodation or courses.';
+            el('resultsHint').classList.remove('hidden');
             list.innerHTML = '<div class="small">Confirm dates. Then choose whether to view accommodation or courses.</div>';
             return;
           }
 
           if(!state.inputMode) {
             el('resultsHint').textContent = 'Select draw or text, then select an area.';
+            el('resultsHint').classList.remove('hidden');
             if(rc) rc.classList.add('hidden');
             list.innerHTML = '<div class="small">Select draw or text. Then select an area to load results.</div>';
             return;
@@ -1778,6 +2311,7 @@
 
           if(!state.selection) {
             el('resultsHint').textContent = state.inputMode === 'draw' ? 'Draw an area to load results.' : 'Search a place to load results.';
+            el('resultsHint').classList.remove('hidden');
             if(rc) rc.classList.add('hidden');
             list.innerHTML = '<div class="small">No search results yet. Make a selection to load results.</div>';
             return;
@@ -1791,18 +2325,32 @@
           const items = state.activeTab === 'courses' ? getFilteredCourses() : getFilteredStays();
           if(!items.length) {
             if(rc) rc.classList.remove('hidden');
+            const hintEl2 = el('resultsHint');
+            if(hintEl2){ hintEl2.textContent = '0 results matched your filters.'; hintEl2.classList.remove('hidden'); }
             list.innerHTML = '<div class="small">No results matched your filters in this selection.</div>';
             return;
           }
 
           if(rc) rc.classList.remove('hidden');
+          // Replace helper text with a results count once results are present
+          const hintEl = el('resultsHint');
+          if(hintEl){
+            hintEl.textContent = `${items.length} result${items.length === 1 ? '' : 's'}`;
+            hintEl.classList.remove('hidden');
+          }
           list.innerHTML = items.slice(0, 50).map(item => {
             const kind = (step === 'golf') ? 'course' : (step === 'accommodation') ? 'stay' : (state.activeTab === 'courses' ? 'course' : 'stay');
             const sub = (kind === 'course')
               ? `${escapeHtml(item.place || '')}`
               : `${escapeHtml(item.place || '')}`;
             const meta = (kind === 'course') ? courseSummary(item) : staySummary(item);
-            return `<div class="result-card">
+            if(kind === 'course') return SC_courseCardHTML(item, 'list');
+            return ST_stayCardHTML(item, 'list');
+          }).join('');
+          SC_hydrateImages(items);
+
+          // legacy view binding below
+          /*
                 ${cardThumb(item, kind)}
                 <div class="content">
                   <div class="r-title">${escapeHtml(item.name)}</div>
@@ -1815,6 +2363,9 @@
                 </div>
               </div>`;
           }).join('');
+          
+
+          */
 
           list.querySelectorAll('[data-view]').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -2081,9 +2632,11 @@ const configurePanelsForStep = () => {
 
           if(step === 'date') {
             el('resultsHint').textContent = 'Confirm dates, then choose whether to view accommodation or courses.';
+            el('resultsHint').classList.remove('hidden');
             el('dateStatus').textContent = state.dateAnchor ? `Selected: ${fmtDate(state.dateAnchor.start)} to ${fmtDate(state.dateAnchor.end)}` : 'No dates selected';
           } else {
             el('resultsHint').textContent = 'Select draw or text, then select an area.';
+            el('resultsHint').classList.remove('hidden');
           }
 
           configurePanelsForStep();
@@ -2195,6 +2748,127 @@ const configurePanelsForStep = () => {
 })();
 
 
+
+
+(function () {
+  const panel = document.getElementById('floatPanel');
+  const mapEl = document.getElementById('map');
+  if (!panel || !mapEl) return;
+
+  // Ensure fixed positioning. We manually align it to the map top-right corner.
+  panel.style.position = 'fixed';
+
+  const marginTop = 10;   // hugs the top edge of the map
+  const marginRight = 6;  // tucks into the top-right corner of the map
+  const minViewportPadding = 6;
+
+  function positionPanel() {
+    const mapRect = mapEl.getBoundingClientRect();
+
+    // Keep the panel below the sticky header, and never above the map top edge (when the map is in view).
+    const headerEl = document.querySelector('header');
+    const headerBottom = headerEl ? headerEl.getBoundingClientRect().bottom : 0;
+
+    // When the map is visible and its top is below the header, hug the map.
+    // Once the map scrolls up behind the header, keep the panel pinned just below the header.
+    const top = Math.max(mapRect.top + marginTop, headerBottom + 8, minViewportPadding);
+    panel.style.top = Math.round(top) + 'px';
+
+    // Hug the right edge of the map (relative to viewport).
+    const panelRect = panel.getBoundingClientRect();
+    let left = mapRect.right - panelRect.width - marginRight;
+
+    // Keep inside viewport just in case.
+    left = Math.max(left, minViewportPadding);
+    const maxLeft = window.innerWidth - panelRect.width - minViewportPadding;
+    left = Math.min(left, maxLeft);
+
+    panel.style.left = Math.round(left) + 'px';
+  }
+
+  // Update on scroll/resize.
+  window.addEventListener('scroll', positionPanel, { passive: true });
+  window.addEventListener('resize', positionPanel);
+
+  // Also update when layout changes (basket minimize/maximize can resize the map).
+  const ro = new ResizeObserver(() => positionPanel());
+  ro.observe(mapEl);
+
+  // Initial position after layout settles.
+  setTimeout(positionPanel, 0)
+
+  // Ensure the floating panel positions correctly the moment it becomes visible (not only after scroll).
+  const panelMO = new MutationObserver(() => {
+    // If panel just became visible, position it and sync spacing.
+    if(!panel.classList.contains('hidden')) {
+      requestAnimationFrame(() => {
+        positionPanel();
+        if(typeof syncFloatingUI === 'function') syncFloatingUI();
+        if(typeof updateSortBarVisibility === 'function') updateSortBarVisibility();
+      });
+    }
+  });
+  panelMO.observe(panel, { attributes:true, attributeFilter:['class','style'] });
+;
+  setTimeout(positionPanel, 150);
+})();
+
+
+(function(){
+  function headerHeight(){
+    const h = document.querySelector('header') || document.querySelector('.header') || document.querySelector('#header');
+    return h ? Math.ceil(h.getBoundingClientRect().height || 0) : 0;
+  }
+  function syncBasketScroll(){
+    const dock = document.getElementById('basketDock') || document.querySelector('.basket-dock');
+    const box  = document.getElementById('basketBox') || document.querySelector('.basket');
+    const head = box?.querySelector('.basket-head');
+    const foot = box?.querySelector('.basket-foot');
+    const body = box?.querySelector('.basket-body');
+    if(!dock || !box || !head || !foot || !body) return;
+
+    const hH = headerHeight();
+    const topGap = 16;
+    const bottomGap = 16;
+    const avail = Math.max(280, window.innerHeight - hH - topGap - bottomGap);
+
+    dock.style.top = (hH + topGap) + 'px';
+    dock.style.height = avail + 'px';
+    dock.style.maxHeight = avail + 'px';
+
+    box.style.height = '100%';
+
+    const headH = Math.ceil(head.getBoundingClientRect().height);
+    const footH = Math.ceil(foot.getBoundingClientRect().height);
+    const bodyH = Math.max(160, avail - headH - footH);
+
+    body.style.height = bodyH + 'px';
+    body.style.maxHeight = bodyH + 'px';
+    body.style.overflowY = 'scroll';
+  }
+
+  window.addEventListener('load', () => { syncBasketScroll(); setTimeout(syncBasketScroll, 250); });
+  window.addEventListener('resize', () => { syncBasketScroll(); });
+
+  document.addEventListener('click', (e) => {
+    const t = e.target;
+    if(!t) return;
+    if (t.id === 'basketMinBtn' || t.id === 'basketMaxBtn' || t.id === 'clearBasketBtn' || t.id === 'clearYesBtn' || t.id === 'clearNoBtn') {
+      setTimeout(syncBasketScroll, 0);
+      setTimeout(syncBasketScroll, 250);
+    }
+  });
+
+  // Re-sync after basket rendering
+  const _rb = window.renderBasket;
+  if (typeof _rb === 'function') {
+    window.renderBasket = function(){
+      const r = _rb.apply(this, arguments);
+      try{ syncBasketScroll(); }catch(e){}
+      return r;
+    };
+  }
+})();
 </script>
   </div>
 
