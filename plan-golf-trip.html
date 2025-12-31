@@ -241,8 +241,23 @@
     
     .leaflet-popup-tip{background:transparent;box-shadow:none}
     .leaflet-popup-content{margin:0}
-    .leaflet-popup-close-button{color:rgba(255,255,255,.85)}
-    .leaflet-popup-close-button:hover{color:#fff}
+    .leaflet-popup-close-button{
+      color:#fff !important;
+      top:6px !important;
+      right:6px !important;
+      width:28px !important;
+      height:28px !important;
+      line-height:28px !important;
+      text-align:center !important;
+      font-size:20px !important;
+      font-weight:700 !important;
+      border-radius:10px !important;
+      background:rgba(0,0,0,.35) !important;
+    }
+    .leaflet-popup-close-button:hover{
+      color:#fff !important;
+      background:rgba(0,0,0,.55) !important;
+    }
 
     .map-topbar{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.10);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
     .map-left{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
@@ -706,6 +721,197 @@
 
 /* Hide stay popup image badge */
 .leaflet-popup-content .stay-card .img-badge{display:none;}
+/* Hide popup image badge (no image / loading) */
+.leaflet-popup-content .img-badge{display:none !important;}
+
+    /* Date inputs in add-to-basket modal */
+    .date-row{display:flex;gap:10px;align-items:center;position:relative}
+    .date-row .date-text{flex:1 1 auto}
+    .date-row 
+    .cal-btn{width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer}
+    .cal-btn:hover{background:rgba(255,255,255,.10)}
+    .date-row .cal-btn{pointer-events:none}
+    .err{color:rgba(255,150,150,.95)}
+    /* Basket remove button: small x top-left */
+    .basket-item{position:relative;padding:12px 10px 10px 32px}
+    .basket-item .icon-btn{position:absolute;top:8px;left:8px;width:18px;height:18px;border-radius:6px;line-height:16px;font-size:12px;display:flex;align-items:center;justify-content:center}
+
+    /* Basket remove button positioning */
+    .basket-item{position:relative;display:block;padding:12px 12px 12px 38px}
+    .basket-item-title{font-weight:900;font-size:13px}
+    .basket-item-sub{font-size:12px;color:rgba(255,255,255,.70);margin-top:4px;line-height:1.3}
+    .basket-item .icon-btn{position:absolute;left:10px;top:10px;width:22px;height:22px;border-radius:8px;font-size:12px;line-height:1}
+    .basket-item .icon-btn:hover{transform:none}
+
+    /* Leaflet popup close button */
+    .leaflet-popup-close-button{
+      color:#ffffff !important;
+      top:6px !important;
+      right:6px !important;
+      background:rgba(11,23,19,.65) !important;
+      border-radius:10px !important;
+      width:24px !important;
+      height:24px !important;
+      line-height:24px !important;
+      font-size:18px !important;
+      opacity:.95 !important;
+    }
+    .leaflet-popup-close-button:hover{opacity:1}
+
+    /* Transport workspace */
+    .transport-wrap{min-height:520px;container-type:inline-size;container-name:transport}
+    /* Align transport content to the left edge of the workspace (so it sits neatly when basket is open) */
+    .transport-inner{
+      min-height:520px;
+      display:flex;
+      align-items:stretch;
+      justify-content:flex-start;
+      padding:24px 18px;
+      box-sizing:border-box;
+      width:100%;
+    }
+    .transport-chooser{max-width:720px;width:100%;text-align:center;margin:0 auto}
+    .transport-title{font-weight:950;font-size:22px;letter-spacing:.2px}
+    .transport-sub{margin-top:8px}
+    .transport-actions{display:flex;gap:14px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+    .transport-actions .btn{min-width:240px}
+    .transport-form{width:100%;max-width:100%;box-sizing:border-box}
+    .transport-form-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+    .transport-grid{display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:14px}
+    .transport-wide{grid-column:1 / -1}
+    .field-label{display:block;font-size:12px;font-weight:900;margin-bottom:6px;color:rgba(255,255,255,.85)}
+    /* Date+time row for transport forms */
+    .dt-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .date-pack{
+      position:relative;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:0;
+      flex:0 0 auto;
+    }
+    .date-pack .date-txt{
+      width:120px;
+      max-width:140px;
+    }
+    .dt-row .time-txt{
+      width: 72px;
+      max-width: 72px;
+      flex:0 0 64px;
+    }
+    /* keep the native date input clickable over the calendar icon */
+    .date-pack .date-iso{
+      position:absolute;
+      right:0;
+      top:0;
+      width:34px;
+      height:34px;
+      opacity:0;
+      cursor:pointer;
+      pointer-events:auto;
+    }
+    .dt-row .date-txt{min-width:0}
+    .dt-row .time-txt{max-width:72px;flex:0 0 72px;width:72px}
+    /* Hide native date input but keep it usable for the picker + validation */
+    .dt-row .date-iso{
+      width:38px;
+      height:38px;
+      opacity:0;
+      border:0;
+      background:transparent;
+      padding:0;
+      margin:0;
+      cursor:pointer;
+    }
+    .cal-btn{width:38px;height:38px;border-radius:12px}
+    .vehicle-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(140px,1fr));gap:10px;margin-top:10px}
+    .vehicle-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:14px;padding:12px 10px;font-weight:900;cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      text-align:left
+    }
+    .vehicle-cap{font-size:12px;opacity:.75;font-weight:700}
+    .vehicle-name{font-size:14px}
+
+    .vehicle-card.active{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.30)}
+    .transport-cta{display:flex;justify-content:flex-end;margin-top:16px}
+    .err{color:rgba(255,120,120,.95)}
+    @media (max-width: 980px){
+      .transport-grid{grid-template-columns:1fr}
+      .dt-row{grid-template-columns:minmax(0,1fr) 38px minmax(0,1fr) 38px}
+      .time-txt{max-width:72px;flex:0 0 72px;width:72px}
+      .vehicle-grid{grid-template-columns:repeat(2, minmax(0,1fr))}
+      .transport-actions .btn{min-width:200px}
+    }
+
+    /* Transport responsive alignment based on available workspace width (works when basket is open) */
+    @container transport (max-width: 920px){
+      .transport-form{max-width:100%}
+      .transport-grid{grid-template-columns:1fr}
+      .dt-row{grid-template-columns:minmax(0,1fr) 38px minmax(0,1fr) 38px}
+      .time-txt{max-width:72px;flex:0 0 72px;width:72px}
+      .vehicle-grid{grid-template-columns:repeat(2, minmax(0,1fr))}
+    }
+    @container transport (max-width: 620px){
+      .dt-row{grid-template-columns:minmax(0,1fr) 38px minmax(0,1fr) 38px}
+      .transport-actions{gap:10px}
+      .transport-actions .btn{min-width:180px}
+    }
+
+    /* Transport inputs: remove global min-width so the grid can size fields properly */
+    #transportCard .input{min-width:0}
+
+    /* Transport selects: keep dropdown options readable */
+    #transportCard select.input{color:#ffffff}
+    #transportCard select.input option{color:#000000;background:#ffffff}
+
+    /* Mini select (custom dropdown) for large numeric ranges */
+    .mini-select{position:relative}
+    .mini-select .ms-btn{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      width:100%;height:42px;border-radius:14px;border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.06);color:#fff;padding:0 12px;cursor:pointer;
+    }
+    .mini-select .ms-btn:focus{outline:none;box-shadow:0 0 0 2px rgba(255,255,255,.14)}
+    .mini-select .ms-caret{opacity:.75;font-weight:900}
+    .mini-select .ms-menu{
+      position:absolute;left:0;right:0;top:calc(100% + 8px);
+      background:rgba(20,20,20,.98);
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,.45);
+      max-height:190px; /* about 5 items */
+      overflow:auto;
+      z-index:9999;
+      display:none;
+    }
+    .mini-select.open .ms-menu{display:block}
+    .mini-select .ms-option{
+      width:100%;
+      text-align:left;
+      padding:10px 12px;
+      background:transparent;
+      border:0;
+      color:#fff;
+      cursor:pointer;
+      font-weight:800;
+    }
+    .mini-select .ms-option:hover{background:rgba(255,255,255,.10)}
+    .mini-select .ms-option.muted{opacity:.75;font-weight:700}
+
+
+    /* Transport compact fields: keep busy forms tidy */
+    #transportCard .compact{width:170px;max-width:170px;justify-self:start}
+    #transportCard .compact .mini-select .ms-btn{width:170px}
+    #transportCard .compact select.input{width:170px}
+    #transportCard textarea#trNotes{min-height:110px;resize:vertical;width:100%;min-width:0;padding:10px 12px}
+
 </style>
 </head>
 
@@ -732,6 +938,10 @@
             <a role="menuitem" href="index.html">Home</a>
             <a role="menuitem" href="search-courses.html">Search courses</a>
             <a role="menuitem" href="plan-golf-trip.html">Plan a golf trip</a>
+            <div class="menu-sep"></div>
+            <a role="menuitem" href="about.html">About</a>
+            <a role="menuitem" href="contact.html">Contact</a>
+            <a role="menuitem" href="terms.html">Terms and conditions</a>
           </div>
         </div>
       </div>
@@ -775,11 +985,10 @@
               <div class="step-sub">Select an area, toggle between accommodation and courses, then add to basket.</div>
             </div>
           
-            <div class="step-card disabled" data-step="transport" role="button" tabindex="0" aria-label="Search transport">
+            <div class="step-card" data-step="transport" role="button" tabindex="0" aria-label="Search transport">
               <div style="font-weight:900;">Search transport</div>
-              <div class="small" style="margin-top:6px;">Car hire and transfers will be added here</div>
-              <div class="pill" style="margin-top:10px;">Coming soon</div>
-            </div>
+              <div class="small" style="margin-top:6px;">Car hire and transfers</div>
+</div>
 </div>
         </div>
       </section>
@@ -955,7 +1164,282 @@
 <div class="results" id="resultsList" aria-live="polite"></div>
           </section>
 
-          <section class="card hidden" id="dateCard">
+                    <section class="card transport-wrap hidden" aria-label="Transport workspace" id="transportCard">
+            <div class="transport-inner">
+              <div class="transport-chooser" id="transportChooser">
+                <div class="transport-title">Transport</div>
+                <div class="small transport-sub">Choose a transport type, then add it to your basket</div>
+                <div class="transport-actions">
+                  <button class="btn" type="button" id="chooseCarHireBtn">Car hire (self drive)</button>
+                  <button class="btn" type="button" id="chooseTransfersBtn">Transfers</button>
+                </div>
+              </div>
+
+              <div class="transport-form hidden" id="carHireForm" aria-label="Car hire form">
+                <div class="transport-form-head">
+                  <div>
+                    <div class="transport-title">Car hire</div>
+                    <div class="small transport-sub">No prices. No live availability. Save your preferred request details.</div>
+                  </div>
+                  <button class="btn ghost" type="button" id="backToTransportChooser1">Back</button>
+                </div>
+
+                <div class="transport-grid">
+                  <div>
+                    <label class="field-label" id="trPickupLbl">Pick up location (optional)</label>
+                    <input class="input" id="carPickup" placeholder="Airport, town, hotel" />
+                  </div>
+                  <div>
+                    <label class="field-label" id="trDropoffLbl">Drop off location (optional)</label>
+                    <input class="input" id="carDropoff" placeholder="Same as pick up, or different location" />
+                  </div>
+
+                  <div>
+                    <label class="field-label">Pick up date and time (optional)</label>
+                    <div class="dt-row">
+                      <div class="date-pack">
+                        <input class="input date-txt" id="carStartTxt" placeholder="DD/MM/YY" />
+                        <button class="icon-btn cal-btn" type="button" id="carStartCal" title="Open calendar">📅</button>
+                        <input class="date-iso" type="date" id="carStartIso" />
+                      </div>
+                      <input class="input time-txt" id="carStartTime" placeholder="HH:MM" />
+                    </div>
+                    <div class="small err" id="carStartErr" style="display:none;">Enter a valid future date in DD/MM/YY</div>
+                    <div class="small err" id="carStartTimeErr" style="display:none;">Enter a valid time in HH:MM</div>
+                  </div>
+
+                  <div>
+                    <label class="field-label">Return date and time (optional)</label>
+                    <div class="dt-row">
+                      <div class="date-pack">
+                        <input class="input date-txt" id="carEndTxt" placeholder="DD/MM/YY" />
+                        <button class="icon-btn cal-btn" type="button" id="carEndCal" title="Open calendar">📅</button>
+                        <input class="date-iso" type="date" id="carEndIso" />
+                      </div>
+                      <input class="input time-txt" id="carEndTime" placeholder="HH:MM" />
+                    </div>
+                    <div class="small err" id="carEndErr" style="display:none;">Enter a valid future date in DD/MM/YY</div>
+                    <div class="small err" id="carEndTimeErr" style="display:none;">Enter a valid time in HH:MM</div>
+                    <div class="small err" id="carTimeOrderErr" style="display:none;">Return time must be after pick up time when dates match</div>
+                  </div>
+
+                  <div class="compact">
+                    <label class="field-label">People (optional)</label>
+                    <div class="mini-select" data-for="carPeople">
+                    <button class="ms-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="ms-value">Select</span>
+                      <span class="ms-caret">▾</span>
+                    </button>
+                    <div class="ms-menu" role="listbox" aria-label="People">
+                      <!-- options injected -->
+                    </div>
+                    <input type="hidden" id="carPeople" value="" />
+                  </div>
+                  </div>
+
+<div class="compact">
+                    <label class="field-label">Suitcases (optional)</label>
+                    <div class="mini-select" data-for="carSuitcases">
+                    <button class="ms-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="ms-value">Select</span>
+                      <span class="ms-caret">▾</span>
+                    </button>
+                    <div class="ms-menu" role="listbox" aria-label="Suitcases">
+                      <!-- options injected -->
+                    </div>
+                    <input type="hidden" id="carSuitcases" value="" />
+                  </div>
+                  </div>
+
+                  <div class="compact">
+                    <label class="field-label">Golf bags (optional)</label>
+                    <div class="mini-select" data-for="carGolfBags">
+                    <button class="ms-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="ms-value">Select</span>
+                      <span class="ms-caret">▾</span>
+                    </button>
+                    <div class="ms-menu" role="listbox" aria-label="Golf bags">
+                      <!-- options injected -->
+                    </div>
+                    <input type="hidden" id="carGolfBags" value="" />
+                  </div>
+                  </div>
+
+                  <div>
+                    <label class="field-label">Transmission (optional)</label>
+                    <select class="input" id="carTransmission">
+                      <option value="">Select</option>
+                      <option value="Automatic">Automatic</option>
+                      <option value="Manual">Manual</option>
+                    </select>
+                  </div>
+
+                  <div class="transport-wide">
+                    <div class="field-label">Vehicle category</div>
+                    <div class="vehicle-grid" id="vehicleGrid">
+                      <button type="button" class="vehicle-card" data-vehicle="Mini"><span class="vehicle-name">Mini</span><span class="vehicle-cap">(up to 2)</span></button>
+                      <button type="button" class="vehicle-card" data-vehicle="Economy"><span class="vehicle-name">Economy</span><span class="vehicle-cap">(up to 4)</span></button>
+                      <button type="button" class="vehicle-card" data-vehicle="Compact"><span class="vehicle-name">Compact</span><span class="vehicle-cap">(up to 4)</span></button>
+                      <button type="button" class="vehicle-card" data-vehicle="Intermediate"><span class="vehicle-name">Intermediate</span><span class="vehicle-cap">(up to 5)</span></button>
+                      <button type="button" class="vehicle-card" data-vehicle="SUV"><span class="vehicle-name">SUV</span><span class="vehicle-cap">(up to 5)</span></button>
+                      <button type="button" class="vehicle-card" data-vehicle="Premium"><span class="vehicle-name">Premium</span><span class="vehicle-cap">(up to 5)</span></button>
+                      <button type="button" class="vehicle-card" data-vehicle="Van"><span class="vehicle-name">Van</span><span class="vehicle-cap">(up to 7)</span></button>
+                    </div>
+                    <div class="small err" id="vehicleErr" style="display:none;">Choose a vehicle category</div>
+                  </div>
+                </div>
+
+                <div class="transport-cta">
+                  <button class="btn primary" type="button" id="addCarToBasketBtn">Add to basket</button>
+                </div>
+              </div>
+
+              <div class="transport-form hidden" id="transferForm" aria-label="Transfers form">
+                <div class="transport-form-head">
+                  <div>
+                    <div class="transport-title">Transfers</div>
+                    <div class="small transport-sub">Airport, station, point to point, or hourly services. Save your preferred request details.</div>
+                  </div>
+                  <button class="btn ghost" type="button" id="backToTransportChooser2">Back</button>
+                </div>
+
+                
+                <div class="transport-wide" id="trTripTypeWrap" style="margin:0 0 12px 0;">
+                  <div class="field-label">Trip type</div>
+                  <div class="row" style="gap:10px;flex-wrap:wrap;">
+                    <label class="pill" style="cursor:pointer;">
+                      <input type="radio" name="trTripType" id="trTripOneWay" value="one_way" checked style="margin-right:8px;">One way
+                    </label>
+                    <label class="pill" style="cursor:pointer;">
+                      <input type="radio" name="trTripType" id="trTripRound" value="round_trip" style="margin-right:8px;">Round trip
+                    </label>
+                  </div>
+                </div>
+
+                <div class="transport-grid">
+                  <div>
+                    <label class="field-label">Pick up location (optional)</label>
+                    <input class="input" id="trPickup" placeholder="Airport, station, hotel" />
+                  </div>
+                  <div>
+                    <label class="field-label">Drop off location (optional)</label>
+                    <input class="input" id="trDropoff" placeholder="Hotel, golf course, town" />
+                  </div>
+<div class="compact">
+                    <label class="field-label">Passengers</label>
+                    <div class="mini-select" data-for="trPax">
+                    <button class="ms-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="ms-value">Select</span>
+                      <span class="ms-caret">▾</span>
+                    </button>
+                    <div class="ms-menu" role="listbox" aria-label="People">
+                      <!-- options injected -->
+                    </div>
+                    <input type="hidden" id="trPax" value="" />
+                  </div>
+                  </div>
+
+                  <div>
+                    <label class="field-label" id="trDateLbl">Date (optional)</label>
+                    <div class="dt-row">
+                      <div class="date-pack">
+                        <input class="input date-txt" id="trDateTxt" placeholder="DD/MM/YY" />
+                        <button class="icon-btn cal-btn" type="button" id="trDateCal" title="Open calendar">📅</button>
+                        <input class="date-iso" type="date" id="trDateIso" />
+                      </div>
+                      <input class="input time-txt" id="trTime" placeholder="HH:MM" />
+                    </div>
+                    <div class="small err" id="trDateErr" style="display:none;">Enter a valid future date in DD/MM/YY</div>
+                    <div class="small err" id="trTimeErr" style="display:none;">Enter a valid time in HH:MM</div>
+                  </div>
+
+
+                  <div class="transport-wide tr-return hidden" id="trReturnDivider" style="margin-top:4px;">
+                    <div class="pill" style="display:inline-flex;">Return leg</div>
+                  </div>
+
+                  <div class="tr-return hidden">
+                    <label class="field-label" id="trRetPickupLbl">Pick up 2 (optional)</label>
+                    <input class="input" id="trRetPickup" placeholder="Auto filled from drop off" />
+                  </div>
+                  <div class="tr-return hidden">
+                    <label class="field-label" id="trRetDropoffLbl">Drop off 2 (optional)</label>
+                    <input class="input" id="trRetDropoff" placeholder="Auto filled from pick up" />
+                  </div>
+                  <div class="transport-wide tr-return hidden">
+                    <label class="field-label" id="trRetDateLbl">Date 2 (optional)</label>
+                    <div class="dt-row">
+                      <div class="date-pack">
+                        <input class="input date-txt" id="trRetDateTxt" placeholder="DD/MM/YY" />
+                        <button class="icon-btn cal-btn" type="button" id="trRetDateCal" title="Open calendar">📅</button>
+                        <input class="date-iso" type="date" id="trRetDateIso" />
+                      </div>
+                      <input class="input time-txt" id="trRetTime" placeholder="HH:MM" />
+                    </div>
+                    <div class="small err" id="trRetDateErr" style="display:none;">Enter a valid future date in DD/MM/YY</div>
+                    <div class="small err" id="trRetTimeErr" style="display:none;">Enter a valid time in HH:MM</div>
+                  </div>
+
+
+
+
+                  
+                  <div class="compact">
+                    <label class="field-label">Suitcases (optional)</label>
+                    <div class="mini-select" data-for="trSuitcases">
+                      <button class="ms-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="ms-value">Select</span>
+                        <span class="ms-caret">▾</span>
+                      </button>
+                      <div class="ms-menu" role="listbox" aria-label="Suitcases">
+                        <!-- options injected -->
+                      </div>
+                      <input type="hidden" id="trSuitcases" value="" />
+                    </div>
+                  </div>
+
+
+                  <div class="compact">
+                    <label class="field-label">Golf bags (optional)</label>
+                    <div class="mini-select" data-for="trGolfBags">
+                    <button class="ms-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="ms-value">Select</span>
+                      <span class="ms-caret">▾</span>
+                    </button>
+                    <div class="ms-menu" role="listbox" aria-label="Golf bags">
+                      <!-- options injected -->
+                    </div>
+                    <input type="hidden" id="trGolfBags" value="" />
+                  </div>
+                  </div>
+
+                  <div class="transport-wide">
+                    <label class="field-label">Notes (optional)</label>
+                    <textarea class="input" id="trNotes" placeholder="Any notes, for example two pick ups required" rows="3"></textarea>
+                  </div>
+
+                  <div class="transport-wide">
+                    <div class="field-label">Vehicle</div>
+                    <div class="vehicle-grid" id="transferVehicleGrid">
+                      <button type="button" class="vehicle-card" data-vehicle="Sedan"><span class="vehicle-name">Sedan</span><span class="vehicle-cap">(up to 4)</span></button>
+                      <button type="button" class="vehicle-card" data-vehicle="Executive"><span class="vehicle-name">Executive</span><span class="vehicle-cap">(up to 4)</span></button>
+                      <button type="button" class="vehicle-card" data-vehicle="Minivan"><span class="vehicle-name">Minivan</span><span class="vehicle-cap">(up to 7)</span></button>
+                      <button type="button" class="vehicle-card" data-vehicle="Minibus"><span class="vehicle-name">Minibus</span><span class="vehicle-cap">(up to 16)</span></button>
+                      <button type="button" class="vehicle-card" data-vehicle="Coach"><span class="vehicle-name">Coach</span><span class="vehicle-cap">(up to 50)</span></button>
+                    </div>
+                    <div class="small err" id="transferVehicleErr" style="display:none;">Choose a vehicle</div>
+                  </div>
+                </div>
+
+                <div class="transport-cta">
+                  <button class="btn primary" type="button" id="addTransferToBasketBtn">Add to basket</button>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+<section class="card hidden" id="dateCard">
             <div class="card-pad">
               <div style="font-weight:900;">Dates</div>
               <div class="small" style="margin-top:8px;max-width:980px;">
@@ -984,7 +1468,7 @@
                 <div class="basket-title">Trip basket</div>
                 <div class="small" id="basketSummary">0 items saved</div>
               </div>
-              <button class="btn ghost" id="exportBtn" type="button">View itinerary</button>
+              <button class="btn ghost" id="exportBtn" type="button">Create itinerary</button>
             </div>
 
             <div class="basket-body">
@@ -1011,7 +1495,7 @@
               <div class="basket-note">Stored locally in your browser storage. Clear basket to remove saved items from this device.</div>
               <div class="row">
                 <button class="btn danger" id="clearBasketBtn" type="button">Clear basket</button>
-                <button class="btn primary" id="viewItineraryBtn" type="button">View itinerary</button>
+                <button class="btn primary" id="viewItineraryBtn" type="button">Create itinerary</button>
               </div>
 </div>
           </div>
@@ -1081,7 +1565,7 @@
           else openMenu();
         });
         document.addEventListener('click', (e) => {
-          if(!menuPanel.contains(e.target) && e.target !== menuBtn) closeMenu();
+          if(!menuPanel.contains(e.target) && !menuBtn.contains(e.target)) closeMenu();
         });
         document.addEventListener('keydown', (e) => {
           if(e.key === 'Escape') closeMenu();
@@ -1109,7 +1593,7 @@
           else openMenu();
         });
         document.addEventListener('click', (e) => {
-          if(!menuPanel.contains(e.target) && e.target !== menuBtn) closeMenu();
+          if(!menuPanel.contains(e.target) && !menuBtn.contains(e.target)) closeMenu();
         });
         document.addEventListener('keydown', (e) => {
           if(e.key === 'Escape') closeMenu();
@@ -1126,7 +1610,8 @@
           flow: { currentStep: null },
           location: null,
           courses: [],
-          stays: []
+          stays: [],
+          transport: []
         });
 
         const safeJsonParse = (s) => { try{ return JSON.parse(s); } catch(e){ return null; } };
@@ -1253,9 +1738,7 @@ const SC_titleCase = (x) => {
                onerror="this.onerror=null;this.src=window.PLACEHOLDER_IMG||this.src;" />
 
           <div class="panel-titlewrap">
-            <div class="course-name">${escapeHtml(c.name || 'Golf')}${pill}</div>
-            <div class="course-location">${escapeHtml(c.place || '—')}</div>
-          </div>
+            <div class="course-name">${escapeHtml(c.name || 'Golf')}${pill}</div>          </div>
 
           <div class="meta-grid panel-meta">
             <div><div class="meta-label">Holes</div><div class="meta-value">${escapeHtml(holesDisplay)}</div></div>
@@ -1282,10 +1765,7 @@ const SC_titleCase = (x) => {
              onerror="this.onerror=null;this.src=window.PLACEHOLDER_IMG||this.src;" />
         <div class="course-body">
           <div style="min-width:0">
-            <div class="course-name">${escapeHtml(c.name || 'Golf')}${pill}</div>
-            <div class="course-location">${escapeHtml(c.place || '—')}</div>
-
-            <div class="meta-grid">
+            <div class="course-name">${escapeHtml(c.name || 'Golf')}${pill}</div>            <div class="meta-grid">
               <div><div class="meta-label">Holes</div><div class="meta-value">${escapeHtml(holesDisplay)}</div></div>
               <div><div class="meta-label">Par</div><div class="meta-value">${escapeHtml(parDisplay)}</div></div>
               <div><div class="meta-label">Length</div><div class="meta-value">${escapeHtml(lengthDisplay)}</div></div>
@@ -1358,9 +1838,7 @@ const SC_titleCase = (x) => {
                    loading="lazy" decoding="async" alt=""
                    onerror="this.onerror=null;this.src=window.PLACEHOLDER_IMG||this.src;" />
               <div class="panel-titlewrap">
-                <div class="course-name">${escapeHtml(s.name)}</div>
-                <div class="course-location">${escapeHtml(s.place || '')}</div>
-              </div>
+                <div class="course-name">${escapeHtml(s.name)}</div>              </div>
             </div>
 
             <div class="meta-grid panel-meta">
@@ -1398,10 +1876,7 @@ const SC_titleCase = (x) => {
              onerror="this.onerror=null;this.src=window.PLACEHOLDER_IMG||this.src;" />
         <div class="course-body">
           <div style="min-width:0;">
-            <div class="course-name">${escapeHtml(s.name)}</div>
-            <div class="course-location">${escapeHtml(s.place || '')}</div>
-
-            <div class="meta-grid panel-meta">
+            <div class="course-name">${escapeHtml(s.name)}</div>            <div class="meta-grid panel-meta">
               <div><div class="meta-label">Type</div><div class="meta-value">${escapeHtml(typeDisplay)}</div></div>
               <div><div class="meta-label">Stars</div><div class="meta-value">${starsDisplay}</div></div>
 
@@ -2387,44 +2862,464 @@ const SC_titleCase = (x) => {
           });
         };
 
+        
+        // ----------------------------
+        // UK date helpers (DD/MM/YY)
+        // ----------------------------
+        const pad2 = (n) => String(n).padStart(2,'0');
+        const todayLocal = () => {
+          const d = new Date();
+          d.setHours(0,0,0,0);
+          return d;
+        };
+        const addDays = (d, days) => {
+          const x = new Date(d.getTime());
+          x.setDate(x.getDate() + days);
+          return x;
+        };
+        const isoFromDate = (d) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+        const dateFromISO = (iso) => {
+          if(!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
+          const [y,m,da] = iso.split('-').map(n=>parseInt(n,10));
+          const d = new Date(y, m-1, da);
+          d.setHours(0,0,0,0);
+          // Guard invalid rollovers (e.g. 2025-02-30)
+          if(d.getFullYear()!==y || (d.getMonth()+1)!==m || d.getDate()!==da) return null;
+          return d;
+        };
+        const ukFromISO = (iso) => {
+          const d = dateFromISO(iso);
+          if(!d) return '';
+          const yy = String(d.getFullYear()).slice(-2);
+          return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${yy}`;
+        };
+        const isoFromUK = (uk) => {
+          if(!uk) return null;
+          const m = String(uk).trim().match(/^([0-3]\d)\/([0-1]\d)\/(\d{2})$/);
+          if(!m) return null;
+          const dd = parseInt(m[1],10);
+          const mm = parseInt(m[2],10);
+          const yy = parseInt(m[3],10);
+          const yyyy = 2000 + yy; // 00-99 => 2000-2099
+          const d = new Date(yyyy, mm-1, dd);
+          d.setHours(0,0,0,0);
+          if(d.getFullYear()!==yyyy || (d.getMonth()+1)!==mm || d.getDate()!==dd) return null;
+          return isoFromDate(d);
+        };
+        const maskUKDateInput = (inputEl) => {
+          if(!inputEl) return;
+          inputEl.addEventListener('input', () => {
+            const digits = (inputEl.value || '').replace(/\D/g,'').slice(0,6);
+            let out = '';
+            if(digits.length <= 2) out = digits;
+            else if(digits.length <= 4) out = `${digits.slice(0,2)}/${digits.slice(2)}`;
+            else out = `${digits.slice(0,2)}/${digits.slice(2,4)}/${digits.slice(4)}`;
+            inputEl.value = out;
+          });
+        };
+        const isStrictFutureISO = (iso) => {
+          const d = dateFromISO(iso);
+          if(!d) return false;
+          return d.getTime() > todayLocal().getTime();
+        };
+        const diffNights = (startISO, endISO) => {
+          const s = dateFromISO(startISO);
+          const e = dateFromISO(endISO);
+          if(!s || !e) return null;
+          const ms = e.getTime() - s.getTime();
+          return Math.round(ms / (1000*60*60*24));
+        };
+        const safeShowPicker = (dateInput) => {
+          try { dateInput.showPicker && dateInput.showPicker(); return true; } catch(e) {}
+          try { dateInput.focus(); dateInput.click(); return true; } catch(e) {}
+          return false;
+        };
+
         const handleSelect = (item, kind) => {
+          const tomorrowISO = isoFromDate(addDays(todayLocal(), 1));
+
           if(kind === 'course') {
             const current = state.basket.courses.find(x => idOf(x) === item.id);
             const rounds = current?.rounds || 1;
+            const existingDates = Array.isArray(current?.roundDates) ? current.roundDates : [];
+
+            const roundDateRows = (n) => {
+              let html = '';
+              for(let i=0;i<n;i++){
+                const iso = existingDates[i] || '';
+                html += `
+                  <div style="margin-top:10px;">
+                    <div class="small" style="margin-bottom:6px;">Round ${i+1} date (optional)</div>
+                    <div class="date-row">
+                      <input id="courseDateTxt_${i}" class="input date-text" type="text" inputmode="numeric" placeholder="DD/MM/YY" value="${escapeHtml(ukFromISO(iso))}">
+                      <input id="courseDateIso_${i}" class="date-iso" type="date" min="${tomorrowISO}" value="${escapeHtml(iso)}">
+                      <button class="icon-btn cal-btn" id="courseDateCal_${i}" type="button" title="Choose date">📅</button>
+                    </div>
+                    <div class="small err" id="courseDateErr_${i}" style="display:none;margin-top:6px;">Enter a valid future date</div>
+                  </div>`;
+              }
+              return html;
+            };
+
             openModal('Add to basket', `<div class="small">
                 <div style="font-weight:900;font-size:16px;margin-bottom:8px;">${escapeHtml(item.name)}</div>
-                <div>${escapeHtml(item.place || '')}</div>
                 <div style="margin-top:12px;font-weight:900;">Number of rounds</div>
-                <div class="row" style="margin-top:10px;">
+                <div class="row" style="margin-top:10px;align-items:flex-end;">
                   <input id="roundsInput" class="input" type="number" min="1" max="30" value="${rounds}" style="min-width:140px;">
                   <button class="btn primary" id="confirmSelectBtn" type="button">Confirm</button>
                 </div>
+                <div id="courseDatesWrap">${roundDateRows(rounds)}</div>
               </div>`);
+
             setTimeout(() => {
+              const roundsInput = document.getElementById('roundsInput');
+              const wrap = document.getElementById('courseDatesWrap');
+
+              const getCourseISOValue = (i) => {
+                const t = document.getElementById(`courseDateTxt_${i}`);
+                const d = document.getElementById(`courseDateIso_${i}`);
+                const tVal = (t?.value || '').trim();
+                const dVal = (d?.value || '').trim();
+                const parsed = tVal ? isoFromUK(tVal) : '';
+                return (parsed || dVal || '').trim();
+              };
+
+              const updateCourseDateMins = (n) => {
+                let min = tomorrowISO;
+                for(let i=0;i<n;i++){
+                  const isoEl = document.getElementById(`courseDateIso_${i}`);
+                  if(isoEl){
+                    isoEl.min = min;
+                    const v = (isoEl.value || '').trim();
+                    if(v && v < min) isoEl.value = '';
+                  }
+                  const cur = getCourseISOValue(i);
+                  if(cur && cur >= min) min = cur; // next round can be same day or later
+                }
+              };
+
+
+              const wireCourseDateField = (i) => {
+                const txt = document.getElementById(`courseDateTxt_${i}`);
+                const iso = document.getElementById(`courseDateIso_${i}`);
+                const cal = document.getElementById(`courseDateCal_${i}`);
+                const err = document.getElementById(`courseDateErr_${i}`);
+                maskUKDateInput(txt);
+
+                const setError = (on) => { if(err) err.style.display = on ? 'block' : 'none'; };
+
+                const applyISO = (isoVal) => {
+                  if(!isoVal){
+                    if(iso) iso.value = '';
+                    if(txt) txt.value = '';
+                    setError(false);
+                    const n = Math.max(1, Math.min(30, parseInt(roundsInput?.value || '1', 10) || 1));
+                    updateCourseDateMins(n);
+                    return;
+                  }
+
+                  const minAllowed = (iso && iso.min) ? iso.min : tomorrowISO;
+                  if(!isStrictFutureISO(isoVal) || isoVal < minAllowed){
+                    setError(true);
+                    return;
+                  }
+
+                  if(iso) iso.value = isoVal;
+                  if(txt) txt.value = ukFromISO(isoVal);
+                  setError(false);
+
+                  const n = Math.max(1, Math.min(30, parseInt(roundsInput?.value || '1', 10) || 1));
+                  updateCourseDateMins(n);
+                };
+
+                txt?.addEventListener('blur', () => {
+                  if(!txt.value){ applyISO(''); return; }
+                  const isoVal = isoFromUK(txt.value);
+                  if(!isoVal || !isStrictFutureISO(isoVal)){ setError(true); return; }
+                  applyISO(isoVal);
+                });
+
+                iso?.addEventListener('change', () => applyISO(iso.value));
+
+                cal?.addEventListener('click', () => { safeShowPicker(iso); });
+              };
+
+              const rebuild = () => {
+                const n = Math.max(1, Math.min(30, parseInt(roundsInput?.value || '1', 10) || 1));
+                if(wrap) wrap.innerHTML = roundDateRows(n);
+                setTimeout(() => {
+                  for(let i=0;i<n;i++) wireCourseDateField(i);
+                  updateCourseDateMins(n);
+                }, 0);
+              };
+
+              roundsInput?.addEventListener('change', rebuild);
+              rebuild();
+
               document.getElementById('confirmSelectBtn')?.addEventListener('click', () => {
-                const v = Math.max(1, Math.min(30, parseInt(document.getElementById('roundsInput').value || '1', 10) || 1));
-                state.basket.courses = addOrUpdate(state.basket.courses, {...item, rounds: v});
+                const n = Math.max(1, Math.min(30, parseInt(document.getElementById('roundsInput').value || '1', 10) || 1));
+                const dates = [];
+                let prev = '';
+                for(let i=0;i<n;i++){
+                  const txt = document.getElementById(`courseDateTxt_${i}`);
+                  const iso = document.getElementById(`courseDateIso_${i}`);
+                  const err = document.getElementById(`courseDateErr_${i}`);
+
+                  const isoVal = (iso?.value || '').trim();
+                  const txtVal = (txt?.value || '').trim();
+
+                  let chosen = '';
+                  if(txtVal){
+                    const parsed = isoFromUK(txtVal);
+                    if(!parsed || !isStrictFutureISO(parsed)){
+                      if(err) err.style.display = 'block';
+                      return; // block confirm on invalid typed date
+                    }
+                    chosen = parsed;
+                  } else if(isoVal){
+                    if(!isStrictFutureISO(isoVal)){
+                      if(err) err.style.display = 'block';
+                      return;
+                    }
+                    chosen = isoVal;
+                  }
+
+                  if(chosen && prev && chosen < prev){
+                    if(err) err.style.display = 'block';
+                    return; // block confirm if a later round is before an earlier one
+                  }
+
+                  if(chosen) prev = chosen;
+                  dates.push(chosen);
+                }
+
+                state.basket.courses = addOrUpdate(state.basket.courses, {...item, rounds: n, roundDates: dates});
                 saveBasket(state.basket);
                 renderBasket();
                 modal.close();
               });
             }, 0);
+
           } else {
             const current = state.basket.stays.find(x => idOf(x) === item.id);
-            const nights = current?.nights || 3;
+            const nightsDefault = current?.nights || 3;
+            const startExisting = current?.startDate || '';
+            const endExisting = current?.endDate || '';
+
             openModal('Add to basket', `<div class="small">
                 <div style="font-weight:900;font-size:16px;margin-bottom:8px;">${escapeHtml(item.name)}</div>
-                <div>${escapeHtml(item.place || '')}</div>
+
+                <div style="margin-top:12px;font-weight:900;">Dates (optional)</div>
+
+                <div style="margin-top:10px;">
+                  <div class="small" style="margin-bottom:6px;">Start date</div>
+                  <div class="date-row">
+                    <input id="stayStartTxt" class="input date-text" type="text" inputmode="numeric" placeholder="DD/MM/YY" value="${escapeHtml(ukFromISO(startExisting))}">
+                    <input id="stayStartIso" class="date-iso" type="date" min="${tomorrowISO}" value="${escapeHtml(startExisting)}">
+                    <button class="icon-btn cal-btn" id="stayStartCal" type="button" title="Choose start date">📅</button>
+                  </div>
+                  <div class="small err" id="stayStartErr" style="display:none;margin-top:6px;">Enter a valid future date</div>
+                </div>
+
+                <div style="margin-top:10px;">
+                  <div class="small" style="margin-bottom:6px;">End date</div>
+                  <div class="date-row">
+                    <input id="stayEndTxt" class="input date-text" type="text" inputmode="numeric" placeholder="DD/MM/YY" value="${escapeHtml(ukFromISO(endExisting))}">
+                    <input id="stayEndIso" class="date-iso" type="date" min="${tomorrowISO}" value="${escapeHtml(endExisting)}">
+                    <button class="icon-btn cal-btn" id="stayEndCal" type="button" title="Choose end date">📅</button>
+                  </div>
+                  <div class="small err" id="stayEndErr" style="display:none;margin-top:6px;">Enter a valid end date</div>
+                </div>
+
                 <div style="margin-top:12px;font-weight:900;">Number of nights</div>
-                <div class="row" style="margin-top:10px;">
-                  <input id="nightsInput" class="input" type="number" min="1" max="60" value="${nights}" style="min-width:140px;">
+                <div class="row" style="margin-top:10px;align-items:flex-end;">
+                  <input id="nightsInput" class="input" type="number" min="1" max="60" value="${nightsDefault}" style="min-width:140px;">
                   <button class="btn primary" id="confirmSelectBtn" type="button">Confirm</button>
                 </div>
               </div>`);
+
             setTimeout(() => {
+              const startTxt = document.getElementById('stayStartTxt');
+              const startIso = document.getElementById('stayStartIso');
+              const startCal = document.getElementById('stayStartCal');
+              const startErr = document.getElementById('stayStartErr');
+
+              const endTxt = document.getElementById('stayEndTxt');
+              const endIso = document.getElementById('stayEndIso');
+              const endCal = document.getElementById('stayEndCal');
+              const endErr = document.getElementById('stayEndErr');
+
+              const nightsInput = document.getElementById('nightsInput');
+
+              maskUKDateInput(startTxt);
+              maskUKDateInput(endTxt);
+
+              const setErr = (node, on) => { if(node) node.style.display = on ? 'block' : 'none'; };
+
+              const clearDatesIfEmpty = () => {
+                if(!startTxt.value && !startIso.value && !endTxt.value && !endIso.value){
+                  setErr(startErr,false); setErr(endErr,false);
+                }
+              };
+
+              const getStartISO = () => (startIso?.value || isoFromUK(startTxt?.value || '') || '').trim();
+              const getEndISO = () => (endIso?.value || isoFromUK(endTxt?.value || '') || '').trim();
+
+              const applyStart = (isoVal) => {
+                if(!isoVal){
+                  startIso.value = '';
+                  startTxt.value = '';
+                  // clearing start also clears end
+                  endIso.value = '';
+                  endTxt.value = '';
+                  endIso.min = tomorrowISO;
+                  setErr(startErr,false); setErr(endErr,false);
+                  return refresh();
+                }
+                if(!isStrictFutureISO(isoVal)){ setErr(startErr,true); return; }
+                setErr(startErr,false);
+                startIso.value = isoVal;
+                startTxt.value = ukFromISO(isoVal);
+
+                // End must be at least next day
+                const s = dateFromISO(isoVal);
+                const minEnd = isoFromDate(addDays(s, 1));
+                endIso.min = minEnd;
+
+                // If end missing/invalid, set to minEnd
+                const curEnd = getEndISO();
+                if(!curEnd || !dateFromISO(curEnd) || dateFromISO(curEnd).getTime() <= s.getTime()){
+                  applyEnd(minEnd);
+                } else {
+                  refresh();
+                }
+              };
+
+              const applyEnd = (isoVal) => {
+                if(!isoVal){
+                  endIso.value = '';
+                  endTxt.value = '';
+                  setErr(endErr,false);
+                  return refresh();
+                }
+                const sIso = getStartISO();
+                const s = dateFromISO(sIso);
+                const e = dateFromISO(isoVal);
+                if(!s){
+                  // require start before end
+                  setErr(endErr,true);
+                  return;
+                }
+                const min = addDays(s, 1).getTime();
+                if(!e || e.getTime() < min){ setErr(endErr,true); return; }
+                setErr(endErr,false);
+                endIso.value = isoVal;
+                endTxt.value = ukFromISO(isoVal);
+                refresh();
+              };
+
+              const refresh = () => {
+                clearDatesIfEmpty();
+                const sIso = getStartISO();
+                const eIso = getEndISO();
+                const s = dateFromISO(sIso);
+                const e = dateFromISO(eIso);
+
+                const hasAnyDate = !!(sIso || eIso);
+
+                // If user has not entered any dates, nights is freely editable
+                nightsInput.disabled = false;
+
+                if(!hasAnyDate){
+                  // no dates => keep nights as-is
+                  return;
+                }
+
+                // If start is set but end is not, auto-set end to start+1 (1 night)
+                if(s && !e){
+                  const minEnd = isoFromDate(addDays(s, 1));
+                  endIso.min = minEnd;
+                  applyEnd(minEnd);
+                  return;
+                }
+
+                // If both are set, sync nights
+                if(s && e){
+                  const nights = diffNights(sIso, eIso);
+                  if(nights !== null && nights >= 1){
+                    nightsInput.value = String(Math.max(1, Math.min(60, nights)));
+                  }
+                }
+              };
+
+              // Nights change updates end date when start exists
+              nightsInput?.addEventListener('change', () => {
+                const v = Math.max(1, Math.min(60, parseInt(nightsInput.value || '1', 10) || 1));
+                nightsInput.value = String(v);
+                const sIso = getStartISO();
+                const s = dateFromISO(sIso);
+                if(!s){
+                  // No start date => do nothing to dates
+                  return;
+                }
+                const newEnd = isoFromDate(addDays(s, v));
+                applyEnd(newEnd);
+              });
+
+              // Manual typing (validate on blur)
+              startTxt?.addEventListener('blur', () => {
+                if(!startTxt.value){ applyStart(''); return; }
+                const isoVal = isoFromUK(startTxt.value);
+                if(!isoVal || !isStrictFutureISO(isoVal)){ setErr(startErr,true); return; }
+                applyStart(isoVal);
+              });
+
+              endTxt?.addEventListener('blur', () => {
+                if(!endTxt.value){ applyEnd(''); return; }
+                const isoVal = isoFromUK(endTxt.value);
+                if(!isoVal){ setErr(endErr,true); return; }
+                applyEnd(isoVal);
+              });
+
+              // Calendar pickers
+              startIso?.addEventListener('change', () => applyStart(startIso.value));
+              endIso?.addEventListener('change', () => applyEnd(endIso.value));
+
+              startCal?.addEventListener('click', () => safeShowPicker(startIso));
+              endCal?.addEventListener('click', () => safeShowPicker(endIso));
+
+              // initial constraints + sync
+              if(startIso.value){
+                applyStart(startIso.value);
+              } else if(startTxt.value){
+                const isoVal = isoFromUK(startTxt.value);
+                if(isoVal) applyStart(isoVal);
+              } else {
+                refresh();
+              }
+
               document.getElementById('confirmSelectBtn')?.addEventListener('click', () => {
-                const v = Math.max(1, Math.min(60, parseInt(document.getElementById('nightsInput').value || '1', 10) || 1));
-                state.basket.stays = addOrUpdate(state.basket.stays, {...item, nights: v});
+                // Dates are optional. Only block if user entered something invalid.
+                const sTxt = (startTxt.value || '').trim();
+                const eTxt = (endTxt.value || '').trim();
+                const sIso = getStartISO();
+                const eIso = getEndISO();
+
+                if(sTxt && (!sIso || !isStrictFutureISO(sIso))) { setErr(startErr,true); return; }
+                if(eTxt){
+                  const s = dateFromISO(sIso);
+                  const e = dateFromISO(eIso);
+                  if(!s || !e){ setErr(endErr,true); return; }
+                  if(e.getTime() < addDays(s,1).getTime()){ setErr(endErr,true); return; }
+                }
+
+                const nights = Math.max(1, Math.min(60, parseInt(nightsInput.value || '1', 10) || 1));
+
+                const payload = {...item, nights};
+                if(sIso) payload.startDate = sIso;
+                if(eIso) payload.endDate = eIso;
+
+                state.basket.stays = addOrUpdate(state.basket.stays, payload);
                 saveBasket(state.basket);
                 renderBasket();
                 modal.close();
@@ -2483,7 +3378,25 @@ const SC_titleCase = (x) => {
             }
           }
 
-          // Remove buttons
+          
+          // Transport
+          const transportList = el('transportList');
+          if(transportList) {
+            if(!(b.transport || []).length) {
+              transportList.innerHTML = '<div class="small">No transport added yet</div>';
+            } else {
+              transportList.innerHTML = (b.transport || []).map(t => {
+                const sub = escapeHtml(t.summary || '');
+                return `<div class="basket-item">
+                  <div class="basket-item-title">${escapeHtml(t.name || '')}</div>
+                  <div class="basket-item-sub">${sub}</div>
+                  <button class="icon-btn" data-remove="transport" data-id="${escapeHtml(idOf(t))}" title="Remove">✕</button>
+                </div>`;
+              }).join('');
+            }
+          }
+
+// Remove buttons
           document.querySelectorAll('[data-remove]').forEach(btn => {
             btn.onclick = null;
             btn.addEventListener('click', () => {
@@ -2585,7 +3498,15 @@ const SC_titleCase = (x) => {
 const configurePanelsForStep = () => {
           const step = state.basket.flow.currentStep;
 
-          // map layer toggles (location step only, only once results exist)
+          
+          if(step === 'transport'){
+            el('courseFilters').classList.add('hidden');
+            el('stayFilters').classList.add('hidden');
+            el('resultsHint').classList.add('hidden');
+            el('sortRow')?.classList.add('hidden');
+            return;
+          }
+// map layer toggles (location step only, only once results exist)
           const hasLocationResults = (step === 'location') && !!state.selection && ((state.results.courses?.length||0) + (state.results.stays?.length||0) > 0);
           if(hasLocationResults) el('mapLayerToggles').classList.remove('hidden');
           else el('mapLayerToggles').classList.add('hidden');
@@ -2625,8 +3546,9 @@ const configurePanelsForStep = () => {
 
           showWorkspace(!!step);
 
-          el('mapCard').classList.toggle('hidden', step === 'date');
+          el('mapCard').classList.toggle('hidden', step === 'date' || step === 'transport');
           el('dateCard').classList.toggle('hidden', step !== 'date');
+          el('transportCard')?.classList.toggle('hidden', step !== 'transport');
 
           if(step && step !== 'date') setInputMode(null);
 
@@ -2651,7 +3573,7 @@ const configurePanelsForStep = () => {
         document.querySelectorAll('.step-card').forEach(card => {
           card.addEventListener('click', () => {
             const step = card.getAttribute('data-step');
-            if(step === 'transport' || card.classList.contains('disabled')) return;
+            if(card.classList.contains('disabled')) return;
             state.basket.flow.currentStep = step;
             saveBasket(state.basket);
             clearSelection();
@@ -2660,6 +3582,546 @@ const configurePanelsForStep = () => {
           card.addEventListener('keydown', (e) => {
             if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
           });
+
+
+        // Transport workspace logic
+        (function initTransport(){
+          const chooser = el('transportChooser');
+          const carForm = el('carHireForm');
+          const trForm = el('transferForm');
+          if(!chooser || !carForm || !trForm) return;
+
+          const showChooser = () => {
+            chooser.classList.remove('hidden');
+            carForm.classList.add('hidden');
+            trForm.classList.add('hidden');
+          };
+          const showCar = () => {
+            chooser.classList.add('hidden');
+            carForm.classList.remove('hidden');
+            trForm.classList.add('hidden');
+          };
+          const showTransfers = () => {
+            chooser.classList.add('hidden');
+            carForm.classList.add('hidden');
+            trForm.classList.remove('hidden');
+          };
+
+          el('chooseCarHireBtn')?.addEventListener('click', showCar);
+          el('chooseTransfersBtn')?.addEventListener('click', showTransfers);
+          el('backToTransportChooser1')?.addEventListener('click', showChooser);
+          el('backToTransportChooser2')?.addEventListener('click', showChooser);
+
+          let selectedVehicle = '';
+          let selectedTransferVehicle = '';
+
+          const bindVehicleGrid = (gridId, setter) => {
+            const grid = el(gridId);
+            if(!grid) return;
+            grid.querySelectorAll('.vehicle-card').forEach(btn => {
+              btn.addEventListener('click', () => {
+                grid.querySelectorAll('.vehicle-card').forEach(x => x.classList.remove('active'));
+                btn.classList.add('active');
+                setter(btn.getAttribute('data-vehicle') || '');
+              });
+            });
+          };
+          bindVehicleGrid('vehicleGrid', v => { selectedVehicle = v; applyPeopleCap('carPeople', carCapByVehicle[v] || 50); });
+          bindVehicleGrid('transferVehicleGrid', v => { selectedTransferVehicle = v; applyPeopleCap('trPax', transferCapByVehicle[v] || 50); });
+
+          // Calendar popups: open native picker where supported
+          const bindCal = (btnId, isoId) => {
+            const btn = el(btnId);
+            const iso = el(isoId);
+            if(!btn || !iso) return;
+            btn.addEventListener('click', () => {
+              try{ iso.showPicker ? iso.showPicker() : iso.click(); }catch(e){ iso.click(); }
+            });
+          };
+          bindCal('carStartCal','carStartIso');
+          bindCal('carEndCal','carEndIso');
+          bindCal('trDateCal','trDateIso');
+          bindCal('trRetDateCal','trRetDateIso');
+          // Populate numeric selectors
+          const populateNumberSelect = (id, max, {start=0, blankLabel='Select'} = {}) => {
+            const s = el(id);
+            if(!s || s.tagName !== 'SELECT') return;
+            const cur = s.value;
+            const opts = [];
+            opts.push(`<option value="">${blankLabel}</option>`);
+            for(let i=start; i<=max; i++){
+              opts.push(`<option value="${i}">${i}</option>`);
+            }
+            s.innerHTML = opts.join('');
+            if(cur) s.value = cur;
+          };
+
+          // Mini dropdown (scrolls; shows ~5 items)
+          const renderMiniSelect = (wrap) => {
+            const id = wrap.getAttribute('data-for');
+            const hidden = el(id);
+            const btn = wrap.querySelector('.ms-btn');
+            const valEl = wrap.querySelector('.ms-value');
+            const menu = wrap.querySelector('.ms-menu');
+
+            const start = Number(wrap.dataset.start || '0');
+            const max = Number(wrap.dataset.max || '0');
+            const blankLabel = wrap.dataset.blankLabel || 'Select';
+
+            const cur = (hidden?.value ?? '').trim();
+            const opts = [];
+            opts.push(`<button type="button" class="ms-option muted" data-value="">${blankLabel}</button>`);
+            for(let i=start; i<=max; i++){
+              opts.push(`<button type="button" class="ms-option" data-value="${i}">${i}</button>`);
+            }
+            menu.innerHTML = opts.join('');
+
+            valEl.textContent = cur ? cur : blankLabel;
+            btn.setAttribute('aria-expanded', wrap.classList.contains('open') ? 'true' : 'false');
+          };
+
+          const initMiniSelect = (id, max, {start=0, blankLabel='Select'} = {}) => {
+            const wrap = document.querySelector(`.mini-select[data-for="${id}"]`);
+            const hidden = el(id);
+            if(!wrap || !hidden) return;
+
+            wrap.dataset.start = String(start);
+            wrap.dataset.max = String(max);
+            wrap.dataset.blankLabel = blankLabel;
+
+            if(!wrap.dataset.bound){
+              wrap.dataset.bound = '1';
+              const btn = wrap.querySelector('.ms-btn');
+              const menu = wrap.querySelector('.ms-menu');
+
+              btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.mini-select.open').forEach(w => { if(w !== wrap) w.classList.remove('open'); });
+                wrap.classList.toggle('open');
+                btn.setAttribute('aria-expanded', wrap.classList.contains('open') ? 'true' : 'false');
+              });
+
+              menu.addEventListener('click', (e) => {
+                const t = e.target.closest('.ms-option');
+                if(!t) return;
+                const v = t.getAttribute('data-value') || '';
+                hidden.value = v;
+                wrap.classList.remove('open');
+                renderMiniSelect(wrap);
+              });
+            }
+
+            renderMiniSelect(wrap);
+          };
+
+          document.addEventListener('click', (e) => {
+            document.querySelectorAll('.mini-select.open').forEach(w => {
+              if(!w.contains(e.target)){
+                w.classList.remove('open');
+                w.querySelector('.ms-btn')?.setAttribute('aria-expanded','false');
+              }
+            });
+          });
+
+          const applyPeopleCap = (id, cap) => {
+            setMiniSelectMax(id, cap || 50, {start:1});
+          };
+
+          const setMiniSelectMax = (id, max, {start=0, blankLabel='Select'} = {}) => {
+            const hidden = el(id);
+            if(hidden && hidden.value && Number(hidden.value) > max){
+              hidden.value = String(max);
+            }
+            initMiniSelect(id, max, {start, blankLabel});
+          };
+
+          // initialise ranges
+          initMiniSelect('trPax', 50, {start:1});
+          initMiniSelect('trGolfBags', 50, {start:0});
+          initMiniSelect('trSuitcases', 50, {start:0});
+
+          initMiniSelect('carPeople', 50, {start:1});
+          initMiniSelect('carGolfBags', 50, {start:0});
+          initMiniSelect('carSuitcases', 50, {start:0});
+
+
+
+          const todayISO = () => {
+            const d = new Date();
+            const y = d.getFullYear();
+            const m = String(d.getMonth()+1).padStart(2,'0');
+            const da = String(d.getDate()).padStart(2,'0');
+            return `${y}-${m}-${da}`;
+          };
+          const addDaysISO = (iso, n) => {
+            const d = new Date(iso + 'T00:00:00');
+            d.setDate(d.getDate() + n);
+            const y = d.getFullYear();
+            const m = String(d.getMonth()+1).padStart(2,'0');
+            const da = String(d.getDate()).padStart(2,'0');
+            return `${y}-${m}-${da}`;
+          };
+
+          const ensureIsoSynced = (txtId, isoId, errId, minIsoFn) => {
+            const txt = el(txtId);
+            const iso = el(isoId);
+            const err = el(errId);
+            if(!txt || !iso) return;
+
+            const tomorrow = addDaysISO(todayISO(), 1);
+            iso.min = (minIsoFn ? minIsoFn() : tomorrow);
+
+            const hideErr = () => { if(err) err.style.display = 'none'; };
+            const showErr = () => { if(err) err.style.display = 'block'; };
+
+            txt.addEventListener('input', () => {
+              hideErr();
+              const cleaned = txt.value.replace(/[^0-9]/g,'').slice(0,6);
+              const parts = [cleaned.slice(0,2), cleaned.slice(2,4), cleaned.slice(4,6)].filter(Boolean);
+              txt.value = parts.join('/');
+              if(txt.value.length === 8){
+                const parsed = isoFromUK(txt.value);
+                if(!parsed) { showErr(); iso.value = ''; return; }
+                const minIso = (minIsoFn ? minIsoFn() : tomorrow);
+                iso.min = minIso;
+                if(parsed < minIso) { showErr(); iso.value=''; return; }
+                iso.value = parsed;
+              } else {
+                iso.value = '';
+              }
+            });
+
+            iso.addEventListener('change', () => {
+              hideErr();
+              if(!iso.value){ txt.value = ''; return; }
+              const minIso = (minIsoFn ? minIsoFn() : tomorrow);
+              iso.min = minIso;
+              if(iso.value < minIso) { showErr(); iso.value=''; txt.value=''; return; }
+              txt.value = ukFromISO(iso.value);
+            });
+          };
+
+          
+          const bindTimeInput = (txtId, errId, {minTime=null} = {}) => {
+            const t = el(txtId);
+            const err = el(errId);
+            if(!t) return;
+            const hideErr = () => { if(err) err.style.display = 'none'; };
+            const showErr = () => { if(err) err.style.display = 'block'; };
+
+            const isValid = (val) => {
+              if(!val) return true;
+              if(!/^\d{2}:\d{2}$/.test(val)) return false;
+              const [hh, mm] = val.split(':').map(Number);
+              if(Number.isNaN(hh) || Number.isNaN(mm)) return false;
+              if(hh < 0 || hh > 23) return false;
+              if(mm < 0 || mm > 59) return false;
+              if(minTime){
+                const a = hh*60+mm;
+                const b = minTime.h*60+minTime.m;
+                if(a < b) return false;
+              }
+              return true;
+            };
+
+            t.addEventListener('input', () => {
+              hideErr();
+              const cleaned = t.value.replace(/[^0-9]/g,'').slice(0,4);
+              const parts = [cleaned.slice(0,2), cleaned.slice(2,4)].filter(Boolean);
+              t.value = parts.join(':');
+              if(t.value.length === 5){
+                if(!isValid(t.value)) showErr();
+              }
+            });
+
+            t.addEventListener('blur', () => {
+              if(!isValid((t.value||'').trim())) showErr();
+            });
+
+            return { isValid };
+          };
+
+          const parseTimeToMins = (val) => {
+            if(!val || !/^\d{2}:\d{2}$/.test(val)) return null;
+            const [hh, mm] = val.split(':').map(Number);
+            if(hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
+            return hh*60 + mm;
+          };
+// Car hire dates
+          let carStartIsoVal = '';
+          const minCarStart = () => addDaysISO(todayISO(), 1);
+          const minCarEnd = () => carStartIsoVal ? carStartIsoVal : addDaysISO(todayISO(), 1);
+
+          ensureIsoSynced('carStartTxt','carStartIso','carStartErr', minCarStart);
+          ensureIsoSynced('carEndTxt','carEndIso','carEndErr', minCarEnd);
+
+          const carStartTimeCtl = bindTimeInput('carStartTime','carStartTimeErr');
+          const carEndTimeCtl = bindTimeInput('carEndTime','carEndTimeErr');
+
+          el('carStartIso')?.addEventListener('change', () => {
+            carStartIsoVal = el('carStartIso').value || '';
+            const endIso = el('carEndIso');
+            if(endIso) endIso.min = minCarEnd();
+            if(endIso && endIso.value && carStartIsoVal && endIso.value < carStartIsoVal){
+              endIso.value = '';
+              el('carEndTxt').value = '';
+            }
+          });
+
+          // Transfer date
+          ensureIsoSynced('trDateTxt','trDateIso','trDateErr', () => addDaysISO(todayISO(), 1));
+          const trTimeCtl = bindTimeInput('trTime','trTimeErr');
+
+          // Transfer round trip controls
+          bindCal('trRetDateCal','trRetDateIso');
+
+          const getOutboundDate = () => (el('trDateIso')?.value || '').trim();
+          const getOutboundTime = () => (el('trTime')?.value || '').trim();
+
+          const minReturnDate = () => {
+            const out = getOutboundDate();
+            if(out) return out;
+            return addDaysISO(todayISO(), 1);
+          };
+
+          ensureIsoSynced('trRetDateTxt','trRetDateIso','trRetDateErr', minReturnDate);
+          const trRetTimeCtl = bindTimeInput('trRetTime','trRetTimeErr');
+
+          const setReturnVisibility = (on) => {
+            document.querySelectorAll('#transferForm .tr-return').forEach(x => {
+              x.classList.toggle('hidden', !on);
+            });
+            if(!on){
+              // clear return fields when switching back to one way
+              ['trRetPickup','trRetDropoff','trRetDateTxt','trRetDateIso','trRetTime'].forEach(id => {
+                const n = el(id); if(n) n.value = '';
+              });
+              const e1 = el('trRetDateErr'); if(e1) e1.style.display='none';
+              const e2 = el('trRetTimeErr'); if(e2) e2.style.display='none';
+            }
+          };
+
+          const syncReturnLocations = () => {
+            const pick = (el('trPickup')?.value || '');
+            const drop = (el('trDropoff')?.value || '');
+            const retPick = el('trRetPickup');
+            const retDrop = el('trRetDropoff');
+            if(retPick && (!retPick.value || retPick.dataset.auto === '1')) { retPick.value = drop; retPick.dataset.auto = '1'; }
+            if(retDrop && (!retDrop.value || retDrop.dataset.auto === '1')) { retDrop.value = pick; retDrop.dataset.auto = '1'; }
+          };
+
+          const enforceReturnMin = () => {
+            const out = getOutboundDate();
+            const rIso = el('trRetDateIso');
+            if(!rIso) return;
+            rIso.min = minReturnDate();
+            if(rIso.value && out && rIso.value < out){
+              rIso.value = '';
+              const t = el('trRetDateTxt'); if(t) t.value = '';
+            }
+          };
+
+          const wireTripType = () => {
+            const one = el('trTripOneWay');
+            const round = el('trTripRound');
+            const apply = () => {
+              const isRound = !!(round && round.checked);
+              const setLbl = (id, txt) => { const n = el(id); if(n) n.textContent = txt; };
+              if(isRound){
+                setLbl("trPickupLbl","Pick up 1 (optional)");
+                setLbl("trDropoffLbl","Drop off 1 (optional)");
+                setLbl("trDateLbl","Date 1 (optional)");
+                setLbl("trRetPickupLbl","Pick up 2 (optional)");
+                setLbl("trRetDropoffLbl","Drop off 2 (optional)");
+                setLbl("trRetDateLbl","Date 2 (optional)");
+              } else {
+                setLbl("trPickupLbl","Pick up location (optional)");
+                setLbl("trDropoffLbl","Drop off location (optional)");
+                setLbl("trDateLbl","Date (optional)");
+              }
+              setReturnVisibility(isRound);
+              if(isRound){
+                syncReturnLocations();
+                enforceReturnMin();
+              }
+            };
+            one?.addEventListener('change', apply);
+            round?.addEventListener('change', apply);
+            apply();
+          };
+          wireTripType();
+
+          el('trPickup')?.addEventListener('input', () => {
+            const retDrop = el('trRetDropoff'); if(retDrop && retDrop.dataset.auto === '1') retDrop.value = (el('trPickup').value || '');
+          });
+          el('trDropoff')?.addEventListener('input', () => {
+            const retPick = el('trRetPickup'); if(retPick && retPick.dataset.auto === '1') retPick.value = (el('trDropoff').value || '');
+          });
+
+          el('trDateIso')?.addEventListener('change', () => { enforceReturnMin(); });
+          el('trDateTxt')?.addEventListener('input', () => { enforceReturnMin(); });
+
+          const isTransfersRoundTrip = () => !!(el('trTripRound') && el('trTripRound').checked);
+
+          const addTransportItem = (item) => {
+            state.basket.transport = state.basket.transport || [];
+            state.basket.transport.push(item);
+            saveBasket(state.basket);
+            renderBasket();
+            openModal('Added', '<div class="small">Transport saved in your basket.</div>');
+          };
+
+          el('addCarToBasketBtn')?.addEventListener('click', () => {
+            const _btn = el('addCarToBasketBtn');
+            if(_btn && _btn.dataset.busy === '1') return;
+            if(_btn) _btn.dataset.busy = '1';
+            setTimeout(() => { if(_btn) _btn.dataset.busy = '0'; }, 500);
+
+            const vehicleErr = el('vehicleErr');
+            if(vehicleErr) vehicleErr.style.display = 'none';
+            if(!selectedVehicle){
+              if(vehicleErr) vehicleErr.style.display = 'block';
+              return;
+            }
+            const startIso = (el('carStartIso').value || '').trim();
+            const endIso = (el('carEndIso').value || '').trim();
+            const startTime = (el('carStartTime').value || '').trim();
+            const endTime = (el('carEndTime').value || '').trim();
+
+            // Time validation (24 hour HH:MM)
+            const tErr1 = el('carStartTimeErr'); if(tErr1) tErr1.style.display = 'none';
+            const tErr2 = el('carEndTimeErr'); if(tErr2) tErr2.style.display = 'none';
+            const tErrO = el('carTimeOrderErr'); if(tErrO) tErrO.style.display = 'none';
+
+            const stM = startTime ? parseTimeToMins(startTime) : null;
+            const enM = endTime ? parseTimeToMins(endTime) : null;
+
+            if(startTime && stM === null){ if(tErr1) tErr1.style.display='block'; return; }
+            if(endTime && enM === null){ if(tErr2) tErr2.style.display='block'; return; }
+
+            if(startIso && endIso && startIso === endIso && stM !== null && enM !== null){
+              if(enM <= stM){ if(tErrO) tErrO.style.display='block'; return; }
+            }
+
+            const bits = [];
+            const people = (el('carPeople').value || '').trim();
+            const suitcases = (el('carSuitcases').value || '').trim();
+            const golf = (el('carGolfBags').value || '').trim();
+            const trans = (el('carTransmission').value || '').trim();
+            if(people) bits.push(`${people} people`);
+            if(suitcases) bits.push(`${suitcases} suitcases`);
+            if(golf) bits.push(`${golf} golf bags`);
+            if(trans) bits.push(trans);
+
+            const when = [];
+            if(startIso) when.push(`Pick up ${ukFromISO(startIso)}${startTime ? ' ' + startTime : ''}`);
+            if(endIso) when.push(`Return ${ukFromISO(endIso)}${endTime ? ' ' + endTime : ''}`);
+
+            const pickup = (el('carPickup').value || '').trim();
+            const dropoff = (el('carDropoff').value || '').trim();
+            const where = [];
+            if(pickup) where.push(`From ${pickup}`);
+            if(dropoff) where.push(`To ${dropoff}`);
+
+            const summaryParts = [];
+            if(bits.length) summaryParts.push(bits.join(' • '));
+            if(when.length) summaryParts.push(when.join(' • '));
+            if(where.length) summaryParts.push(where.join(' • '));
+
+            addTransportItem({
+              id: 'tr_' + Math.random().toString(36).slice(2,10),
+              kind: 'car_hire',
+              name: `Car hire: ${selectedVehicle}`,
+              vehicle: selectedVehicle,
+              startDate: startIso || '',
+              endDate: endIso || '',
+              summary: summaryParts.join(' | ')
+            });
+          });
+
+          el('addTransferToBasketBtn')?.addEventListener('click', () => {
+            const _btn = el('addTransferToBasketBtn');
+            if(_btn && _btn.dataset.busy === '1') return;
+            if(_btn) _btn.dataset.busy = '1';
+            setTimeout(() => { if(_btn) _btn.dataset.busy = '0'; }, 500);
+
+            const vErr = el('transferVehicleErr');
+            if(vErr) vErr.style.display = 'none';
+            if(!selectedTransferVehicle){
+              if(vErr) vErr.style.display = 'block';
+              return;
+            }
+
+            const pickup = (el('trPickup').value || '').trim();
+            const dropoff = (el('trDropoff').value || '').trim();
+            const pax = (el('trPax').value || '').trim();
+            const suitcases = (el('trSuitcases').value || '').trim();
+            const golf = (el('trGolfBags').value || '').trim();
+            const notes = (el('trNotes')?.value || '').trim();
+            const dateIso = (el('trDateIso').value || '').trim();
+            const time = (el('trTime').value || '').trim();
+
+            const tErr = el('trTimeErr'); if(tErr) tErr.style.display = 'none';
+            const tm = time ? parseTimeToMins(time) : null;
+            if(time && tm === null){ if(tErr) tErr.style.display='block'; return; }
+
+            const isRound = (typeof isTransfersRoundTrip === 'function') ? isTransfersRoundTrip() : false;
+
+            // Return leg values if round trip
+            const retPickup = (el('trRetPickup')?.value || '').trim();
+            const retDropoff = (el('trRetDropoff')?.value || '').trim();
+            const retDateIso = (el('trRetDateIso')?.value || '').trim();
+            const retTime = (el('trRetTime')?.value || '').trim();
+
+            const rtErr1 = el('trRetTimeErr'); if(rtErr1) rtErr1.style.display = 'none';
+
+            const rtm = retTime ? parseTimeToMins(retTime) : null;
+            if(isRound){
+              if(retTime && rtm === null){ if(rtErr1) rtErr1.style.display='block'; return; }
+              // enforce return not before outbound
+              if(dateIso && retDateIso){
+                if(retDateIso < dateIso){ openModal('Transfers', '<div class="small">Return date must not be before the outbound date.</div>'); return; }
+                if(retDateIso === dateIso && tm !== null && rtm !== null && rtm < tm){
+                  openModal('Transfers', '<div class="small">Return time must not be before the outbound time when dates match.</div>'); return;
+                }
+              }
+            }
+
+            const bits = [];
+            if(pax) bits.push(`${pax} people`);
+            if(suitcases) bits.push(`${suitcases} suitcases`);
+            if(golf) bits.push(`${golf} golf bags`);
+
+            const whenOut = dateIso ? `${ukFromISO(dateIso)}${time ? ' ' + time : ''}` : '';
+            const whenRet = retDateIso ? `${ukFromISO(retDateIso)}${retTime ? ' ' + retTime : ''}` : '';
+
+            const tripLine = isRound
+              ? `${pickup} → ${dropoff}${whenOut ? ' | ' + whenOut : ''} • ${retPickup || dropoff} → ${retDropoff || pickup}${whenRet ? ' | ' + whenRet : ''}`
+              : `${pickup} → ${dropoff}${whenOut ? ' | ' + whenOut : ''}`;
+
+            const summary = `${tripLine}${bits.length ? ' | ' + bits.join(' • ') : ''}${notes ? ' | Notes: ' + notes : ''}`;
+
+            addTransportItem({
+              id: 'tr_' + Math.random().toString(36).slice(2,10),
+              kind: 'transfer',
+              tripType: isRound ? 'round_trip' : 'one_way',
+              name: `Transfer: ${selectedTransferVehicle}`,
+              vehicle: selectedTransferVehicle,
+              pickup,
+              dropoff,
+              outboundDate: dateIso || '',
+              outboundTime: time || '',
+              returnPickup: isRound ? (retPickup || dropoff) : '',
+              returnDropoff: isRound ? (retDropoff || pickup) : '',
+              returnDate: isRound ? (retDateIso || '') : '',
+              returnTime: isRound ? (retTime || '') : '',
+              notes: notes,
+              summary
+            });
+          });
+
+          showChooser();
+        })();
 
         // location map layer toggles
         const bindMapLayerToggles = () => {
@@ -2998,6 +4460,40 @@ const configurePanelsForStep = () => {
   }
 })();
 </script>
+
+
+    <script>
+      (function initMenuFallback(){
+        const menuBtn = document.getElementById('menuBtn');
+        const menuPanel = document.getElementById('menuPanel');
+        if(!menuBtn || !menuPanel) return;
+
+        const closeMenu = () => {
+          menuPanel.style.display = 'none';
+          menuBtn.setAttribute('aria-expanded','false');
+        };
+        const openMenu = () => {
+          menuPanel.style.display = 'block';
+          menuBtn.setAttribute('aria-expanded','true');
+        };
+
+        closeMenu();
+
+        menuBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if(menuPanel.style.display === 'block') closeMenu();
+          else openMenu();
+        });
+
+        document.addEventListener('click', (e) => {
+          if(!menuPanel.contains(e.target) && !menuBtn.contains(e.target)) closeMenu();
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if(e.key === 'Escape') closeMenu();
+        });
+      })();
+    </script>
 
 </body>
 </html>
