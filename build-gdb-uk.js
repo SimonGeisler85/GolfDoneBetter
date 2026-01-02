@@ -298,6 +298,7 @@ function buildAddress(tags, nominatim) {
   a.postcode = pickTag(t, ["addr:postcode"]);
   a.country = pickTag(t, ["addr:country"]) || "UK";
 
+  if (!a.state) a.state = "unknown";
   if ((!a.city || !a.postcode || !a.county) && nominatim?.address) {
     const na = nominatim.address; a.state = a.state || na.state || na.state_district || "";
     a.city = a.city || na.city || na.town || na.village || na.hamlet || "";
