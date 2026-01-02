@@ -294,7 +294,7 @@ function buildAddress(tags, nominatim) {
   const t = tags || {}; a.state = pickTag(t, ["addr:state"]);
   a.street = pickTag(t, ["addr:housenumber", "addr:street"]) ? `${pickTag(t,["addr:housenumber"])} ${pickTag(t,["addr:street"])}`.trim() : pickTag(t, ["addr:street"]);
   a.city = pickTag(t, ["addr:city", "addr:town", "addr:village"]);
-  a.county = pickTag(t, ["addr:county", "addr:state"]);
+  a.county = pickTag(t, ["addr:county"]);
   a.postcode = pickTag(t, ["addr:postcode"]);
   a.country = pickTag(t, ["addr:country"]) || "UK";
 
