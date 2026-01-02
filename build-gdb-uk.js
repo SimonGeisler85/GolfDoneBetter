@@ -300,7 +300,8 @@ function buildAddress(tags, nominatim) {
 
   if (!a.state) a.state = "unknown";
   if ((!a.city || !a.postcode || !a.county) && nominatim?.address) {
-    const na = nominatim.address; a.state = a.state || na.state || na.state_district || "";
+    const na = nominatim.address; a.state = (a.state && a.state !== "unknown") ? a.state : (na.state || na.state_district || "");
+
     a.city = a.city || na.city || na.town || na.village || na.hamlet || "";
     a.county = a.county || na.county || na.state_district || na.state || "";
     a.postcode = a.postcode || na.postcode || "";
