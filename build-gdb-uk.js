@@ -150,21 +150,30 @@ function classifyCourse(tags, name) {
   const golf = String(t.golf || "").toLowerCase();
   const leisure = String(t.leisure || "").toLowerCase();
 
+  // Always exclude non target golf variants
+  const isMini = ["miniature_golf", "adventure_golf", "disc_golf", "footgolf", "pitch_and_putt"].includes(golf);
+  if (isMini) return { kind: "exclude" };
+
+  // Name based driving range override (fixes mis tagged leisure=golf_course ranges)
+  if (/\bdriving\s*range\b/.test(nameL) || /\bgolf\s*driving\s*range\b/.test(nameL)) return { kind: "driving_range" };
+
+  // Tag based driving range
   const isDrivingRange =
     golf === "driving_range" ||
     leisure === "driving_range" ||
     golf === "practice";
 
-  const isCourse =
-    t.leisure === "golf_course" ||
-    t.golf === "course" ||
-    (t.sport === "golf" && (t.leisure === "pitch" || t.landuse === "recreation_ground"));
-
-  const isMini = ["miniature_golf", "adventure_golf", "disc_golf", "footgolf", "pitch_and_putt"].includes(golf);
-  if (isMini) return { kind: "exclude" };
   if (isDrivingRange) return { kind: "driving_range" };
+
+  // Full course signals
+  const isCourse =
+    leisure === "golf_course" ||
+    golf === "course" ||
+    (t.sport === "golf" && (leisure === "pitch" || t.landuse === "recreation_ground"));
+
   if (isCourse) return { kind: "course" };
 
+  // Final fallback
   if (nameL.includes("golf") && (nameL.includes("club") || nameL.includes("course"))) return { kind: "course" };
   return { kind: "unknown" };
 }
