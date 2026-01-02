@@ -315,12 +315,15 @@ function buildAddress(tags, nominatim) {
 }
 
 function nationFromAddress(addr) {
+  const state = String(addr?.state || "").toLowerCase();
   const county = String(addr?.county || "").toLowerCase();
   const country = String(addr?.country || "").toLowerCase();
-  if (county.includes("scotland") || country.includes("scotland")) return "scotland";
-  if (county.includes("wales") || country.includes("wales")) return "wales";
-  if (county.includes("northern ireland") || country.includes("northern ireland")) return "northern_ireland";
-  if (county.includes("england") || country.includes("england")) return "england";
+
+  if (state.includes("scotland") || county.includes("scotland") || country.includes("scotland")) return "scotland";
+  if (state.includes("wales") || county.includes("wales") || country.includes("wales")) return "wales";
+  if (state.includes("northern ireland") || county.includes("northern ireland") || country.includes("northern ireland")) return "northern_ireland";
+  if (state.includes("england") || county.includes("england") || country.includes("england")) return "england";
+
   return "england";
 }
 
