@@ -580,8 +580,8 @@
 <div class="acc-body">
 <div class="fopts" id="fAccess">
 <label class="fopt"><input type="checkbox" value="public"/> Public</label>
-<label class="fopt"><input type="checkbox" value="members"/> Members</label>
-<label class="fopt"><input type="checkbox" value="visitor"/> Visitor times</label>
+<label class="fopt"><input type="checkbox" value="members_only"/> Members only</label>
+<label class="fopt"><input type="checkbox" value="visitors_welcome"/> Visitors welcome</label>
 </div>
 </div>
 </details>
@@ -589,10 +589,10 @@
 <summary><span class="sum-left">Price range</span><span class="sum-pill" data-pill="price">Any</span></summary>
 <div class="acc-body">
 <div class="fopts" id="fPrice">
-<label class="fopt"><input type="checkbox" value="under60"/> Under 60</label>
-<label class="fopt"><input type="checkbox" value="60to120"/> 60 to 120</label>
-<label class="fopt"><input type="checkbox" value="120to200"/> 120 to 200</label>
-<label class="fopt"><input type="checkbox" value="200plus"/> 200 plus</label>
+<label class="fopt"><input type="checkbox" value="value"/> Value</label>
+<label class="fopt"><input type="checkbox" value="mid"/> Mid</label>
+<label class="fopt"><input type="checkbox" value="premium"/> Premium</label>
+<label class="fopt"><input type="checkbox" value="luxury"/> Luxury</label>
 </div>
 </div>
 </details>
@@ -603,7 +603,7 @@
 <label class="fopt"><input type="checkbox" value="easy"/> Easy or beginner</label>
 <label class="fopt"><input type="checkbox" value="medium"/> Medium or casual golfer</label>
 <label class="fopt"><input type="checkbox" value="hard"/> Hard or low handicap</label>
-<label class="fopt"><input type="checkbox" value="pro"/> Pro</label>
+<label class="fopt"><input type="checkbox" value="championship"/> Championship</label>
 </div>
 </div>
 </details>
@@ -631,11 +631,13 @@
 <summary><span class="sum-left">Vibe</span><span class="sum-pill" data-pill="vibe">Any</span></summary>
 <div class="acc-body">
 <div class="fopts" id="fVibe">
+<label class="fopt"><input type="checkbox" value="relaxed"/> Relaxed</label>
 <label class="fopt"><input type="checkbox" value="casual"/> Casual</label>
+<label class="fopt"><input type="checkbox" value="beginner_friendly"/> Beginner friendly</label>
 <label class="fopt"><input type="checkbox" value="premium"/> Premium</label>
-<label class="fopt"><input type="checkbox" value="championship"/> Championship</label>
-<label class="fopt"><input type="checkbox" value="hiddenGem"/> Hidden gem</label>
-<label class="fopt"><input type="checkbox" value="family"/> Family friendly</label>
+<label class="fopt"><input type="checkbox" value="prestigious"/> Prestigious</label>
+<label class="fopt"><input type="checkbox" value="traditional"/> Traditional</label>
+<label class="fopt"><input type="checkbox" value="scenic"/> Scenic</label>
 </div>
 </div>
 </details>
@@ -773,12 +775,17 @@
     return `£${lo || hi}`;
   };
   const priceBucket = (c) => {
+    if(c && Array.isArray(c.priceBands) && c.priceBands.length){
+      // Prefer the first non-unknown band
+      const first = c.priceBands.find(x => x && x !== 'unknown');
+      return first || 'unknown';
+    }
     const m = midPrice(c);
     if(!Number.isFinite(m)) return 'unknown';
-    if(m < 60) return 'under60';
-    if(m < 120) return '60to120';
-    if(m < 200) return '120to200';
-    return '200plus';
+    if(m < 60) return 'value';
+    if(m < 120) return 'mid';
+    if(m < 200) return 'premium';
+    return 'luxury';
   };
 
   const countFilters = () => Object.values(fs).reduce((n,s)=>n+(s.size||0),0);
@@ -848,7 +855,7 @@
       if(!fs.holes.has(b)) return false;
     }
     if(any(fs.access) && (!c.access || !fs.access.has(c.access))) return false;
-    if(any(fs.price) && !fs.price.has(priceBucket(c))) return false;
+    if(any(fs.price) && !inter((c.priceBands && c.priceBands.length) ? c.priceBands : [priceBucket(c)], fs.price)) return false;
     if(any(fs.difficulty) && !inter(c.difficulty, fs.difficulty)) return false;
     if(any(fs.accommodation) && (!c.accommodation || !fs.accommodation.has(c.accommodation))) return false;
     if(any(fs.walkability) && !inter(c.walkability, fs.walkability)) return false;
@@ -1705,6 +1712,12 @@ const isPlayableCourse = (t, holes, nameLower) => {
 
     for(const el of elements){
       const t = el.tags || {};
+      const gdb = el._gdb || null;
+      const gdbList = (key) => {
+        const raw = t[key];
+        if(!raw) return [];
+        return String(raw).split(';').map(x=>x.trim()).filter(Boolean);
+      };
       const lat = (el.type === 'node') ? el.lat : (el.center ? el.center.lat : null);
       const lng = (el.type === 'node') ? el.lon : (el.center ? el.center.lon : null);
       if(lat == null || lng == null) continue;
@@ -1826,19 +1839,23 @@ const style = String(first(t['golf:style'], t['course:style'], t['golf:course_st
         kind,
         name,
         lat, lng,
-        holes,
-        par,
+        holes: (gdb && gdb.holes && gdb.holes[0] && Number.isFinite(gdb.holes[0].count)) ? gdb.holes[0].count : holes,
+        par: (gdb && gdb.par && gdb.par !== 'unknown') ? gdb.par : par,
         lengthM,
         priceLow: fees.low,
         priceHigh: fees.high,
-        access,
+        access: (gdb && Array.isArray(gdb.access) && gdb.access.length) ? gdb.access[0] : access,
         style,
         hasPractice,
         accommodation: null,
-        difficulty: [],
+        difficulty: (gdb && Array.isArray(gdb.difficulty)) ? gdb.difficulty : [],
         walkability,
-        vibe: [],
-        facilities,
+        vibe: (gdb && Array.isArray(gdb.vibe)) ? gdb.vibe : [],
+        dressCode: (gdb && Array.isArray(gdb.dress_code)) ? gdb.dress_code : gdbList('gdb:dress_code'),
+        courseType: (gdb && Array.isArray(gdb.course_type)) ? gdb.course_type : gdbList('gdb:course_type'),
+        extras: (gdb && Array.isArray(gdb.extras)) ? gdb.extras : gdbList('gdb:extras'),
+        priceBands: (gdb && Array.isArray(gdb.price_band)) ? gdb.price_band : [],
+        facilities: (gdb && Array.isArray(gdb.facilities)) ? gdb.facilities : facilities,
         tags: t,
         place
       });
@@ -1912,7 +1929,101 @@ const style = String(first(t['golf:style'], t['course:style'], t['golf:course_st
     'https://overpass-api.de/api/interpreter',
     'https://overpass.kumi.systems/api/interpreter',
     'https://overpass.openstreetmap.ru/api/interpreter'
-  ];
+  ];// GDB static UK dataset (generated via build-gdb-uk.js)
+const USE_LOCAL_GDB_DATA = true;
+let LOCAL_GDB_LOADED = false;
+let LOCAL_GDB_COURSES = [];
+let LOCAL_GDB_RANGES = [];
+
+const loadLocalGdbData = async () => {
+  if(LOCAL_GDB_LOADED) return;
+  try{
+    const [cRes, rRes] = await Promise.all([
+      fetch('./data/gdb_courses_uk.json', { cache:'no-store' }),
+      fetch('./data/gdb_driving_ranges_uk.json', { cache:'no-store' })
+    ]);
+    const cJson = await cRes.json();
+    const rJson = await rRes.json();
+    LOCAL_GDB_COURSES = Array.isArray(cJson.courses) ? cJson.courses : [];
+    LOCAL_GDB_RANGES = Array.isArray(rJson.driving_ranges) ? rJson.driving_ranges : [];
+    LOCAL_GDB_LOADED = true;
+  
+    window.gdbDebug = {
+      loaded: true,
+      coursesCount: LOCAL_GDB_COURSES.length,
+      rangesCount: LOCAL_GDB_RANGES.length,
+      sampleCourse: LOCAL_GDB_COURSES[0] || null,
+      sampleRange: LOCAL_GDB_RANGES[0] || null,
+      courses: LOCAL_GDB_COURSES,
+      ranges: LOCAL_GDB_RANGES
+    };}catch(e){
+    console.warn('Local GDB data load failed', e);
+    LOCAL_GDB_COURSES = [];
+    LOCAL_GDB_RANGES = [];
+    LOCAL_GDB_LOADED = true;
+  }
+};
+
+const asOverpassElement = (gdbItem) => {
+  const isRange = gdbItem.kind === 'driving_range';
+  const tags = {
+    name: gdbItem.name || 'unknown',
+    golf: isRange ? 'driving_range' : 'course',
+    website: (gdbItem.links && gdbItem.links.official) ? gdbItem.links.official : undefined,
+    'addr:city': gdbItem.address?.city,
+    'addr:county': gdbItem.address?.county,
+    'addr:postcode': gdbItem.address?.postcode,
+    'golf:holes': (gdbItem.holes && gdbItem.holes[0] && gdbItem.holes[0].count) ? String(gdbItem.holes[0].count) : undefined,
+    'golf:par': (gdbItem.par && gdbItem.par !== 'unknown') ? String(gdbItem.par) : undefined,
+    'golf:type': (Array.isArray(gdbItem.course_type) && gdbItem.course_type.length) ? String(gdbItem.course_type[0]) : undefined,
+    // Custom tags for later card/filter wiring
+    'gdb:vibe': Array.isArray(gdbItem.vibe) ? gdbItem.vibe.join(';') : '',
+    'gdb:dress_code': Array.isArray(gdbItem.dress_code) ? gdbItem.dress_code.join(';') : '',
+    'gdb:price_band': Array.isArray(gdbItem.price_band) ? gdbItem.price_band.join(';') : '',
+    'gdb:difficulty': Array.isArray(gdbItem.difficulty) ? gdbItem.difficulty.join(';') : '',
+    'gdb:course_type': Array.isArray(gdbItem.course_type) ? gdbItem.course_type.join(';') : '',
+    'gdb:facilities': Array.isArray(gdbItem.facilities) ? gdbItem.facilities.join(';') : '',
+    'gdb:extras': Array.isArray(gdbItem.extras) ? gdbItem.extras.join(';') : '',
+    'gdb:access': Array.isArray(gdbItem.access) ? gdbItem.access.join(';') : ''
+  };
+  return {
+    type: 'node',
+    id: gdbItem.id || (Math.random()*1e12)|0,
+    lat: gdbItem.geo?.lat,
+    lon: gdbItem.geo?.lng,
+    tags,
+    _gdb: gdbItem
+  };
+};
+
+const filterLocalByGeom = (geom) => {
+  if(!geom) return [];
+  const feats = [];
+  const poly = turf.feature(geom);
+  for(const c of LOCAL_GDB_COURSES){
+    const p = turf.point([c.geo?.lng, c.geo?.lat]);
+    if(c.geo?.lat == null || c.geo?.lng == null) continue;
+    let inside = false;
+    try{
+      inside = turf.booleanPointInPolygon(p, poly);
+    }catch(e){
+      inside = false;
+    }
+    if(inside) feats.push(asOverpassElement(c));
+  }
+  for(const r of LOCAL_GDB_RANGES){
+    const p = turf.point([r.geo?.lng, r.geo?.lat]);
+    if(r.geo?.lat == null || r.geo?.lng == null) continue;
+    let inside = false;
+    try{
+      inside = turf.booleanPointInPolygon(p, poly);
+    }catch(e){
+      inside = false;
+    }
+    if(inside) feats.push(asOverpassElement(r));
+  }
+  return feats;
+};
 
   // Primary Overpass endpoint for boundary resolution helpers (Wikidata/ISO lookups)
   const OVERPASS_URL = OVERPASS_ENDPOINTS[0];
@@ -1936,17 +2047,39 @@ const style = String(first(t['golf:style'], t['course:style'], t['golf:course_st
     liveStatus = 'loading';
     refresh();
 
+    // Local dataset path (preferred)
+    if(USE_LOCAL_GDB_DATA){
+      await loadLocalGdbData();
+      try{
+        // Make sure map tools only show what the user wants (courses vs ranges)
+        const all = filterLocalByGeom(geom);
+        liveItems = all.filter(el => {
+          const k = (el.tags && el.tags.golf === 'driving_range') ? 'driving_range' : 'course';
+          return visibleKinds.has(k);
+        });
+        liveStatus = 'done';
+        refresh();
+        return;
+      }catch(e){
+        console.warn('Local dataset filter failed', e);
+        liveStatus = 'error';
+        liveItems = [];
+        refresh();
+        return;
+      }
+    }
+
+    // Fallback: live Overpass (kept for future debugging, not relied upon)
     const poly = geojsonToOverpassPoly(geom);
 
-    // Prefer Overpass area queries for large administrative boundaries (countries, major regions).
-    // This avoids timeouts and missing results caused by giant polygon strings.
-    const area = (geomAreaId && Number.isFinite(Number(geomAreaId)))
+    // Prefer Overpass area queries if we can get them (faster and avoids timeouts)
+    const area = (geomAreaId && String(geomAreaId).trim() !== '')
       ? `(area:${Number(geomAreaId)})`
       : (poly ? `(poly:"${poly}")` : '');
 
-    const query = `[out:json][timeout:25];(
-  nwr["leisure"="golf_course"]
-    ["leisure"!="miniature_golf"]
+    const query = `[out:json][timeout:180];
+(
+  nwr["leisure"="golf_course"]["leisure"!="miniature_golf"]
     ["golf"!="pitch_and_putt"]
     ["golf"!="miniature_golf"]
     ["golf"!="practice"]
@@ -1957,18 +2090,7 @@ const style = String(first(t['golf:style'], t['course:style'], t['golf:course_st
     ["amenity"!="school"]["amenity"!="college"]["amenity"!="university"]["amenity"!="kindergarten"]
     ["building"!="school"]["building"!="college"]["building"!="university"]
     ["landuse"!="education"]${area};
-  nwr["golf"="course"]
-    ["leisure"!="miniature_golf"]
-    ["golf"!="pitch_and_putt"]
-    ["golf"!="miniature_golf"]
-    ["golf"!="practice"]
-    ["golf"!="driving_range"]
-    ["golf"!="adventure_golf"]
-    ["golf"!="disc_golf"]
-    ["golf"!="footgolf"]
-    ["amenity"!="school"]["amenity"!="college"]["amenity"!="university"]["amenity"!="kindergarten"]
-    ["building"!="school"]["building"!="college"]["building"!="university"]
-    ["landuse"!="education"]${area};
+  nwr["golf"="course"]["golf"!="pitch_and_putt"]["golf"!="miniature_golf"]["golf"!="practice"]["golf"!="driving_range"]["golf"!="adventure_golf"]["golf"!="disc_golf"]["golf"!="footgolf"]${area};
   nwr["golf"="driving_range"]${area};
   nwr["leisure"="driving_range"]${area};
 );out center tags;`;
@@ -1985,32 +2107,31 @@ const style = String(first(t['golf:style'], t['course:style'], t['golf:course_st
             body:'data=' + encodeURIComponent(query),
             signal: liveAbort.signal
           });
-          if(res.status === 429){ lastErr = new Error('Rate limited'); continue; }
-          if(!res.ok){ lastErr = new Error('Overpass error ' + res.status); continue; }
+          if(res.status === 429){ lastErr = new Error('rate'); continue; }
+          if(!res.ok){ lastErr = new Error('http'); continue; }
           data = await res.json();
           lastErr = null;
           break;
-        } catch(e){
-          if(String(e?.name) === 'AbortError') throw e;
+        }catch(e){
+          if(e && e.name === 'AbortError') throw e;
           lastErr = e;
         }
       }
 
-      if(!data) throw (lastErr || new Error('Overpass error'));
+      if(!data || !data.elements){
+        throw (lastErr || new Error('No data'));
+      }
 
-      liveItems = buildLiveItems(data.elements || []);
-      // Best-effort enrichment for missing fields and better images
-      try{ await enrichList(liveItems); } catch(e) {}
-      liveStatus = 'ready';
+      liveItems = data.elements || [];
+      liveStatus = 'done';
       refresh();
-    } catch(err){
-      if(String(err?.name) === 'AbortError') return;
+    }catch(e){
+      if(e && e.name === 'AbortError') return;
       liveStatus = 'error';
       liveItems = [];
       refresh();
     }
   };
-
     const resetView = () => {
     if(!map) return;
     try{ map.closePopup(); } catch(e){}
