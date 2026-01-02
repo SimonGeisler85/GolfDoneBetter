@@ -163,11 +163,11 @@ function classifyCourse(tags, name) {
 
   if (nameSaysRange && !hasFullCourseSignal) return { kind: "driving_range" };
 
-  const isDrivingRange =
-    golf === "driving_range" ||
-    leisure === "driving_range" ||
-    golf === "practice" ||
-    nameSaysRange;
+const isDrivingRange =
+  golf === "driving_range" ||
+  leisure === "driving_range" ||
+  golf === "practice" ||
+  (nameSaysRange && !hasFullCourseSignal);
 
   const isCourse =
     leisure === "golf_course" ||
