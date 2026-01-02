@@ -291,7 +291,7 @@ async function reverseGeocode(lat, lng) {
 
 function buildAddress(tags, nominatim) {
   const a = {};
-  const t = tags || {};
+  const t = tags || {}; a.state = pickTag(t, ["addr:state"]);
   a.street = pickTag(t, ["addr:housenumber", "addr:street"]) ? `${pickTag(t,["addr:housenumber"])} ${pickTag(t,["addr:street"])}`.trim() : pickTag(t, ["addr:street"]);
   a.city = pickTag(t, ["addr:city", "addr:town", "addr:village"]);
   a.county = pickTag(t, ["addr:county", "addr:state"]);
@@ -299,7 +299,7 @@ function buildAddress(tags, nominatim) {
   a.country = pickTag(t, ["addr:country"]) || "UK";
 
   if ((!a.city || !a.postcode || !a.county) && nominatim?.address) {
-    const na = nominatim.address;
+    const na = nominatim.address; a.state = a.state || na.state || na.state_district || "";
     a.city = a.city || na.city || na.town || na.village || na.hamlet || "";
     a.county = a.county || na.county || na.state_district || na.state || "";
     a.postcode = a.postcode || na.postcode || "";
