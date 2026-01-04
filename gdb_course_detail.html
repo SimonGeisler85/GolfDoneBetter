@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Course details</title>
+  <link rel="icon" href="favicon.ico">
+  <style>
+    :root{
+      --bg:#0c0c0f;
+      --panel:rgba(20,20,26,.72);
+      --border:rgba(255,255,255,.10);
+      --text:#f2f2f4;
+      --muted:rgba(242,242,244,.78);
+      --muted2:rgba(242,242,244,.68);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#0b0b0f, #09090c 60%, #070709);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      line-height:1.35;
+    }
+    a{color:inherit}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px 16px 60px;}
+    .card{border:1px solid var(--border); background:var(--panel); border-radius:var(--radius); overflow:hidden;}
+    .hero{display:grid; grid-template-columns: 1.15fr .85fr; gap:14px; margin-top:12px;}
+    @media (max-width: 900px){ .hero{grid-template-columns:1fr;} }
+    .img{height:360px; background:rgba(0,0,0,.25); overflow:hidden;}
+    .img img{width:100%; height:100%; object-fit:cover; display:block;}
+    .content{padding:16px 16px 18px;}
+    h1{margin:0 0 6px; font-size:26px; letter-spacing:.2px;}
+    .sub{color:var(--muted2); font-size:14px; margin:0 0 10px;}
+    .kv{display:grid; gap:10px; margin-top:10px;}
+    .kv .row{display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.06);}
+    .kv .row:last-child{border-bottom:0}
+    .kv .k{color:var(--text); font-size:13px; font-weight:750;}
+    .kv .v{color:var(--muted); font-size:13px; text-align:right; font-weight:650; max-width:66%;}
+    .actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:10px 12px; border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.25);
+      text-decoration:none; font-size:14px;
+    }
+    .btn:hover{background:rgba(0,0,0,.38)}
+    .btn[aria-disabled="true"]{opacity:.45; pointer-events:none}
+    .section{margin-top:14px;}
+    .section h2{font-size:15px; margin:0 0 10px; color:rgba(242,242,244,.94); letter-spacing:.2px;}
+    .details-grid{display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:12px;}
+    @media (max-width: 900px){ .details-grid{grid-template-columns: repeat(2, minmax(0, 1fr));} }
+    @media (max-width: 620px){ .details-grid{grid-template-columns: 1fr;} }
+    .field{padding:12px 12px 13px;}
+    .field .k{color:var(--text); font-size:12px; font-weight:800; margin-bottom:6px; letter-spacing:.2px;}
+    .field .v{color:var(--muted); font-size:14px; font-weight:650; line-height:1.35;}
+    .field .v.small{font-size:13px}
+    .desc{color:var(--muted); font-size:14px; line-height:1.5;}
+    .map{height:340px; border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); background:rgba(0,0,0,.22);}
+    iframe{border:0; width:100%; height:100%;}
+    .topline{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-top:10px;}
+    .crumb{display:flex; align-items:center; gap:10px; color:var(--muted2); font-size:13px; flex-wrap:wrap;}
+    .crumb a{color:var(--muted2); text-decoration:none; border-bottom:1px solid transparent}
+    .crumb a:hover{border-bottom-color:var(--muted2)}
+    .idtext{color:var(--muted2); font-size:12px; padding-top:2px}
+    .notice{padding:14px 14px 15px; color:var(--muted); font-size:14px;}
+
+    /* Header menu (match other pages) */
+    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+    .skip-link:focus{left:14px;top:14px;width:auto;height:auto;padding:10px 12px;border-radius:12px;background:#fff;color:#000;z-index:9999;text-decoration:none}
+    .site-header{position:sticky;top:0;z-index:900;background:rgba(12,12,15,0.72);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,0.10)}
+    .site-header-inner{max-width:none;margin:0 auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative}
+    .brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .brand svg{width:132px;height:auto;display:block}
+    .menu-btn{
+      width:54px;height:54px;border-radius:18px;border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.25);color:#fff;display:grid;place-items:center;cursor:pointer;
+      box-shadow:0 18px 60px rgba(0,0,0,.35);
+    }
+    .menu-btn:hover{background:rgba(255,255,255,.06)}
+    .menu-btn svg{width:28px;height:28px}
+    .menu-panel{position:absolute;right:16px;top:70px;min-width:240px;background:rgba(11,23,19,.92);border:1px solid rgba(255,255,255,.14);border-radius:14px;overflow:hidden;display:none;box-shadow:0 18px 60px rgba(0,0,0,.45);backdrop-filter:blur(10px);text-align:left;z-index:910}
+    .menu-panel a{display:block;padding:12px 14px;font-weight:900;opacity:.95;color:#ffffff;text-decoration:none}
+    .menu-panel a:hover{background:rgba(255,255,255,.08);opacity:1}
+    .menu-sep{height:1px;background:rgba(255,255,255,.12);margin:6px 0}
+    .site-footer{max-width:1100px;margin:0 auto;padding:24px 16px 34px;opacity:0.70;font-size:12px}
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="site-header-inner">
+    <a class="brand" href="index.html" aria-label="GDB home">
+      <svg aria-label="GDB logo" role="img" viewBox="0 0 420 120">
+        <text x="210" y="70" text-anchor="middle" font-family="Libre Baskerville, Georgia, serif" font-size="72" font-weight="700" letter-spacing="-1.5" fill="#ffffff">GDB</text>
+        <text x="210" y="104" text-anchor="middle" font-family="Libre Baskerville, Georgia, serif" font-size="18" letter-spacing="1.6" opacity="0.9" fill="#ffffff">Golf Done Better</text>
+      </svg>
+    </a>
+
+    <div aria-label="Site menu" class="top-right">
+      <button aria-expanded="false" aria-haspopup="true" aria-label="Open menu" class="menu-btn" id="menuBtn" type="button">
+        <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-linecap="round" stroke-width="2.8"></path>
+        </svg>
+      </button>
+      <div aria-label="Navigation" class="menu-panel" id="menuPanel" role="menu">
+        <a href="index.html" role="menuitem">Home</a>
+        <a href="search-courses.html" role="menuitem">Search courses</a>
+        <a href="plan-golf-trip.html" role="menuitem">Plan a golf trip</a>
+        <div class="menu-sep"></div>
+        <a href="about.html" role="menuitem">About</a>
+        <a href="contact.html" role="menuitem">Contact</a>
+        <a href="terms.html" role="menuitem">Terms and conditions</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+  <div class="topline">
+    <div class="crumb">
+      <a href="./search-courses.html">Search courses</a>
+      <span>›</span>
+      <span id="crumbName">Course details</span>
+    </div>
+</div>
+
+  <div id="app"></div>
+</main>
+
+<footer class="site-footer">© 2025 Golf Done Better. Bookings happen on partner sites.</footer>
+
+<script>
+  (function(){
+    const menuBtn = document.getElementById('menuBtn');
+    const menuPanel = document.getElementById('menuPanel');
+    if(!menuBtn || !menuPanel) return;
+
+    const closeMenu = () => {
+      menuPanel.style.display = 'none';
+      menuBtn.setAttribute('aria-expanded','false');
+    };
+    const openMenu = () => {
+      menuPanel.style.display = 'block';
+      menuBtn.setAttribute('aria-expanded','true');
+    };
+
+    closeMenu();
+
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if(menuPanel.style.display === 'block') closeMenu();
+      else openMenu();
+    });
+
+    document.addEventListener('click', (e) => {
+      if(!menuPanel.contains(e.target) && e.target !== menuBtn) closeMenu();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') closeMenu();
+    });
+  })();
+</script>
+
+<script>
+  const qs = new URLSearchParams(location.search);
+  const id = qs.get('id') || '';
+  const elApp = document.getElementById('app');
+  const elId = document.getElementById('idText');
+  if(elId) elId.textContent = 'ID: ' + (id || '—');
+
+  const escapeHtml = (s) => String(s ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+
+  const titleCase = (s) => String(s || '')
+    .replace(/_/g,' ')
+    .toLowerCase()
+    .replace(/\b\w/g, (m) => m.toUpperCase());
+
+  const pick = (...vals) => vals.find(v => v != null && String(v).trim() !== '' && String(v).trim().toLowerCase() !== 'unknown') || '';
+
+  const niceAccess = (v) => v === 'public' ? 'Public' : v === 'visitors' ? 'Visitors welcome' : v === 'members_only' ? 'Members only' : 'Unknown';
+
+  const joinLabels = (arr, mapFn) => Array.isArray(arr) && arr.length ? arr.map(mapFn || (x=>x)).filter(Boolean).join(', ') : 'Unknown';
+
+  const getWebsite = (c) => pick(c.website, c.url, c.link, c.source && (c.source.website || c.source.url));
+  const getAffiliate = (c) => pick(c.affiliate_link, c.affiliate, c.source && (c.source.affiliate || c.source.affiliate_link));
+  const getPhone = (c) => pick(c.phone, c.telephone, c.source && (c.source.phone || c.source.telephone));
+  const getPostcode = (c) => pick(c.postcode, c.address && c.address.postcode, c.source && c.source.postcode);
+  const getEmail = (c) => pick(c.email, c.contact_email, c.source && (c.source.email || c.source.contact_email));
+
+  const getAddressParts = (c) => {
+    const out = { line1:'', line2:'', city:'', postcode:'', full:'' };
+    if (c.address && typeof c.address === 'object') {
+      out.line1 = pick(c.address.line1);
+      out.line2 = pick(c.address.line2);
+      out.city = pick(c.address.city, c.address.town, c.address.county);
+      out.postcode = pick(c.address.postcode);
+      out.full = [out.line1,out.line2,out.city,out.postcode].filter(Boolean).join(', ');
+      return out;
+    }
+    const full = pick(c.address, c.full_address, c.street_address, c.source && (c.source.address || c.source.location));
+    out.full = full;
+    out.postcode = pick(getPostcode(c));
+    return out;
+  };
+
+  const getDesc = (c) => pick(c.short_description, c.description, c.info, c.source && (c.source.short_description || c.source.description));
+  const getImg = (c) => pick(c.hero_image, c.image, c.image_url, c.photo, (c.images && c.images[0]));
+  const getCity = (c) => pick(c.city, c.place, c.town, c.area);
+  const getCountry = (c) => pick(c.country, c.nation);
+
+  const valueOr = (v, fallback) => {
+    const s = String(v ?? '').trim();
+    if(!s || s.toLowerCase() === 'unknown') return fallback;
+    return s;
+  };
+
+  const render = (c) => {
+    const name = valueOr(c.name, 'Golf course');
+    const city = getCity(c);
+    const country = getCountry(c);
+    const addressParts = getAddressParts(c);
+    const postcode = valueOr(getPostcode(c), 'Unknown');
+    const phone = valueOr(getPhone(c), 'Unknown');
+    const email = valueOr(getEmail(c), 'Unknown');
+    const website = getWebsite(c);
+    const affiliate = getAffiliate(c);
+    const desc = getDesc(c);
+    const img = getImg(c);
+
+    const holes = valueOr(pick(c.holes), 'Unknown');
+    const par = valueOr(pick(c.par), 'Unknown');
+    const access = niceAccess(String(c.access || 'unknown'));
+    const priceBand = pick(c.price_band) ? titleCase(c.price_band) : 'Unknown';
+
+    const difficulty = joinLabels(c.difficulty, (x)=>titleCase(x));
+    const dress = joinLabels(c.dress_code, (x)=>x === 'smart_casual' ? 'Smart casual' : titleCase(x));
+    const vibe = joinLabels(c.vibe, (x)=>titleCase(x));
+    const courseType = joinLabels(c.course_type, (x)=>titleCase(x));
+    const facilities = joinLabels(c.facilities, (x)=>x === 'practice_area' ? 'Practice areas' : titleCase(x));
+    const extras = joinLabels(c.extras, (x)=>x === 'alcohol_allowed' ? 'Alcohol allowed on course' : x === 'smoking_allowed' ? 'Smoking allowed on course' : titleCase(x));
+
+    const length = valueOr(pick(c.length_yards, c.length, c.course_length_yards), 'Unknown');
+    const slope = valueOr(pick(c.slope, c.slope_rating), 'Unknown');
+    const rating = valueOr(pick(c.course_rating, c.rating), 'Unknown');
+    const architect = valueOr(pick(c.architect), 'Unknown');
+    const year = valueOr(pick(c.year_opened, c.year_built, c.opened), 'Unknown');
+    const season = valueOr(pick(c.season), 'Unknown');
+    const walking = valueOr(pick(c.walking, c.walkable), 'Unknown');
+    const carts = valueOr(pick(c.carts, c.buggies), 'Unknown');
+    const practice = valueOr(pick(c.practice, c.practice_facilities), 'Unknown');
+    const lessons = valueOr(pick(c.lessons), 'Unknown');
+    const clubhouse = valueOr(pick(c.clubhouse), 'Unknown');
+    const proshop = valueOr(pick(c.pro_shop, c.shop), 'Unknown');
+
+    const mapsHref = (c.lat && c.lng) ? `https://www.google.com/maps?q=${encodeURIComponent(String(c.lat)+','+String(c.lng))}` : (addressParts.full ? `https://www.google.com/maps?q=${encodeURIComponent(addressParts.full)}` : '');
+    const embedHref = (c.lat && c.lng) ? `https://www.google.com/maps?q=${encodeURIComponent(String(c.lat)+','+String(c.lng))}&output=embed` : '';
+
+    document.title = name + ' | Course details';
+    const crumbName = document.getElementById('crumbName');
+    if(crumbName) crumbName.textContent = name;
+
+    const line1 = valueOr(addressParts.line1, 'Unknown');
+    const line2 = valueOr(addressParts.line2, 'Unknown');
+    const cityLine = valueOr(addressParts.city || city, 'Unknown');
+
+    elApp.innerHTML = `
+      <div class="hero">
+        <div class="card">
+          <div class="img">
+            ${img ? `<img src="${escapeHtml(img)}" alt="" loading="lazy" />` : ``}
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="content">
+            <h1>${escapeHtml(name)}</h1>
+            <div class="sub">${escapeHtml([city, country].filter(Boolean).join(', ') || '—')}</div>
+
+            <div class="kv">
+              <div class="row"><div class="k">Address line 1</div><div class="v">${escapeHtml(line1)}</div></div>
+              <div class="row"><div class="k">Address line 2</div><div class="v">${escapeHtml(line2)}</div></div>
+              <div class="row"><div class="k">City</div><div class="v">${escapeHtml(cityLine)}</div></div>
+              <div class="row"><div class="k">Postcode</div><div class="v">${escapeHtml(postcode)}</div></div>
+              <div class="row"><div class="k">Phone</div><div class="v">${escapeHtml(phone)}</div></div>
+              <div class="row"><div class="k">Email</div><div class="v">${escapeHtml(email)}</div></div>
+            </div>
+
+            <div class="actions">
+              <a class="btn" href="${website ? escapeHtml(website) : '#'}" target="_blank" rel="noopener" aria-disabled="${website ? 'false' : 'true'}">Direct website</a>
+              <a class="btn" href="${mapsHref ? escapeHtml(mapsHref) : '#'}" target="_blank" rel="noopener" aria-disabled="${mapsHref ? 'false' : 'true'}">View in Google Maps</a>
+              <a class="btn" href="${affiliate ? escapeHtml(affiliate) : '#'}" target="_blank" rel="noopener" aria-disabled="${affiliate ? 'false' : 'true'}">Affiliate booking link</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Course info</h2>
+        <div class="details-grid">
+          <div class="card field"><div class="k">Holes</div><div class="v">${escapeHtml(holes)}</div></div>
+          <div class="card field"><div class="k">Par</div><div class="v">${escapeHtml(par)}</div></div>
+          <div class="card field"><div class="k">Access</div><div class="v">${escapeHtml(access)}</div></div>
+
+          <div class="card field"><div class="k">Price band</div><div class="v">${escapeHtml(priceBand)}</div></div>
+          <div class="card field"><div class="k">Course type</div><div class="v">${escapeHtml(courseType)}</div></div>
+          <div class="card field"><div class="k">Difficulty</div><div class="v">${escapeHtml(difficulty)}</div></div>
+
+          <div class="card field"><div class="k">Dress code</div><div class="v">${escapeHtml(dress)}</div></div>
+          <div class="card field"><div class="k">Vibe</div><div class="v">${escapeHtml(vibe)}</div></div>
+          <div class="card field"><div class="k">Facilities</div><div class="v small">${escapeHtml(facilities)}</div></div>
+
+          <div class="card field"><div class="k">Extras</div><div class="v small">${escapeHtml(extras)}</div></div>
+          <div class="card field"><div class="k">Length (yards)</div><div class="v">${escapeHtml(length)}</div></div>
+          <div class="card field"><div class="k">Course rating</div><div class="v">${escapeHtml(rating)}</div></div>
+
+          <div class="card field"><div class="k">Slope</div><div class="v">${escapeHtml(slope)}</div></div>
+          <div class="card field"><div class="k">Architect</div><div class="v">${escapeHtml(architect)}</div></div>
+          <div class="card field"><div class="k">Year opened</div><div class="v">${escapeHtml(year)}</div></div>
+
+          <div class="card field"><div class="k">Season</div><div class="v">${escapeHtml(season)}</div></div>
+          <div class="card field"><div class="k">Walking</div><div class="v">${escapeHtml(walking)}</div></div>
+          <div class="card field"><div class="k">Carts</div><div class="v">${escapeHtml(carts)}</div></div>
+
+          <div class="card field"><div class="k">Practice</div><div class="v">${escapeHtml(practice)}</div></div>
+          <div class="card field"><div class="k">Lessons</div><div class="v">${escapeHtml(lessons)}</div></div>
+          <div class="card field"><div class="k">Clubhouse</div><div class="v">${escapeHtml(clubhouse)}</div></div>
+
+          <div class="card field"><div class="k">Pro shop</div><div class="v">${escapeHtml(proshop)}</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Description</h2>
+        <div class="card content">
+          <div class="desc">${escapeHtml(desc || 'Description not available yet.')}</div>
+        </div>
+      </div>
+
+      ${embedHref ? `
+      <div class="section">
+        <h2>Map</h2>
+        <div class="map">
+          <iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${escapeHtml(embedHref)}"></iframe>
+        </div>
+      </div>` : ``}
+
+      <div class="section">
+        <div class="card content">
+          <div class="actions" style="margin-top:0">
+            <a class="btn" href="${website ? escapeHtml(website) : '#'}" target="_blank" rel="noopener" aria-disabled="${website ? 'false' : 'true'}">Direct website</a>
+            <a class="btn" href="${mapsHref ? escapeHtml(mapsHref) : '#'}" target="_blank" rel="noopener" aria-disabled="${mapsHref ? 'false' : 'true'}">View in Google Maps</a>
+            <a class="btn" href="${affiliate ? escapeHtml(affiliate) : '#'}" target="_blank" rel="noopener" aria-disabled="${affiliate ? 'false' : 'true'}">Affiliate booking link</a>
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  const loadFromCache = () => {
+    try{
+      const raw = localStorage.getItem('GDB_COURSES_CACHE_V1');
+      if(!raw) return null;
+      const data = JSON.parse(raw);
+      if(Array.isArray(data)) return data;
+      if(data && Array.isArray(data.courses)) return data.courses;
+      return null;
+    }catch(e){
+      return null;
+    }
+  };
+
+  const main = async () => {
+    const list = loadFromCache();
+    if(!id){
+      elApp.innerHTML = '<div class="card notice">Course details could not load because no id was provided.</div>';
+      return;
+    }
+    if(!list){
+      elApp.innerHTML = '<div class="card notice">Course details could not load for this id. Refresh Search courses once, then open course details again.</div>';
+      return;
+    }
+    const course = list.find(x => String(x && x.id) === String(id));
+    if(!course){
+      elApp.innerHTML = '<div class="card notice">Course details could not load for this id. Refresh Search courses once, then open course details again.</div>';
+      return;
+    }
+    render(course);
+  };
+
+  main();
+</script>
+</body>
+</html>
