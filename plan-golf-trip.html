@@ -1687,15 +1687,59 @@ const SC_titleCase = (x) => {
     (list||[]).forEach(item => {
       const id = item && item.id;
       if(!id) return;
-      const url = item.imageUrl || item.image || item.img || '';
+
       const imgs = document.querySelectorAll(`[data-img="${CSS.escape(id)}"]`);
       const badge = document.querySelector(`[data-imgbadge="${CSS.escape(id)}"]`);
-      if(url){
+
+      const setUrl = (url) => {
+        if(!url) return false;
         imgs.forEach(img => { img.src = url; });
         if(badge) badge.style.display = 'none';
-      }else{
-        if(badge) badge.textContent = 'No image';
+        return true;
+      };
+
+      const direct = item.imageUrl || item.image || item.img || '';
+      if(setUrl(direct)) return;
+
+      const tags = item.tags || item.rawTags || {};
+      const fromTags = pickImageFromTags(tags);
+      if(setUrl(fromTags)){
+        item.imageUrl = fromTags;
+        return;
       }
+
+      const wp = tags.wikipedia || '';
+      if(!wp){
+        if(badge) badge.textContent = 'No image';
+        return;
+      }
+
+      const parts = String(wp).split(':');
+      const lang = (parts.length > 1 && parts[0].length <= 5) ? parts[0] : 'en';
+      const title = (parts.length > 1 && parts[0].length <= 5) ? parts.slice(1).join(':') : wp;
+
+      const cacheKey = '__gdb_wpimg_' + lang + '_' + title;
+      window.__gdbImgCache = window.__gdbImgCache || {};
+      if(window.__gdbImgCache[cacheKey]){
+        const u = window.__gdbImgCache[cacheKey];
+        if(setUrl(u)) item.imageUrl = u;
+        else if(badge) badge.textContent = 'No image';
+        return;
+      }
+
+      fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`)
+        .then(r => r.ok ? r.json() : null)
+        .then(js => {
+          const u = js && js.thumbnail && js.thumbnail.source ? js.thumbnail.source : '';
+          window.__gdbImgCache[cacheKey] = u || '';
+          if(u){
+            item.imageUrl = u;
+            setUrl(u);
+          }else{
+            if(badge) badge.textContent = 'No image';
+          }
+        })
+        .catch(() => { if(badge) badge.textContent = 'No image'; });
     });
   };
 
@@ -1854,7 +1898,7 @@ const SC_titleCase = (x) => {
               <div><div class="meta-label">Restaurant</div><div class="meta-value">${restaurantDisplay}</div></div>
               <div><div class="meta-label">Bar</div><div class="meta-value">${barDisplay}</div></div>
 
-              <div><div class="meta-label">Pets</div><div class="meta-value">${petsDisplay}</div></div>
+              <div>
               <div><div class="meta-label">Accessible</div><div class="meta-value">${accessibleDisplay}</div></div>
 
               <div><div class="meta-label">Website</div><div class="meta-value">${escapeHtml(websiteDisplay)}</div></div>
@@ -1889,7 +1933,7 @@ const SC_titleCase = (x) => {
               <div><div class="meta-label">Restaurant</div><div class="meta-value">${restaurantDisplay}</div></div>
               <div><div class="meta-label">Bar</div><div class="meta-value">${barDisplay}</div></div>
 
-              <div><div class="meta-label">Pets</div><div class="meta-value">${petsDisplay}</div></div>
+              <div>
               <div><div class="meta-label">Accessible</div><div class="meta-value">${accessibleDisplay}</div></div>
 
               <div><div class="meta-label">Website</div><div class="meta-value">${escapeHtml(websiteDisplay)}</div></div>
@@ -2267,9 +2311,9 @@ const SC_titleCase = (x) => {
           const b = bboxToQuery(bbox);
           return `[out:json][timeout:25];
             (
-              node["tourism"~"hotel|motel|hostel|guest_house|apartment|resort|chalet|camp_site|caravan_site|camp_pitch"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
-              way["tourism"~"hotel|motel|hostel|guest_house|apartment|resort|chalet|camp_site|caravan_site|camp_pitch"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
-              relation["tourism"~"hotel|motel|hostel|guest_house|apartment|resort|chalet|camp_site|caravan_site|camp_pitch"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
+              node["tourism"~"hotel|motel|hostel|guest_house|apartment|resort|chalet|bed_and_breakfast|aparthotel|lodge|inn|serviced_apartment|holiday_home|villa"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
+              way["tourism"~"hotel|motel|hostel|guest_house|apartment|resort|chalet|bed_and_breakfast|aparthotel|lodge|inn|serviced_apartment|holiday_home|villa"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
+              relation["tourism"~"hotel|motel|hostel|guest_house|apartment|resort|chalet|bed_and_breakfast|aparthotel|lodge|inn|serviced_apartment|holiday_home|villa"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
 
               node["building"="hotel"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
               way["building"="hotel"](${b.minLat},${b.minLon},${b.maxLat},${b.maxLon});
@@ -2283,12 +2327,28 @@ const SC_titleCase = (x) => {
           catch(e){ return false; }
         });
         const pickImageFromTags = (tags) => {
-          const direct = tags?.image || tags?.['website:image'] || tags?.wikimedia_commons || '';
-          return (direct && String(direct).startsWith('http')) ? String(direct) : '';
+          const direct = tags?.image || tags?.['website:image'] || tags?.wikimedia_commons || tags?.['wikimedia_commons'] || '';
+          const s = String(direct || '').trim();
+          if(!s) return '';
+          if(s.startsWith('http://') || s.startsWith('https://')) return s;
+          if(s.startsWith('File:')){
+            const fp = encodeURIComponent(s.replace(/^File:/,''));
+            return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + fp + '?width=900';
+          }
+          if(/\.(jpg|jpeg|png|webp|gif)$/i.test(s)){
+            const fp = encodeURIComponent(s);
+            return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + fp + '?width=900';
+          }
+          return '';
         };
         const pickWebsiteFromTags = (tags) => {
-          const w = tags?.website || tags?.url || tags?.contact_website || tags?.['contact:website'] || '';
-          return (w && String(w).startsWith('http')) ? String(w) : '';
+          const raw = tags?.website || tags?.url || tags?.contact_website || tags?.['contact:website'] || '';
+          const s = String(raw || '').trim();
+          if(!s) return '';
+          if(s.startsWith('http://') || s.startsWith('https://')) return s;
+          if(s.startsWith('www.')) return 'https://' + s;
+          if(/^[a-z0-9\-_.]+\.[a-z]{2,}/i.test(s)) return 'https://' + s;
+          return '';
         };
         const toCourseModel = (e) => {
           const tags = e.tags || {};
@@ -2374,11 +2434,11 @@ const SC_titleCase = (x) => {
           let stays = [];
           try {
             const jsonCourses = await overpassFetch(overpassCoursesQuery(bbox));
-            courses = filterInPoly((jsonCourses?.elements || []).map(toCourseModel).filter(Boolean), poly).slice(0, 220);
+            courses = filterInPoly((jsonCourses?.elements || []).map(toCourseModel).filter(Boolean), poly);
           } catch(e) {}
           try {
             const jsonStays = await overpassFetch(overpassStaysQuery(bbox));
-            stays = filterInPoly((jsonStays?.elements || []).map(toStayModel).filter(Boolean), poly).slice(0, 260);
+            stays = filterInPoly((jsonStays?.elements || []).map(toStayModel).filter(Boolean), poly);
           } catch(e) {}
 
           const { cRes, sRes } = computeResortLinks(courses, stays);
@@ -2735,7 +2795,9 @@ const SC_titleCase = (x) => {
             map.removeLayer(markerGroupStays);
           }
 
-          const count = courses.length + stays.length;
+          let count = 0;
+          if(showCourses) count += courses.length;
+          if(showStays) count += stays.length;
           // map layer toggles should only appear once location results exist
           if(step === 'location') {
             if(count > 0) el('mapLayerToggles').classList.remove('hidden');
@@ -2813,7 +2875,7 @@ const SC_titleCase = (x) => {
             hintEl.textContent = `${items.length} result${items.length === 1 ? '' : 's'}`;
             hintEl.classList.remove('hidden');
           }
-          list.innerHTML = items.slice(0, 50).map(item => {
+          list.innerHTML = items.map(item => {
             const kind = (step === 'golf') ? 'course' : (step === 'accommodation') ? 'stay' : (state.activeTab === 'courses' ? 'course' : 'stay');
             const sub = (kind === 'course')
               ? `${escapeHtml(item.place || '')}`
@@ -4495,5 +4557,832 @@ const configurePanelsForStep = () => {
       })();
     </script>
 
+
+<script>
+/* ===============================
+   GDB RESULT COUNT SYNC v1
+   Ensures map pins + counters always reflect filtered results
+   =============================== */
+(function(){
+  window.GDB_setResultCount = function(n){
+    try{
+      const pill = document.getElementById('resultCountPill');
+      const top = document.getElementById('resultsCountText');
+      const val = (Number(n)||0);
+      if(pill) pill.textContent = val + ' results';
+      if(top) top.textContent = val + ' results';
+    }catch(e){}
+  };
+})();
+</script>
+
+
+<script>
+/* ===============================
+   GDB AUTO ENRICH v1 (Wikidata)
+   - Images: wdt:P18
+   - Websites: wdt:P856
+   No keys, cached in localStorage
+   =============================== */
+(function(){
+  const CACHE_KEY = 'gdb_wd_cache_v1';
+  const mem = (() => { try{ return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); }catch(e){ return {}; } })();
+  const save = () => { try{ localStorage.setItem(CACHE_KEY, JSON.stringify(mem)); }catch(e){} };
+
+  function fileUrlFromCommonsUrlOrName(v){
+    const s = String(v||'').trim();
+    if(!s) return '';
+    if(s.startsWith('http://') || s.startsWith('https://')) return s;
+    const n = s.replace(/^File:/,'');
+    return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(n) + '?width=1200';
+  }
+
+  async function fetchWikidata(qid){
+    const q = String(qid||'').trim();
+    if(!/^Q\d+$/.test(q)) return null;
+    if(mem[q]) return mem[q];
+
+    const sparql = `SELECT ?website ?image WHERE {
+      OPTIONAL { wd:${q} wdt:P856 ?website . }
+      OPTIONAL { wd:${q} wdt:P18 ?image . }
+    } LIMIT 1`;
+
+    const url = 'https://query.wikidata.org/sparql?format=json&query=' + encodeURIComponent(sparql);
+    const res = await fetch(url, { headers: { 'Accept': 'application/sparql-results+json' } });
+    if(!res.ok) return null;
+    const js = await res.json();
+    const b = js?.results?.bindings?.[0] || {};
+    const website = b.website?.value || '';
+    const image = b.image?.value || '';
+    const out = { website: website, image: fileUrlFromCommonsUrlOrName(image) };
+    mem[q] = out;
+    save();
+    return out;
+  }
+
+  let rerenderTimer = null;
+  const requestRerender = () => {
+    if(rerenderTimer) return;
+    rerenderTimer = setTimeout(() => {
+      rerenderTimer = null;
+      try{ if(typeof renderResults === 'function') renderResults(); }catch(e){}
+      try{ if(typeof syncMapMarkers === 'function') syncMapMarkers(); }catch(e){}
+    }, 250);
+  };
+
+  const oldHydrate = window.SC_hydrateImages;
+  if(typeof oldHydrate === 'function'){
+    window.SC_hydrateImages = (list) => {
+      oldHydrate(list);
+      (list||[]).forEach(item => {
+        const tags = item?.tags || item?.rawTags || {};
+        const qid = tags.wikidata || tags['wikidata'] || '';
+        if(!qid) return;
+
+        const needImg = !(item.imageUrl || item.image || item.img);
+        const needWeb = !(item.websiteUrl || item.website);
+        if(!needImg && !needWeb) return;
+
+        fetchWikidata(qid).then(data => {
+          if(!data) return;
+          let changed = false;
+
+          if(needWeb && data.website){
+            item.websiteUrl = data.website;
+            item.website = data.website;
+            changed = true;
+          }
+          if(needImg && data.image){
+            item.imageUrl = data.image;
+            changed = true;
+          }
+          if(changed) requestRerender();
+        }).catch(()=>{});
+      });
+    };
+  }
+})();
+</script>
+
+<script>
+/* ===============================
+   GDB AUTO ENRICH v2 (Resolver)
+   Goal: fill missing wikidata, image, website for OSM entities that lack wikidata tags
+   - Uses Wikidata Query Service (SPARQL) with coordinate proximity
+   - Uses Wikipedia tag -> QID via MediaWiki API when available
+   - Aggressively cached in localStorage
+   - Never blocks initial render, runs silently in background
+   Safety:
+   - Only accepts matches above a conservative confidence threshold
+   - Stores provenance on item._enrich
+   =============================== */
+(function(){
+  const RESOLVE_CACHE_KEY = 'gdb_wd_resolve_cache_v2';
+  const WIKI_QID_CACHE_KEY = 'gdb_wiki_qid_cache_v1';
+  const mem = (() => { try{ return JSON.parse(localStorage.getItem(RESOLVE_CACHE_KEY) || '{}'); }catch(e){ return {}; } })();
+  const wikiMem = (() => { try{ return JSON.parse(localStorage.getItem(WIKI_QID_CACHE_KEY) || '{}'); }catch(e){ return {}; } })();
+
+  const save = () => { try{ localStorage.setItem(RESOLVE_CACHE_KEY, JSON.stringify(mem)); }catch(e){} };
+  const saveWiki = () => { try{ localStorage.setItem(WIKI_QID_CACHE_KEY, JSON.stringify(wikiMem)); }catch(e){} };
+
+  // simple concurrency limiter
+  const MAX_INFLIGHT = 3;
+  let inflight = 0;
+  const queue = [];
+  function enqueue(fn){
+    queue.push(fn);
+    pump();
+  }
+  function pump(){
+    if(inflight >= MAX_INFLIGHT) return;
+    const fn = queue.shift();
+    if(!fn) return;
+    inflight++;
+    Promise.resolve().then(fn).catch(()=>{}).finally(()=>{ inflight--; pump(); });
+  }
+
+  function norm(s){
+    return String(s||'')
+      .toLowerCase()
+      .replace(/&/g,' and ')
+      .replace(/[^a-z0-9]+/g,' ')
+      .replace(/\s+/g,' ')
+      .trim();
+  }
+
+  function tokenSet(s){
+    const n = norm(s);
+    if(!n) return new Set();
+    const parts = n.split(' ').filter(Boolean);
+    const stop = new Set(['the','and','of','at','hotel','resort','golf','club','course','courses','golfclub','golfcourse']);
+    return new Set(parts.filter(p => p.length > 1 && !stop.has(p)));
+  }
+
+  function jaccard(aSet, bSet){
+    if(!aSet.size && !bSet.size) return 0;
+    let inter = 0;
+    for(const x of aSet){ if(bSet.has(x)) inter++; }
+    const uni = aSet.size + bSet.size - inter;
+    return uni ? inter / uni : 0;
+  }
+
+  function kmBetween(lat1, lon1, lat2, lon2){
+    const R = 6371;
+    const toRad = (d)=>d*Math.PI/180;
+    const dLat = toRad(lat2-lat1);
+    const dLon = toRad(lon2-lon1);
+    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+    return 2*R*Math.asin(Math.min(1, Math.sqrt(a)));
+  }
+
+  function commonsFileToUrl(file){
+    const n = String(file||'').trim().replace(/^File:/i,'').replace(/_/g,' ');
+    if(!n) return '';
+    return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(n) + '?width=1200';
+  }
+
+  async function fetchQidFromWikipediaTag(wikipediaTag){
+    const raw = String(wikipediaTag||'').trim();
+    if(!raw) return '';
+    // wikipedia tag formats: "en:Page_Title" or "Page_Title" or "lang:Title"
+    const parts = raw.split(':');
+    let lang = 'en', title = raw;
+    if(parts.length >= 2 && /^[a-z]{2,3}$/i.test(parts[0])){
+      lang = parts[0].toLowerCase();
+      title = parts.slice(1).join(':');
+    }
+    title = title.replace(/_/g,' ').trim();
+    const key = lang + '|' + title;
+    if(wikiMem[key]) return wikiMem[key];
+
+    const api = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&format=json&origin=*' +
+      '&prop=pageprops&ppprop=wikibase_item&redirects=1&titles=' + encodeURIComponent(title);
+    try{
+      const res = await fetch(api, { headers:{ 'Accept':'application/json' } });
+      if(!res.ok) return '';
+      const js = await res.json();
+      const pages = js?.query?.pages || {};
+      const firstKey = Object.keys(pages)[0];
+      const qid = pages?.[firstKey]?.pageprops?.wikibase_item || '';
+      if(/^Q\d+$/.test(qid)){
+        wikiMem[key] = qid;
+        saveWiki();
+        return qid;
+      }
+    }catch(e){}
+    return '';
+  }
+
+  function isCourseItem(item){
+    const t = item?.tags || {};
+    const leisure = String(t.leisure||'').toLowerCase();
+    const sport = String(t.sport||'').toLowerCase();
+    return leisure === 'golf_course' || sport === 'golf' || (item?.holes != null);
+  }
+
+  function isStayItem(item){
+    const t = item?.tags || {};
+    const tourism = String(t.tourism||'').toLowerCase();
+    const building = String(t.building||'').toLowerCase();
+    return !!tourism && tourism !== 'information' || building === 'hotel';
+  }
+
+  function buildAroundQuery(lat, lon, radiusKm, kind){
+    // kind: 'course' | 'stay' | 'any'
+    // Use soft type hints rather than hard filters to avoid dropping good matches
+    const typeHints = (kind === 'course')
+      ? `OPTIONAL { ?item wdt:P31 ?p31 . }
+         BIND(EXISTS { ?item wdt:P31/wdt:P279* wd:Q11303 } AS ?isGolfCourse)
+         BIND(EXISTS { ?item wdt:P31/wdt:P279* wd:Q847017 } AS ?isGolfClub)
+         BIND(EXISTS { ?item wdt:P31/wdt:P279* wd:Q7889 } AS ?isSportFacility)`
+      : (kind === 'stay')
+      ? `OPTIONAL { ?item wdt:P31 ?p31 . }
+         BIND(EXISTS { ?item wdt:P31/wdt:P279* wd:Q27686 } AS ?isHotel)
+         BIND(EXISTS { ?item wdt:P31/wdt:P279* wd:Q875157 } AS ?isResort)
+         BIND(EXISTS { ?item wdt:P31/wdt:P279* wd:Q11707 } AS ?isBuilding)`
+      : `OPTIONAL { ?item wdt:P31 ?p31 . }`;
+
+    return `SELECT ?item ?itemLabel ?loc ?dist ?image ?website ?isGolfCourse ?isGolfClub ?isSportFacility ?isHotel ?isResort ?isBuilding WHERE {
+      SERVICE wikibase:around {
+        ?item wdt:P625 ?loc .
+        bd:serviceParam wikibase:center "Point(${lon} ${lat})"^^geo:wktLiteral ;
+                        wikibase:radius "${radiusKm}" ;
+                        wikibase:distance ?dist .
+      }
+      OPTIONAL { ?item wdt:P18 ?image . }
+      OPTIONAL { ?item wdt:P856 ?website . }
+      ${typeHints}
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+    }
+    ORDER BY ?dist
+    LIMIT 25`;
+  }
+
+  async function wdqs(query){
+    const url = 'https://query.wikidata.org/sparql?format=json&query=' + encodeURIComponent(query);
+    const res = await fetch(url, { headers: { 'Accept': 'application/sparql-results+json' } });
+    if(!res.ok) return null;
+    return await res.json();
+  }
+
+  function scoreCandidate(item, cand){
+    const nameA = item?.name || item?.tags?.name || '';
+    const nameB = cand?.itemLabel || '';
+    const a = tokenSet(nameA);
+    const b = tokenSet(nameB);
+    const sim = jaccard(a,b); // 0..1
+
+    // distance score: 0km -> 1, 5km -> ~0.2
+    const dist = Number(cand?.dist || 999);
+    const dScore = Math.exp(-dist/2.5);
+
+    let tScore = 0;
+    if(isCourseItem(item)){
+      if(cand.isGolfCourse === true) tScore += 0.35;
+      if(cand.isGolfClub === true) tScore += 0.20;
+      if(cand.isSportFacility === true) tScore += 0.10;
+    } else if(isStayItem(item)){
+      if(cand.isHotel === true) tScore += 0.35;
+      if(cand.isResort === true) tScore += 0.20;
+      if(cand.isBuilding === true) tScore += 0.10;
+    }
+
+    // final score
+    return (sim*0.65) + (dScore*0.30) + tScore;
+  }
+
+  function parseBindings(js){
+    const rows = js?.results?.bindings || [];
+    return rows.map(b => {
+      const itemUrl = b.item?.value || '';
+      const qid = (itemUrl.match(/\/(Q\d+)$/)||[])[1] || '';
+      const label = b.itemLabel?.value || '';
+      const dist = Number(b.dist?.value || b.dist) || 999;
+      const image = b.image?.value || '';
+      const website = b.website?.value || '';
+      const flags = (k)=> {
+        const v = b[k]?.value;
+        if(v === 'true') return true;
+        if(v === 'false') return false;
+        return undefined;
+      };
+      return {
+        qid,
+        itemLabel: label,
+        dist,
+        image,
+        website,
+        isGolfCourse: flags('isGolfCourse'),
+        isGolfClub: flags('isGolfClub'),
+        isSportFacility: flags('isSportFacility'),
+        isHotel: flags('isHotel'),
+        isResort: flags('isResort'),
+        isBuilding: flags('isBuilding')
+      };
+    }).filter(r => /^Q\d+$/.test(r.qid));
+  }
+
+  function applyToItem(item, qid, image, website, source, score){
+    item.tags = item.tags || {};
+    if(!item.tags.wikidata) item.tags.wikidata = qid;
+
+    let changed = false;
+    if(website && !(item.websiteUrl || item.website)){
+      item.websiteUrl = website;
+      item.website = website;
+      changed = true;
+    }
+    if(image && !(item.imageUrl || item.image || item.img)){
+      const imgUrl = image.startsWith('http') ? image : commonsFileToUrl(image);
+      if(imgUrl){
+        item.imageUrl = imgUrl;
+        changed = true;
+      }
+    }
+    item._enrich = { source, qid, score, ts: Date.now() };
+    return changed;
+  }
+
+  function getCacheKey(item){
+    const id = item?.id || '';
+    const lat = item?.lat ?? item?.latitude;
+    const lng = item?.lng ?? item?.lon ?? item?.longitude;
+    return id || (String(item?.name||'') + '|' + (lat?.toFixed ? lat.toFixed(5) : '') + '|' + (lng?.toFixed ? lng.toFixed(5) : ''));
+  }
+
+  async function resolveAndApply(item){
+    try{
+      if(!item) return false;
+      const needImg = !(item.imageUrl || item.image || item.img);
+      const needWeb = !(item.websiteUrl || item.website);
+      if(!needImg && !needWeb) return false;
+
+      const tags = item.tags || {};
+      const key = getCacheKey(item);
+      const cached = mem[key];
+      if(cached && cached.qid){
+        return applyToItem(item, cached.qid, cached.image || '', cached.website || '', cached.source || 'cache', cached.score || 0);
+      }
+
+      // Wikipedia tag path first
+      if(!tags.wikidata && tags.wikipedia){
+        const qid = await fetchQidFromWikipediaTag(tags.wikipedia);
+        if(qid){
+          mem[key] = { qid, source: 'wikipedia', score: 0.95, ts: Date.now() };
+          save();
+          // let v1 pick up qid and fetch P18/P856, but also do a direct lightweight fetch here
+          const sparql = `SELECT ?website ?image WHERE {
+            OPTIONAL { wd:${qid} wdt:P856 ?website . }
+            OPTIONAL { wd:${qid} wdt:P18 ?image . }
+          } LIMIT 1`;
+          const js = await wdqs(sparql);
+          const b = js?.results?.bindings?.[0] || {};
+          const website = b.website?.value || '';
+          const image = b.image?.value || '';
+          mem[key] = { qid, website, image, source: 'wikipedia', score: 0.95, ts: Date.now() };
+          save();
+          return applyToItem(item, qid, image, website, 'wikipedia', 0.95);
+        }
+      }
+
+      const lat = item.lat;
+      const lon = item.lng;
+      if(typeof lat !== 'number' || typeof lon !== 'number') return false;
+
+      const kind = isCourseItem(item) ? 'course' : (isStayItem(item) ? 'stay' : 'any');
+      const radius = kind === 'course' ? 6 : 4;
+      const q = buildAroundQuery(lat, lon, radius, kind);
+      const js = await wdqs(q);
+      const rows = parseBindings(js);
+
+      if(!rows.length) return false;
+
+      let best = null;
+      let bestScore = 0;
+      for(const r of rows){
+        const sc = scoreCandidate(item, r);
+        if(sc > bestScore){
+          bestScore = sc;
+          best = r;
+        }
+      }
+
+      // conservative threshold
+      // - requires decent name overlap unless very close and strongly typed
+      const nameOverlap = jaccard(tokenSet(item.name), tokenSet(best?.itemLabel || ''));
+      const close = Number(best?.dist || 999) <= 1.5;
+      const typedBoost = (kind === 'course' && (best.isGolfCourse || best.isGolfClub)) || (kind === 'stay' && (best.isHotel || best.isResort));
+      const ok = (bestScore >= 0.78) || (bestScore >= 0.70 && close && (nameOverlap >= 0.30 || typedBoost));
+
+      if(!ok) return false;
+
+      const qid = best.qid;
+      const image = best.image || '';
+      const website = best.website || '';
+      mem[key] = { qid, image, website, source: 'wdqs_around', score: bestScore, ts: Date.now() };
+      save();
+
+      return applyToItem(item, qid, image, website, 'wdqs_around', bestScore);
+    }catch(e){
+      return false;
+    }
+  }
+
+  // Hook: wrap renderResults to opportunistically resolve missing metadata for visible results
+  if(typeof window.renderResults === 'function' && !window.__GDB_ENRICH_V2_WRAPPED__){
+    window.__GDB_ENRICH_V2_WRAPPED__ = true;
+    const orig = window.renderResults;
+    let rerenderTimer = null;
+    const requestRerender = () => {
+      if(rerenderTimer) return;
+      rerenderTimer = setTimeout(() => {
+        rerenderTimer = null;
+        try{ orig(); }catch(e){}
+      }, 450);
+    };
+
+    window.renderResults = function(){
+      // render first
+      const out = orig.apply(this, arguments);
+
+      // resolve in background, limited and cached
+      try{
+        const list = window.allResults || window.state?.results?.combined || window.state?.results?.courses || window.state?.results?.stays || [];
+        const slice = (Array.isArray(list) ? list : []).slice(0, 40); // keep it light per render
+        slice.forEach(item => {
+          const need = !(item.imageUrl || item.image || item.img) || !(item.websiteUrl || item.website);
+          if(!need) return;
+          if(item.tags && item.tags.wikidata) return; // v1 will handle
+          enqueue(async () => {
+            const changed = await resolveAndApply(item);
+            if(changed) requestRerender();
+          });
+        });
+      }catch(e){}
+
+      return out;
+    };
+  }
+})();
+</script>
+
+
+
 </body>
 </html>
+
+<script>
+/* ===============================
+   GDB COURSE LOGIC v1
+   Classification + Normalisation
+   Non-breaking helpers
+   =============================== */
+
+(function(){
+  function has(val){ return val !== undefined && val !== null && val !== ""; }
+
+  function normStr(s){ return (s||"").toString().toLowerCase(); }
+
+  function getWebsite(tags){
+    return tags.website || tags["contact:website"] || null;
+  }
+
+  function classifyCourse(tags, name){
+    const n = normStr(name);
+    const hasRange = tags.golf === "driving_range" || n.includes("driving range");
+    const hasCourse =
+      tags.leisure === "golf_course" ||
+      tags.golf === "course" ||
+      (parseInt(tags["golf:holes"]||0,10) >= 9);
+
+    if (hasCourse && hasRange) return "mixed_course";
+    if (hasCourse) return "full_course";
+    if (hasRange) return "range_only";
+    return "unknown";
+  }
+
+  function scoreCourse(tags, geometryType, category, website, wiki){
+    let score = 0;
+    if (geometryType === "polygon") score += 30;
+    const holes = parseInt(tags["golf:holes"]||0,10);
+    if (holes >= 18) score += 20;
+    if (website) score += 10;
+    if (wiki) score += 10;
+    if (geometryType === "node") score -= 10;
+    if (category === "range_only") score -= 25;
+    return score;
+  }
+
+  // Main normaliser
+  window.GDB_normaliseCourse = function(feature){
+    const tags = feature.tags || {};
+    const name = tags.name || "Unnamed golf course";
+    const category = classifyCourse(tags, name);
+    const website = getWebsite(tags);
+    const wiki = tags.wikipedia || tags.wikidata || null;
+
+    const geometryType =
+      feature.type === "way" || feature.type === "relation" ? "polygon" : "node";
+
+    const confidenceScore = scoreCourse(tags, geometryType, category, website, wiki);
+
+    return {
+      id: feature.id || (name + "_" + Math.random().toString(36).slice(2)),
+      name: name,
+      lat: feature.lat,
+      lng: feature.lon,
+      town: tags["addr:city"] || tags["addr:town"] || null,
+      region: tags["addr:state"] || tags["addr:region"] || null,
+      country: tags["addr:country"] || null,
+      courseCategory: category,
+      confidenceScore: confidenceScore,
+      websiteUrl: website,
+      holes: has(tags["golf:holes"]) ? parseInt(tags["golf:holes"],10) : null,
+      par: has(tags["golf:par"]) ? parseInt(tags["golf:par"],10) : null,
+      lengthYards: has(tags["golf:length"]) ? parseInt(tags["golf:length"],10) : null,
+      access: tags.access || "unknown",
+      rawTags: tags
+    };
+  };
+
+  console.log("GDB Course Logic v1 loaded");
+})();
+</script>
+
+<script>
+/* ===============================
+   GDB ACCOMMODATION LOGIC v1
+   Classification + Normalisation
+   Non-breaking helpers
+   =============================== */
+
+(function(){
+  function has(val){ return val !== undefined && val !== null && val !== ""; }
+  function normStr(s){ return (s||"").toString().toLowerCase(); }
+
+  const INCLUDE_TYPES = [
+    "hotel","resort","guest_house","aparthotel",
+    "lodge","inn","serviced_apartment"
+  ];
+
+  const BORDERLINE_TYPES = [
+    "bed_and_breakfast","holiday_home","chalet","villa"
+  ];
+
+  const EXCLUDE_TYPES = [
+    "camp_site","campsite","caravan_site","hostel",
+    "wilderness_hut","alpine_hut","tent","motorhome_stopover","farm"
+  ];
+
+  function classifyAccommodation(tags, name){
+    const n = normStr(name);
+    const type = tags.tourism || tags.building || "";
+
+    if (EXCLUDE_TYPES.includes(type) || n.includes("camp") || n.includes("caravan")) {
+      return "excluded";
+    }
+    if (INCLUDE_TYPES.includes(type)) return "stay";
+    if (BORDERLINE_TYPES.includes(type)) return "borderline";
+    return "unknown";
+  }
+
+  function scoreAccommodation(tags, geometryType, category, website, wiki){
+    let score = 0;
+    if (geometryType === "polygon") score += 25;
+    if (website) score += 10;
+    if (wiki) score += 10;
+    if (category === "borderline") score -= 10;
+    if (category === "excluded") score -= 50;
+    if (geometryType === "node") score -= 5;
+    return score;
+  }
+
+  window.GDB_normaliseAccommodation = function(feature){
+    const tags = feature.tags || {};
+    const name = tags.name || "Unnamed accommodation";
+    const category = classifyAccommodation(tags, name);
+    const website = tags.website || tags["contact:website"] || null;
+    const wiki = tags.wikipedia || tags.wikidata || null;
+
+    const geometryType =
+      feature.type === "way" || feature.type === "relation" ? "polygon" : "node";
+
+    const confidenceScore = scoreAccommodation(tags, geometryType, category, website, wiki);
+
+    return {
+      id: feature.id || (name + "_" + Math.random().toString(36).slice(2)),
+      name: name,
+      lat: feature.lat,
+      lng: feature.lon,
+      town: tags["addr:city"] || tags["addr:town"] || null,
+      region: tags["addr:state"] || tags["addr:region"] || null,
+      country: tags["addr:country"] || null,
+      accommodationCategory: category, // stay | borderline | excluded | unknown
+      confidenceScore: confidenceScore,
+      websiteUrl: website,
+      stars: tags.stars || null,
+      roomsHint: tags.rooms || null,
+      rawTags: tags
+    };
+  };
+
+  console.log("GDB Accommodation Logic v1 loaded");
+})();
+</script>
+
+<script>
+/* ===============================
+   GDB DOM PAGINATION v1
+   Non-invasive pagination for long result lists
+   Works by hiding/showing existing cards in #resultsList
+   =============================== */
+(function(){
+  const KEY_PER = "gdb_results_per_page";
+  const KEY_PAGE = "gdb_results_page";
+  const ALLOWED = [10,25,50];
+
+  function getPerPage(){
+    const raw = Number(localStorage.getItem(KEY_PER) || "10");
+    return ALLOWED.includes(raw) ? raw : 10;
+  }
+  function setPerPage(v){
+    const n = Number(v);
+    localStorage.setItem(KEY_PER, String(ALLOWED.includes(n) ? n : 10));
+  }
+  function getPage(){ return Math.max(1, Math.floor(Number(localStorage.getItem(KEY_PAGE) || "1") || 1)); }
+  function setPage(p){ localStorage.setItem(KEY_PAGE, String(Math.max(1, Math.floor(Number(p)||1)))); }
+
+  function buildPager(suffix, state){
+    const wrap = document.createElement("div");
+    wrap.dataset.gdbPager = suffix;
+    wrap.style.border = "1px solid rgba(255,255,255,.14)";
+    wrap.style.background = "rgba(255,255,255,.04)";
+    wrap.style.borderRadius = "16px";
+    wrap.style.padding = "12px";
+    wrap.style.marginTop = "10px";
+
+    wrap.innerHTML = `
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <button type="button" class="btn sm" data-gdb-prev>Prev</button>
+          <div class="pill" data-gdb-pill>Page ${state.page} of ${state.totalPages}</div>
+          <button type="button" class="btn sm" data-gdb-next>Next</button>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <label class="small" style="font-weight:900;">Results</label>
+          <select class="select" data-gdb-per style="background:#ffffff;color:#000000;">
+            ${ALLOWED.map(n => `<option value="${n}" ${n===state.perPage?'selected':''}>${n} per page</option>`).join("")}
+          </select>
+          <label class="small" style="font-weight:900;">Go to</label>
+          <input data-gdb-go-input inputmode="numeric" placeholder="${state.page}"
+            style="height:40px;min-width:120px;max-width:140px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:#000000;color:#ffffff;padding:0 12px;outline:none;" />
+          <button type="button" class="btn sm" data-gdb-go>Go</button>
+        </div>
+      </div>
+    `;
+
+    const prev = wrap.querySelector("[data-gdb-prev]");
+    const next = wrap.querySelector("[data-gdb-next]");
+    if(prev) prev.disabled = state.page <= 1;
+    if(next) next.disabled = state.page >= state.totalPages;
+
+    return wrap;
+  }
+
+  function applyPagination(){
+    const container = document.getElementById("resultsList");
+    if(!container) return;
+
+    // Cards only, ignore our pagers
+    const cards = Array.from(container.children).filter(el => {
+      if(el && el.dataset && el.dataset.gdbPager) return false;
+      return el.classList.contains("course-card") || el.classList.contains("stay-card") || el.classList.contains("result-card");
+    });
+
+    // Remove existing pagers
+    Array.from(container.children).forEach(el => { if(el && el.dataset && el.dataset.gdbPager) el.remove(); });
+
+    if(cards.length === 0) return;
+
+    const perPage = getPerPage();
+    let page = getPage();
+    const totalPages = Math.max(1, Math.ceil(cards.length / perPage));
+    if(page > totalPages) page = totalPages;
+    setPage(page);
+
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+
+    cards.forEach((el, idx) => {
+      el.style.display = (idx >= start && idx < end) ? "" : "none";
+    });
+
+    const topPager = buildPager("Top", { perPage, page, totalPages });
+    const botPager = buildPager("Bot", { perPage, page, totalPages });
+
+    // Insert top before first card
+    container.insertBefore(topPager, container.firstChild);
+
+    // Insert bottom after last visible card (or end)
+    container.appendChild(botPager);
+
+    function wire(pagerEl){
+      const perSel = pagerEl.querySelector("[data-gdb-per]");
+      const prev = pagerEl.querySelector("[data-gdb-prev]");
+      const next = pagerEl.querySelector("[data-gdb-next]");
+      const goBtn = pagerEl.querySelector("[data-gdb-go]");
+      const goInput = pagerEl.querySelector("[data-gdb-go-input]");
+
+      if(perSel) perSel.onchange = () => { setPerPage(perSel.value); setPage(1); applyPagination(); };
+      if(prev) prev.onclick = () => { setPage(page - 1); applyPagination(); };
+      if(next) next.onclick = () => { setPage(page + 1); applyPagination(); };
+      if(goBtn) goBtn.onclick = () => {
+        const v = Number((goInput && goInput.value) ? goInput.value.trim() : "");
+        if(!Number.isFinite(v)) return;
+        setPage(Math.min(totalPages, Math.max(1, Math.floor(v))));
+        applyPagination();
+      };
+      if(goInput) goInput.onkeydown = (ev) => { if(ev.key === "Enter"){ ev.preventDefault(); if(goBtn) goBtn.click(); } };
+    }
+
+    wire(topPager);
+    wire(botPager);
+  }
+
+  // Observe changes so pagination always reapplies after a new search / filter
+  function boot(){
+    const container = document.getElementById("resultsList");
+    if(!container) return;
+
+    // First pass
+    applyPagination();
+
+    const obs = new MutationObserver((mutations) => {
+      // If real cards added/removed, reapply
+      let needs = false;
+      for(const m of mutations){
+        if(m.type === "childList"){
+          const added = Array.from(m.addedNodes || []).some(n => n && n.classList && (n.classList.contains("course-card") || n.classList.contains("stay-card") || n.classList.contains("result-card")));
+          const removed = Array.from(m.removedNodes || []).some(n => n && n.classList && (n.classList.contains("course-card") || n.classList.contains("stay-card") || n.classList.contains("result-card")));
+          if(added || removed){ needs = true; break; }
+        }
+      }
+      if(needs) applyPagination();
+    });
+
+    obs.observe(container, { childList:true });
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+
+<script>
+/* ===============================
+   GDB STEP->TAB SYNC v1
+   Ensures accommodation step shows stay pins and stay cards
+   =============================== */
+(function(){
+  const onReady = (fn) => {
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  };
+
+  onReady(() => {
+    const wire = (card) => {
+      const step = card.getAttribute('data-step') || '';
+      const apply = () => {
+        // Allow the page internal handler to set currentStep first
+        setTimeout(() => {
+          try{
+            if(step === 'accommodation'){
+              if(typeof setTab === 'function') setTab('stays');
+              if(typeof setFilterTab === 'function') setFilterTab('stays');
+            }
+            if(step === 'courses'){
+              if(typeof setTab === 'function') setTab('courses');
+              if(typeof setFilterTab === 'function') setFilterTab('courses');
+            }
+            // Re-sync to ensure pins + cards match the selected step
+            if(typeof renderResults === 'function') renderResults();
+            if(typeof syncMapMarkers === 'function') syncMapMarkers();
+          }catch(e){}
+        }, 0);
+      };
+      card.addEventListener('click', apply);
+      card.addEventListener('keydown', (ev) => {
+        if(ev.key === 'Enter' || ev.key === ' '){
+          ev.preventDefault();
+          apply();
+        }
+      });
+    };
+
+    document.querySelectorAll('.step-card[data-step]').forEach(wire);
+  });
+})();
+</script>
