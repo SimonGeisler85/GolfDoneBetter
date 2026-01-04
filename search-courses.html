@@ -57,7 +57,12 @@
     .prompt{opacity:.85}
 
     .filters-wrap{display:block;padding:0;position:sticky;z-index:2000;top:74px}
-    .filters-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;background:rgba(11,23,19,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px 12px}
+    .filters-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;background:rgba(11,23,19,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:8px 10px}
+/* Tighten filters header spacing */
+#filtersWrap .filters-left{gap:6px}
+#filtersWrap .filters-actions{gap:8px;margin-bottom:4px}
+#filtersWrap #toggleFilters{padding-top:6px;padding-bottom:6px}
+
     
 .filters-actions{display:flex;gap:10px;align-items:center;flex-wrap:nowrap}
 @media (max-width:420px){.filters-actions{flex-wrap:wrap}}
@@ -68,7 +73,7 @@
 .sidecol .filters-left{
   flex-direction:column;
   align-items:center;
-  gap:8px;
+  gap: 4px;
   width:100%;
 }
 .sidecol .filters-actions{
@@ -118,7 +123,7 @@
     .live-pill{position:absolute;top:12px;left:56px;z-index:950;padding:8px 12px;border-radius:999px;background:rgba(11,23,19,.62);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px);font-size:13px;font-weight:900;opacity:.95;pointer-events:none;white-space:nowrap}
     #map{height:440px;width:100%;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
     .map-instruction{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(11,23,19,.62);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:900;z-index:900;pointer-events:none;white-space:nowrap}
-    /* Text search: hide drawing tools. Text mode is driven by the search bar, not map selection */
+    /* Text Search: hide drawing tools. Text mode is driven by the search bar, not map selection */
     body.mode-text .leaflet-draw{display:none !important;}
 
 
@@ -566,8 +571,369 @@
 .filters-left{gap:8px}
 #selectAreaHint{margin-top:4px}
 
+
+
+/* Mini confirm modal (used for Clear compare) */
+.mini-modal{position:fixed;inset:0;z-index:9999;display:none}
+.mini-modal.show{display:block}
+.mini-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+.mini-panel{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(520px, calc(100vw - 32px));
+  background:#000;border:1px solid rgba(255,255,255,.16);
+  border-radius:16px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.55);
+  color:#fff;
+}
+.mini-text{font-weight:900;font-size:15px;line-height:1.35}
+.mini-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+
+
+/* --- GDB polish: tighter filter header spacing --- */
+.filters-left{gap:6px;row-gap:6px}
+.filters-actions{gap:8px}
+#toggleFilters{margin:0}
+
+
+/* === FILTER SIDEBAR HEADER: FORCE FIXED + COMPRESS === */
+
+/* Kill all sticky/fixed behaviour in filter column */
+.sidecol,
+.sidecol *{
+  position: static !important;
+  top: auto !important;
+}
+
+/* Actual header block inside filters */
+.sidecol .filters-header{
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+  margin-bottom: 6px !important;
+}
+
+/* Button row stays same size, less air */
+.sidecol .filters-actions{
+  margin-top: 0 !important;
+  margin-bottom: 4px !important;
+}
+
+/* Counter spacing tightened */
+.sidecol .chip-static{
+  margin-top: 2px !important;
+  margin-bottom: 4px !important;
+}
+
+/* Helper text */
+.sidecol .smallhint{
+  margin-top: 0 !important;
+  margin-bottom: 4px !important;
+}
+
+/* Collapse flex spacing */
+.sidecol .filters-left{
+  gap: 4px !important;
+}
+
+
+/* === FILTER HEADER: HEIGHT COMPRESSION ONLY (NO POSITION CHANGES) === */
+
+/* Reduce header vertical size decisively */
+.sidecol .filters-header{
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+/* Reduce space between elements */
+.sidecol .filters-left{
+  gap: 2px !important;
+}
+
+/* Button row spacing */
+.sidecol .filters-actions{
+  margin-bottom: 2px !important;
+}
+
+/* Counter spacing */
+.sidecol .chip-static{
+  margin-top: 0 !important;
+  margin-bottom: 2px !important;
+}
+
+/* Helper text */
+.sidecol .smallhint{
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+
+/* =========================================
+   1. FLOAT ENTIRE FILTERS BAR (ONE BLOCK)
+   ========================================= */
+
+.sidecol{
+  position: sticky !important;
+  top: 16px !important;
+}
+
+/* Ensure nothing inside becomes independently sticky */
+.sidecol *{
+  position: static;
+}
+
+/* =========================================
+   2. FILTER TAB ARROWS (CENTER, VISUAL ONLY)
+   ========================================= */
+
+.filter-group > .filter-group-header{
+  position: relative;
+}
+
+.filter-group > .filter-group-header::after{
+  content: "▾";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.filter-group.collapsed > .filter-group-header::after{
+  content: "▸";
+}
+
+/* =========================================
+   3. REMOVE MAP 'SHOW COURSES' TOGGLE
+   ========================================= */
+
+/* Leaflet layers control (old show courses toggle) */
+.leaflet-control-layers,
+.leaflet-control-layers-expanded{
+  display: none !important;
+}
+
+
+/* =========================================
+   FILTERS BAR OFFSET BELOW PAGE HEADER
+   ========================================= */
+
+/* Adjust sticky offset to sit below main page header */
+.sidecol{
+  top: 96px !important; /* matches full page header height */
+}
+
+/* =========================================
+   SEARCH MODE BUTTONS – CENTER + TITLE CASE
+   ========================================= */
+
+/* Center search buttons with page heading */
+.search-modes{
+  justify-content: center !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Button text case */
+.search-modes button{
+  text-transform: none;
+}
+
+
+/* ================================
+   SEARCH MODE BUTTONS – FINAL FIX
+   ================================ */
+
+.search-modes{
+  display: flex !important;
+  justify-content: center !important;
+  gap: 12px;
+  width: 100%;
+}
+
+
+/* ================================
+   CENTER SEARCH BUTTONS WITH PAGE HEADER
+   ================================ */
+
+/* Match heading container width */
+.search-modes{
+  max-width: 1100px;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  justify-content: center !important;
+}
+
+
+/* ================================
+   FORCE SEARCH BUTTONS DEAD-CENTER
+   ================================ */
+
+.search-modes{
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center;
+  text-align: center;
+}
+
+
+/* ================================
+   ABSOLUTE CENTERING – NO DEPENDENCIES
+   ================================ */
+
+/* Center the entire block itself */
+.search-modes{
+  position: relative !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+}
+
+/* Ensure parent allows centering */
+.search-modes-wrapper,
+.search-modes-container,
+.search-modes-parent{
+  text-align: center !important;
+}
+
+
+/* ================================
+   CENTER SEARCH MODE BUTTONS (REAL SELECTOR)
+   Buttons live in: section.modes
+   ================================ */
+.modes{
+  justify-content: center !important;
+  text-align: center;
+}
+.modes .prompt{
+  width: 100%;
+  text-align: center;
+}
+
+
+/* Center arrow between left label and right pill */
+/* When closed */
+/* =========================================
+   FILTER DROPDOWN ARROWS (VISUAL ONLY, NO LAYOUT SHIFT)
+   Keeps: name left, pill right. Adds centered arrow.
+   ========================================= */
+
+details.acc > summary{
+  position: relative; /* anchor for the arrow */
+}
+
+/* Center arrow without changing existing flex layout */
+/* When closed */
+/* Safety: ensure pill stays right if any layout gets weird */
+details.acc > summary .sum-pill{
+  margin-left: auto;
+}
+
+
+/* =========================================
+   FILTER DROPDOWN ARROWS – FINAL (NO LAYOUT SHIFT)
+   Requirement:
+   - Name stays left
+   - Any pill stays right
+   - Arrow centered between
+   - Closed: down arrow
+   - Open: up arrow
+   ========================================= */
+
+details.acc > summary{
+  position: relative !important; /* anchor for arrow */
+}
+
+/* Center arrow without affecting layout */
+details.acc > summary::after{
+  content: "▾" !important; /* closed = down */
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  opacity: 0.65 !important;
+  pointer-events: none !important;
+}
+
+/* Open = up */
+details.acc[open] > summary::after{
+  content: "▴" !important;
+}
+
+/* Ensure pill stays pinned right */
+details.acc > summary .sum-pill{
+  margin-left: auto !important;
+}
+
+
+/* Center top search mode buttons with heading */
+.modes{
+  justify-content: center !important;
+}
+
+
+/* ================================
+   Compare modal grid/cards
+   ================================ */
+#compareModal .compare-modal-panel{max-width: 1240px; width: min(1240px, 96vw);}
+#compareGrid{
+  display:grid;
+  gap:14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+#compareModal[data-count="2"] #compareGrid{grid-template-columns: repeat(2, minmax(0, 1fr));}
+#compareModal[data-count="1"] #compareGrid{grid-template-columns: 1fr;}
+@media (max-width: 980px){
+  #compareGrid{grid-template-columns: repeat(2, minmax(0, 1fr));}
+}
+@media (max-width: 640px){
+  #compareGrid{grid-template-columns: 1fr;}
+}
+.compare-card{
+  position:relative;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  overflow:hidden;
+  background:rgba(20,20,20,.7);
+}
+.compare-remove{
+  position:absolute; top:10px; right:10px;
+  width:34px; height:34px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(0,0,0,.45);
+  color:#fff; font-weight:900;
+  cursor:pointer;
+  z-index:2;
+}
+.compare-remove:hover{background:rgba(0,0,0,.65);}
+.compare-imgwrap{height:150px; overflow:hidden; background:rgba(0,0,0,.25);}
+.compare-imgwrap img{width:100%; height:100%; object-fit:cover; display:block;}
+.compare-body{padding:12px 12px 14px;}
+.compare-body .dim{opacity:.85;}
+.compare-meta{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:8px 10px;
+  font-size:12.5px;
+}
+.meta-row{
+  display:flex; justify-content:space-between; gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  padding-bottom:6px;
+}
+.meta-row.meta-wide{grid-column:1 / -1;}
+.meta-row span{opacity:.75;}
+.compare-desc{margin-top:10px; font-size:13px; line-height:1.35; opacity:.92;}
+.compare-links{margin-top:10px; display:flex; flex-wrap:wrap; gap:10px;}
+
 </style>
-<meta content="Search golf courses by map area or by location. Filter by holes, access, price range, difficulty, facilities, and vibe. No live availability or price guarantees." name="description"/><link href="https://golfdonebetter.com/search-courses" rel="canonical"/><meta content="index,follow,max-image-preview:large" name="robots"/><meta content="#0b1713" name="theme-color"/><meta content="Golf Done Better" property="og:site_name"/><meta content="website" property="og:type"/><meta content="https://golfdonebetter.com/search-courses" property="og:url"/><meta content="Search golf courses | Golf Done Better" property="og:title"/><meta content="Search golf courses by map area or by location. Filter by holes, access, price range, difficulty, facilities, and vibe. No live availability or price guarantees." property="og:description"/><meta content="summary" name="twitter:card"/><meta content="Search golf courses | Golf Done Better" name="twitter:title"/><meta content="Search golf courses by map area or by location. Filter by holes, access, price range, difficulty, facilities, and vibe. No live availability or price guarantees." name="twitter:description"/><script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebPage", "name": "Search golf courses", "url": "https://golfdonebetter.com/search-courses", "isPartOf": {"@type": "WebSite", "name": "Golf Done Better", "url": "https://golfdonebetter.com/"}, "description": "Search golf courses by map area or by location. Filter by holes, access, price range, difficulty, facilities, and vibe. No live availability or price guarantees."}]</script></head>
+<meta content="Search golf courses by map area or by location. Filter by holes, access, price range, difficulty, facilities, and vibe. No live availability or price guarantees." name="description"/><link href="https://golfdonebetter.com/search-courses" rel="canonical"/><meta content="index,follow,max-image-preview:large" name="robots"/><meta content="#0b1713" name="theme-color"/><meta content="Golf Done Better" property="og:site_name"/><meta content="website" property="og:type"/><meta content="https://golfdonebetter.com/search-courses" property="og:url"/><meta content="Search golf courses | Golf Done Better" property="og:title"/><meta content="Search golf courses by map area or by location. Filter by holes, access, price range, difficulty, facilities, and vibe. No live availability or price guarantees." property="og:description"/><meta content="summary" name="twitter:card"/><meta content="Search golf courses | Golf Done Better" name="twitter:title"/><meta content="Search golf courses by map area or by location. Filter by holes, access, price range, difficulty, facilities, and vibe. No live availability or price guarantees." name="twitter:description"/><script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebPage", "name": "Search golf courses", "url": "https://golfdonebetter.com/search-courses", "isPartOf": {"@type": "WebSite", "name": "Golf Done Better", "url": "https://golfdonebetter.com/"}, "description": "Search golf courses by map area or by location. Filter by holes, access, price range, difficulty, facilities, and vibe. No live availability or price guarantees."}]</script>  <link rel="icon" href="favicon.ico">
+<script>window.$ = window.$ || ((id) => document.getElementById(id));</script>
+</head>
 <body><a class="skip-link" href="#main">Skip to main content</a>
 <header>
 <div class="header-inner">
@@ -596,19 +962,19 @@
 </div>
 </header>
 <main class="wrap" id="main">
-<section class="intro">
-<h1>Search courses</h1>
-<p>Pick a tool first. Use map search for exploration. Use text search for known locations.</p>
+<section class="intro" style="text-align:center">
+<h1 style="font-size:30px">Search Courses</h1>
+<p>Pick a search tool, filter results, review and compare courses.</p>
 </section>
 <section aria-label="Search mode" class="modes">
-<button class="btn" data-mode="map" id="btnMap" type="button">Map search</button>
-<button class="btn" data-mode="text" id="btnText" type="button">Text search</button>
-<button class="btn" data-mode="near" id="btnNear" type="button">Find courses near me</button>
+<button class="btn" data-mode="map" id="btnMap" type="button">Map Search</button>
+<button class="btn" data-mode="text" id="btnText" type="button">Text Search</button>
+<button class="btn" data-mode="near" id="btnNear" type="button">Find Courses Near Me</button>
 <div class="prompt" id="modePrompt">Select a search mode to begin.</div>
 </section>
 <div class="layout" id="pageLayout">
 <div class="maincol" id="mainCol">
-<section aria-label="Text search" class="text-search" id="textSearch">
+<section aria-label="Text Search" class="text-search" id="textSearch">
 <div class="textbar">
 <div class="acwrap">
 <input autocomplete="off" id="textQuery" placeholder="Search by address, postcode, city, region, country or course name" type="text"/>
@@ -821,7 +1187,7 @@
         + '<div style="opacity:.85;">This page loads Leaflet from a public CDN. If your viewer blocks network requests, the map will not run. Download the file and open it in a browser with internet access. If needed, open via a simple local web server.</div>'
         + '</div>';
     }
-    // Keep the rest of the UI usable, but map search will not function without Leaflet.
+    // Keep the rest of the UI usable, but Map Search will not function without Leaflet.
     return false;
   };
 
@@ -839,10 +1205,23 @@
   const saveSaved = () => localStorage.setItem('gdb_saved', JSON.stringify([...saved]));
 
   // --- Compare shortlist (max 6) ---
-  const compareSet = new Set(JSON.parse(localStorage.getItem('gdb_compare') || '[]'));
+  window.compareSet = window.compareSet || new Set(JSON.parse(localStorage.getItem('gdb_compare') || '[]'));
+  const compareSet = window.compareSet;
   const saveCompare = () => localStorage.setItem('gdb_compare', JSON.stringify([...compareSet]));
-  const compareMax = 6;
+  window.saveCompare = saveCompare;
+  window.compareMax = window.compareMax || 6;
+  const compareMax = window.compareMax;
   let lastRenderedList = [];
+  let currentResults = [];
+    window.currentResults = currentResults;
+    // Cache dataset for Full Details page (local use)
+    try{
+      if (Array.isArray(GDB_COURSES) && GDB_COURSES.length){
+        localStorage.setItem('GDB_COURSES_CACHE_V1', JSON.stringify(GDB_COURSES));
+      }
+    }catch(e){}
+
+  window.currentResults = currentResults;
 
   const toast = (msg, dur=2800) => {
     const t = document.getElementById('gdbToast');
@@ -852,6 +1231,8 @@
     clearTimeout(window.__gdbToastTimer);
     window.__gdbToastTimer = setTimeout(() => t.classList.remove('show'), dur);
   };
+  window.toast = toast;
+
 
   const updateCompareUi = () => {
     // Buttons on cards
@@ -875,6 +1256,8 @@
       renderMarkers(lastRenderedList);
     }
   };
+  window.updateCompareUi = updateCompareUi;
+
 
   const toggleCompare = (id) => {
     if(!id) return;
@@ -921,18 +1304,14 @@
   const loadGdbLocal = async () => {
     if(GDB_READY) return true;
     try{
-      const [cRes, rRes] = await Promise.all([
-        fetch('data/gdb_courses_uk.json', {cache:'no-store'}),
-        fetch('data/gdb_driving_ranges_uk.json', {cache:'no-store'}),
-      ]);
-      const cJson = await cRes.json();      GDB_COURSES = (cJson.courses || []).filter(x => x && x.geo && Number.isFinite(x.geo.lat) && Number.isFinite(x.geo.lng));
+      const cRes = await fetch('data/gdb_courses_uk.json', {cache:'no-store'});
+const cJson = await cRes.json();      GDB_COURSES = (cJson.courses || []).filter(x => x && x.geo && Number.isFinite(x.geo.lat) && Number.isFinite(x.geo.lng));
       // Debug hook
       window.gdbDebug = {
         loaded:true,
         coursesCount:GDB_COURSES.length,
         rangesCount:0,
         sampleCourse:GDB_COURSES[0] || null,
-        sampleRange:null
       };
 
       GDB_READY = true;
@@ -1785,7 +2164,13 @@ const cardHTML = (c, variant='list') => {
       if(!id) return;
       const item = (list||[]).find(x => x.id === id);
       try{ sessionStorage.setItem('gdb_detail_item', JSON.stringify(item || {id})); } catch(err) {}
-      window.location.href = 'gdb_course_detail.html?id=' + encodeURIComponent(id);
+      e.preventDefault();
+      e.stopPropagation();
+      if(typeof window.openCourseDetailsInNewTab === 'function'){
+        window.openCourseDetailsInNewTab(id);
+      } else {
+        window.open('./gdb_course_detail.html?id=' + encodeURIComponent(id), '_blank', 'noopener');
+      }
     }));
   };
 
@@ -1811,11 +2196,18 @@ const cardHTML = (c, variant='list') => {
     }));
 
     root.querySelectorAll('[data-details]').forEach(el => el.addEventListener('click', (e) => {
+      // Always open Full Details in a NEW tab (keep search results visible)
+      e.preventDefault();
+      e.stopPropagation();
       const id = e.currentTarget.getAttribute('data-details');
       if(!id) return;
       const item = (list||[]).find(x => x.id === id);
       try{ sessionStorage.setItem('gdb_detail_item', JSON.stringify(item || {id})); } catch(err) {}
-      window.location.href = 'gdb_course_detail.html?id=' + encodeURIComponent(id);
+      if(typeof window.openCourseDetailsInNewTab === 'function'){
+        window.openCourseDetailsInNewTab(id);
+      } else {
+        window.open('./gdb_course_detail.html?id=' + encodeURIComponent(id), '_blank', 'noopener');
+      }
     }));
   };
 
@@ -1890,10 +2282,13 @@ const cardHTML = (c, variant='list') => {
 
     const list = sortList(shown);
     lastRenderedList = list;
-    render(list);
+    
+    currentResults = list;
+    window.currentResults = currentResults;
+render(list);
     renderMarkers(list);
 
-    // Filters bar only appears once data is loaded for an area or text search
+    // Filters bar only appears once data is loaded for an area or Text Search
     const hasLoadedResults = (liveStatus === 'loaded') && Array.isArray(liveItems) && liveItems.length > 0;
     const fw = $('filtersWrap');
     if(fw) fw.style.display = hasLoadedResults ? 'block' : 'none';
@@ -2347,6 +2742,14 @@ const style = String(first(t['golf:style'], t['course:style'], t['golf:course_st
         GDB_ALL = all;
         GDB_BY_ID = new Map(all.map(x => [x.id, x]));
 
+// Cache dataset for Full Details page (local use)
+try{
+  if(Array.isArray(GDB_COURSES) && GDB_COURSES.length){
+    localStorage.setItem('GDB_COURSES_CACHE_V1', JSON.stringify(GDB_COURSES));
+    localStorage.setItem('GDB_COURSES_CACHE_TS', String(Date.now()));
+  }
+}catch(e){}
+
     // Geo filter: keep only those within geom
     liveItems = all.filter(pointIn);
 
@@ -2365,7 +2768,7 @@ const clearArea = () => {
     geom = null;
     if(map && clickCircle){ map.removeLayer(clickCircle); clickCircle = null; }
 
-    // Clear any text search marker or area overlay
+    // Clear any Text Search marker or area overlay
     if(map && textSearchMarker){ map.removeLayer(textSearchMarker); textSearchMarker = null; }
     if(map && textAreaLayer){ map.removeLayer(textAreaLayer); textAreaLayer = null; }
     selectedTextHit = null;
@@ -2478,7 +2881,7 @@ const clearArea = () => {
   };
 
 
-// Text search (Nominatim). Uses the same map and sidebar. It replaces any previous map-drawn area.
+// Text Search (Nominatim). Uses the same map and sidebar. It replaces any previous map-drawn area.
 let textSearchMarker = null;
 let textAreaLayer = null;
 let lastTextHits = [];
@@ -3876,17 +4279,90 @@ const setMode = (m) => {
   }
 
   // Events
-  document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.getAttribute('data-mode'))));
-  $('clearFiltersBtn').addEventListener('click', clearFilters);
-  $('applyFiltersBtn').addEventListener('click', applyFilters);
-  $('applyFiltersBtnTop') && $('applyFiltersBtnTop').addEventListener('click', applyFilters);
-  $('clearFiltersBtnBottom') && $('clearFiltersBtnBottom').addEventListener('click', clearFilters);
+
+  
+  // ------------------------------
+  // Filters: apply only on button (FINAL, ROBUST)
+  // ------------------------------
+  const ensureFiltersConfirm = () => {
+    let el = document.getElementById('filtersConfirm');
+    if (el) return el;
+
+    // Create modal dynamically so it always exists before wiring
+    el = document.createElement('div');
+    el.className = 'mini-modal';
+    el.id = 'filtersConfirm';
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = `
+      <div class="mini-backdrop" data-filters-cancel></div>
+      <div class="mini-panel" role="dialog" aria-modal="true" aria-label="Clear filters confirmation">
+        <div class="mini-text">Are you sure you want to clear all filters</div>
+        <div class="mini-actions">
+          <button class="btn" id="filtersConfirmNo" type="button">No</button>
+          <button class="btn btn-primary" id="filtersConfirmYes" type="button">Yes</button>
+        </div>
+      </div>`;
+    document.body.appendChild(el);
+    return el;
+  };
+
+  const ensureModeValid = () => {
+    if (mode !== 'map' && mode !== 'text' && mode !== 'near') setMode('map');
+  };
+
+  const runApplyFilters = () => {
+    ensureModeValid();
+    // Use the existing pipeline (reads ticked boxes, updates UI, refreshes list + map)
+    applyFilters();
+    // Belt-and-braces refresh in case applyFilters pipeline was modified elsewhere
+    refresh();
+  };
+
+  const runClearFiltersNow = () => {
+    ensureModeValid();
+    clearFilters();
+    refresh();
+  };
+
+  const filtersConfirmEl = ensureFiltersConfirm();
+
+  const openFiltersConfirm = () => {
+    if(!filtersConfirmEl) return;
+    filtersConfirmEl.classList.add('show');
+    filtersConfirmEl.setAttribute('aria-hidden','false');
+  };
+  const closeFiltersConfirm = () => {
+    if(!filtersConfirmEl) return;
+    filtersConfirmEl.classList.remove('show');
+    filtersConfirmEl.setAttribute('aria-hidden','true');
+  };
+
+  // Apply (header + footer)
+  $('applyFiltersBtn') && $('applyFiltersBtn').addEventListener('click', runApplyFilters);
+  $('applyFiltersBtnTop') && $('applyFiltersBtnTop').addEventListener('click', runApplyFilters);
+
+  // Clear (requires confirmation)
+  $('clearFiltersBtn') && $('clearFiltersBtn').addEventListener('click', openFiltersConfirm);
+  $('clearFiltersBtnBottom') && $('clearFiltersBtnBottom').addEventListener('click', openFiltersConfirm);
+
+  // Modal actions
+  document.addEventListener('click', (e) => {
+    if(!filtersConfirmEl) return;
+    if(e.target && (e.target.hasAttribute('data-filters-cancel') || e.target.id === 'filtersConfirmNo')){
+      closeFiltersConfirm();
+    }
+    if(e.target && e.target.id === 'filtersConfirmYes'){
+      closeFiltersConfirm();
+      runClearFiltersNow();
+    }
+  });
+document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.getAttribute('data-mode'))));
   $('sortSelect').addEventListener('change', (e) => { sort = e.target.value; refresh(); });
   $('clearAreaBtn').addEventListener('click', clearArea);
   const rv = $('resetViewBtn');
   if(rv) rv.addEventListener('click', resetView);
 
-  // Text search controls
+  // Text Search controls
   const goBtn = $('textGo');
   const qEl = $('textQuery');
   if(goBtn) goBtn.addEventListener('click', doTextSearch);
@@ -3912,7 +4388,7 @@ const setMode = (m) => {
   }
 
   document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeAc(); });
-document.querySelectorAll('#filtersPanel input[type="checkbox"]').forEach(cb => cb.addEventListener('change', applyFilters));
+document.querySelectorAll('#filtersPanel input[type="checkbox"]').forEach(cb => cb.addEventListener('change', () => { /* pending only */ }));
   $('closeSidePanel')?.addEventListener('click', closeSidePanel);
   // Close quick view if user starts drawing a new area
   document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeSidePanel(); });
@@ -3930,14 +4406,33 @@ document.querySelectorAll('#filtersPanel input[type="checkbox"]').forEach(cb => 
     // Allow default anchor behaviour when present, but ensure it always opens in a new tab.
     if(el.tagName && el.tagName.toLowerCase() === 'a') {
       // Ensure correct href in case markup was modified elsewhere
-      el.setAttribute('href', 'course-details.html?id=' + encodeURIComponent(id));
+      el.setAttribute('href', './gdb_course_detail.html?id=' + encodeURIComponent(id));
       el.setAttribute('target', '_blank');
       el.setAttribute('rel', 'noopener');
       return;
     }
     e.preventDefault();
-    window.open('course-details.html?id=' + encodeURIComponent(id), '_blank', 'noopener');
+    window.open('./gdb_course_detail.html?id=' + encodeURIComponent(id), '_blank', 'noopener');
   });
+
+
+  // Full details open in new tab (stable)
+  function openCourseDetailsInNewTab(id){
+    if(id === undefined || id === null) return;
+    const url = `./gdb_course_detail.html?id=${encodeURIComponent(String(id))}`;
+    try{
+      window.open(url, '_blank', 'noopener');
+    }catch(e){
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+  }
+  window.openCourseDetailsInNewTab = openCourseDetailsInNewTab;
 
 })();
 </script>
@@ -3951,7 +4446,7 @@ document.querySelectorAll('#filtersPanel input[type="checkbox"]').forEach(cb => 
     <div class="compare-widget-title">Compare</div>
     <div class="compare-widget-sub"><span id="compareCount">0</span> selected</div>
   </div>
-  <button class="compare-open" id="compareOpenBtn" type="button">View</button>
+  <button class="compare-open" id="compareOpenBtn" type="button" onclick="event.preventDefault(); event.stopPropagation(); if(window.openCompareModal){ try{ window.try{ openCompareModal(); }catch(e){ console.error(e); const mm=document.getElementById('compareModal'); if(mm){ mm.classList.add('show'); mm.setAttribute('aria-hidden','false'); } } }catch(e){ console.error(e); const mm=document.getElementById('compareModal'); if(mm){mm.classList.add('show');mm.setAttribute('aria-hidden','false');}} }">View</button>
   <button class="compare-open" id="compareClearAllBtn" type="button" style="margin-left:8px;opacity:.9">Clear</button>
 </div>
 
@@ -3967,6 +4462,31 @@ document.querySelectorAll('#filtersPanel input[type="checkbox"]').forEach(cb => 
       <button class="compare-x" type="button" data-compare-close aria-label="Close">✕</button>
     </div>
     <div class="compare-grid" id="compareGrid"></div>
+  </div>
+</div>
+
+<!-- Compare clear confirmation -->
+<div class="mini-modal" id="compareConfirm" aria-hidden="true">
+  <div class="mini-backdrop" data-ccancel></div>
+  <div class="mini-panel" role="dialog" aria-modal="true" aria-label="Clear compare selection">
+    <div class="mini-text">Clear all courses selected for comparison</div>
+    <div class="mini-actions">
+      <button class="btn" id="compareConfirmNo" type="button">No</button>
+      <button class="btn btn-primary" id="compareConfirmYes" type="button">Yes</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Clear filters confirmation -->
+<div class="mini-modal" id="filtersConfirm" aria-hidden="true">
+  <div class="mini-backdrop" data-filters-cancel></div>
+  <div class="mini-panel" role="dialog" aria-modal="true" aria-label="Clear filters confirmation">
+    <div class="mini-text">Are you sure you want to clear all filters</div>
+    <div class="mini-actions">
+      <button class="btn" id="filtersConfirmNo" type="button">No</button>
+      <button class="btn btn-primary" id="filtersConfirmYes" type="button">Yes</button>
+    </div>
   </div>
 </div>
 
@@ -4282,109 +4802,171 @@ document.querySelectorAll('#filtersPanel input[type="checkbox"]').forEach(cb => 
   }
 
   // Compare modal wiring
+
+  // Ensure compare globals are available in this scope
+  const compareSet = window.compareSet || new Set();
+  const compareMax = window.compareMax || 6;
+  const saveCompare = window.saveCompare || (()=>{});
+  const updateCompareUi = window.updateCompareUi || (()=>{});
+  const toast = window.toast || ((m)=>{ try{ console.warn(m);}catch(e){} });
   const openCompareModal = () => {
-    if(compareSet.size < 2){
-      toast('Select at least 2 courses to compare');
-      return;
-    }
-    const modal = document.getElementById('compareModal');
-    const grid = document.getElementById('compareGrid');
-    if(!modal || !grid) return;
+    try{
+      if (compareSet.size < 2) {
+        toast('Select at least 2 courses to compare');
+        return;
+      }
 
-    const ids = [...compareSet].slice(0, compareMax);
-    const items = (Array.isArray(currentResults) ? currentResults : []).filter(x => ids.includes(x.id));
-    // If some selected courses are not in current results, try global list
-    const missing = ids.filter(id => !items.find(x => x.id === id));
-    if(missing.length && Array.isArray(GDB_COURSES)){
-      missing.forEach(id => {
-        const c = GDB_COURSES.find(x => x && x.id === id);
-        if(c) items.push(c);
-      });
-    }
+      const modal = document.getElementById('compareModal');
+      const grid = document.getElementById('compareGrid');
+      if (!modal || !grid) return;
 
-    grid.innerHTML = items.map(c => {
-      const img = (typeof imageCache !== 'undefined' && imageCache.get(c.id)) ? imageCache.get(c.id) : PLACEHOLDER_IMG;
-      const city = (c.city || c.place || '').trim() || '—';
-      const accessLabel = (a) => a==='public' ? 'Public' : a==='visitors' ? 'Visitors' : a==='members_only' ? 'Members only' : 'Unknown';
-      const access = accessLabel(String(c.access || 'unknown'));
-      const priceBand = String(c.price_band || 'unknown');
-      const priceDisplay = (priceBand && priceBand !== 'unknown') ? titleCase(priceBand) : 'Unknown';
-      const holesDisplay = c.holes ? String(c.holes) : 'Unknown';
-      const parDisplay = (c.par && String(c.par).trim() && String(c.par).trim().toLowerCase() !== 'unknown') ? String(c.par) : 'Unknown';
-      const diffDisplay = (c.difficulty && c.difficulty.length) ? labels(c.difficulty).join(', ') : 'Unknown';
-      const dressDisplay = (c.dress_code && c.dress_code.length)
-        ? c.dress_code.map(x => x==='smart_casual' ? 'Smart casual' : titleCase(x)).join(', ')
-        : 'Unknown';
-      const vibeDisplay = (c.vibe && c.vibe.length) ? labels(c.vibe).join(', ') : 'Unknown';
-      const ctDisplay = (c.course_type && c.course_type.length) ? labels(c.course_type).join(', ') : 'Unknown';
-      const fac = (c.facilities && c.facilities.length)
-        ? c.facilities.map(x => x==='practice_area' ? 'Practice areas' : titleCase(x)).join(', ')
-        : 'Unknown';
-      const extrasLabel = (x) => x==='alcohol_allowed' ? 'Alcohol allowed on course' :
-        x==='smoking_allowed' ? 'Smoking allowed on course' : titleCase(x);
-      const ex = (c.extras && c.extras.length) ? c.extras.map(extrasLabel).join(', ') : 'Unknown';
+      const escape = (typeof escapeHtml === 'function') ? escapeHtml : (s) => String(s ?? '').replace(/[&<>"']/g, (c)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+      const tc = (typeof titleCase === 'function') ? titleCase : (s) => String(s ?? '').replace(/_/g,' ').replace(/\b\w/g, ch => ch.toUpperCase());
+      const lbls = (typeof labels === 'function') ? labels : (arr) => (Array.isArray(arr)?arr.map(tc):[]);
 
-      return `
-        <div class="compare-card">
-          <button class="compare-remove" type="button" data-compare-remove="${escapeHtml(c.id)}">Remove</button>
-          <div style="position:relative">
-            <img class="course-img" src="${escapeHtml(img)}" alt="" loading="lazy"
-              onerror="this.onerror=null;this.src=window.PLACEHOLDER_IMG||this.src;" />
-          </div>
-          <div class="course-body" style="padding:14px">
-            <div class="course-name">${escapeHtml(c.name || 'Golf')}</div>
-            <div class="course-location">${escapeHtml(city)}</div>
+      // Selected ids (max 6)
+      const ids = [...compareSet].slice(0, compareMax).map(String);
 
-            <div class="meta-grid" style="margin-top:10px">
-              <div><div class="meta-label">Holes</div><div class="meta-value">${escapeHtml(holesDisplay)}</div></div>
-              <div><div class="meta-label">Par</div><div class="meta-value">${escapeHtml(parDisplay)}</div></div>
-              <div><div class="meta-label">Access</div><div class="meta-value">${escapeHtml(access)}</div></div>
+      // Build or reuse course index
+      if(!window.__gdbCourseIndex){
+        const idx = new Map();
+        const addAll = (arr) => Array.isArray(arr) && arr.forEach(c => { if(c && c.id != null) idx.set(String(c.id), c); });
+        addAll(Array.isArray(window.currentResults) ? window.currentResults : (Array.isArray(currentResults) ? currentResults : []));
+        addAll(typeof GDB_COURSES !== 'undefined' ? GDB_COURSES : []);
+        window.__gdbCourseIndex = idx;
+      }
+      const index = window.__gdbCourseIndex;
 
-              <div><div class="meta-label">Price band</div><div class="meta-value">${escapeHtml(priceDisplay)}</div></div>
-              <div><div class="meta-label">Difficulty</div><div class="meta-value">${escapeHtml(diffDisplay)}</div></div>
-              <div><div class="meta-label">Dress code</div><div class="meta-value">${escapeHtml(dressDisplay)}</div></div>
+      const items = ids.map(id => index.get(id)).filter(Boolean);
 
-              <div><div class="meta-label">Vibe</div><div class="meta-value wrap">${escapeHtml(vibeDisplay)}</div></div>
-              <div><div class="meta-label">Course type</div><div class="meta-value wrap">${escapeHtml(ctDisplay)}</div></div>
-              <div><div class="meta-label">Extras</div><div class="meta-value wrap">${escapeHtml(ex)}</div></div>
+      // If still empty, show a clear message (so we know mapping is the issue)
+      if(items.length === 0){
+        grid.innerHTML = `<div style="padding:16px;opacity:.85">No matching course data found for selected comparisons. (IDs: ${escape(ids.join(', '))})</div>`;
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden','false');
+        return;
+      }
 
-              <div style="grid-column:span 3"><div class="meta-label">Facilities</div><div class="meta-value wrap">${escapeHtml(fac)}</div></div>
+      const pick = (...vals) => vals.find(v => v != null && String(v).trim() !== '' && String(v).trim().toLowerCase() !== 'unknown') || '';
+      const niceAccess = (v) => v === 'public' ? 'Public' : v === 'visitors' ? 'Visitors welcome' : v === 'members_only' ? 'Members only' : 'Unknown';
+      const joinLabels = (arr, mapFn) => Array.isArray(arr) && arr.length ? arr.map(mapFn || (x=>x)).filter(Boolean).join(', ') : 'Unknown';
+      const extrasLabel = (x) => x === 'alcohol_allowed' ? 'Alcohol allowed on course' : x === 'smoking_allowed' ? 'Smoking allowed on course' : tc(x);
+
+      grid.innerHTML = items.map(c => {
+        const id = String(c.id);
+        const img = (typeof imageCache !== 'undefined' && imageCache.get && imageCache.get(id)) ? imageCache.get(id) : (window.PLACEHOLDER_IMG || (typeof PLACEHOLDER_IMG !== 'undefined' ? PLACEHOLDER_IMG : ''));
+        const name = c.name || 'Golf course';
+        const city = pick(c.city, c.place, c.town, c.area);
+        const postcode = pick(c.postcode, c.address && c.address.postcode, c.source && c.source.postcode);
+        const address = (typeof c.address === 'string') ? c.address :
+          (c.address && typeof c.address === 'object') ? [c.address.line1,c.address.line2,c.address.town,c.address.city,c.address.county].filter(Boolean).join(', ') :
+          pick(c.full_address, c.street_address, c.source && (c.source.address || c.source.location));
+        const phone = pick(c.phone, c.telephone, c.source && (c.source.phone || c.source.telephone));
+        const website = pick(c.website, c.url, c.link, c.source && (c.source.website || c.source.url));
+        const affiliate = pick(c.affiliate_link, c.affiliate, c.source && (c.source.affiliate || c.source.affiliate_link));
+        const desc = pick(c.short_description, c.description, c.info, c.source && (c.source.short_description || c.source.description));
+
+        const holes = pick(c.holes) || 'Unknown';
+        const par = pick(c.par) || 'Unknown';
+        const access = niceAccess(String(c.access || 'unknown'));
+        const priceBand = pick(c.price_band) ? tc(c.price_band) : 'Unknown';
+
+        const difficulty = (c.difficulty && c.difficulty.length) ? lbls(c.difficulty).join(', ') : 'Unknown';
+        const dress = (c.dress_code && c.dress_code.length) ? c.dress_code.map(x => x === 'smart_casual' ? 'Smart casual' : tc(x)).join(', ') : 'Unknown';
+        const vibe = (c.vibe && c.vibe.length) ? lbls(c.vibe).join(', ') : 'Unknown';
+        const courseType = (c.course_type && c.course_type.length) ? lbls(c.course_type).join(', ') : 'Unknown';
+        const facilities = (c.facilities && c.facilities.length) ? c.facilities.map(x => x === 'practice_area' ? 'Practice areas' : tc(x)).join(', ') : 'Unknown';
+        const extras = (c.extras && c.extras.length) ? c.extras.map(extrasLabel).join(', ') : 'Unknown';
+
+        const mapsHref = (c.lat && c.lng) ? `https://www.google.com/maps?q=${encodeURIComponent(String(c.lat)+','+String(c.lng))}` : '';
+
+        return `
+          <div class="compare-card">
+            <button class="compare-remove" type="button" data-compare-remove="${escape(id)}" aria-label="Remove">✕</button>
+            ${img ? `<div class="compare-imgwrap"><img src="${escape(img)}" alt="" loading="lazy"></div>` : ''}
+            <div class="compare-body">
+              <div class="course-name">${escape(name)}</div>
+              <div class="course-location">${escape([city, postcode].filter(Boolean).join(' · ') || '—')}</div>
+              ${address ? `<div class="course-location dim">${escape(address)}</div>` : ''}
+              ${phone ? `<div class="course-location dim">${escape(phone)}</div>` : ''}
+
+              <div class="compare-meta">
+                <div class="meta-row"><span>Holes</span><b>${escape(holes)}</b></div>
+                <div class="meta-row"><span>Par</span><b>${escape(par)}</b></div>
+                <div class="meta-row"><span>Access</span><b>${escape(access)}</b></div>
+                <div class="meta-row"><span>Price</span><b>${escape(priceBand)}</b></div>
+                <div class="meta-row"><span>Difficulty</span><b>${escape(difficulty)}</b></div>
+                <div class="meta-row"><span>Dress</span><b>${escape(dress)}</b></div>
+                <div class="meta-row"><span>Vibe</span><b>${escape(vibe)}</b></div>
+                <div class="meta-row"><span>Type</span><b>${escape(courseType)}</b></div>
+                <div class="meta-row meta-wide"><span>Facilities</span><b>${escape(facilities)}</b></div>
+                <div class="meta-row meta-wide"><span>Extras</span><b>${escape(extras)}</b></div>
+              </div>
+
+              ${desc ? `<div class="compare-desc">${escape(desc)}</div>` : ''}
+
+              <div class="compare-links">
+                <a class="link" href="./gdb_course_detail.html?id=${encodeURIComponent(id)}" target="_blank" rel="noopener">Full details</a>
+                ${mapsHref ? `<a class="link" href="${escape(mapsHref)}" target="_blank" rel="noopener">Maps</a>` : ''}
+                ${website ? `<a class="link" href="${escape(website)}" target="_blank" rel="noopener">Website</a>` : ''}
+                ${affiliate ? `<a class="link" href="${escape(affiliate)}" target="_blank" rel="noopener">Affiliate</a>` : ''}
+              </div>
             </div>
-
-            <div class="course-actions" style="margin-top:10px">
-              <a class="link" href="course-details.html?id=${encodeURIComponent(c.id)}" target="_blank" rel="noopener">Full Details</a>
-              <span class="link" data-maps="${escapeHtml(c.lat)},${escapeHtml(c.lng)}">Open in Maps</span>
-            </div>
           </div>
-        </div>
-      `;
-    }).join('');
+        `;
+      }).join('');
 
-    // Hook remove buttons
-    grid.querySelectorAll('[data-compare-remove]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = e.currentTarget.getAttribute('data-compare-remove');
-        if(id) compareSet.delete(id);
-        saveCompare();
-        updateCompareUi();
-        if(compareSet.size < 2){
-          toast('Comparison needs at least 2 courses');
-          closeCompareModal();
-        } else {
-          openCompareModal(); // re-render
-        }
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden','false');
+      modal.dataset.count = String(items.length);
+
+      grid.querySelectorAll('[data-compare-remove]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.getAttribute('data-compare-remove');
+          if (id) compareSet.delete(String(id));
+          saveCompare();
+          updateCompareUi();
+
+          if (compareSet.size < 2) {
+            toast('Comparison needs at least 2 courses');
+            closeCompareModal();
+            return;
+          }
+          // Refresh modal view
+          openCompareModal();
+        });
       });
-    });
-
-    modal.classList.add('show');
-    modal.setAttribute('aria-hidden','false');
+    }catch(err){
+      console.error(err);
+      toast('Compare view failed to load');
+    }
   };
-
-  const closeCompareModal = () => {
+  // Expose for hard-wired button click
+  window.openCompareModal = openCompareModal;
+const closeCompareModal = () => {
     const modal = document.getElementById('compareModal');
     if(!modal) return;
     modal.classList.remove('show');
     modal.setAttribute('aria-hidden','true');
+  };
+
+
+  // Compare clear confirmation modal
+  const openCompareConfirm = () => {
+    const m = document.getElementById('compareConfirm');
+    if(!m) return;
+    m.classList.add('show');
+    m.setAttribute('aria-hidden','false');
+    // focus No for safety
+    const noBtn = document.getElementById('compareConfirmNo');
+    if(noBtn) setTimeout(()=>noBtn.focus(), 0);
+  };
+
+  const closeCompareConfirm = () => {
+    const m = document.getElementById('compareConfirm');
+    if(!m) return;
+    m.classList.remove('show');
+    m.setAttribute('aria-hidden','true');
   };
 
 
@@ -4397,7 +4979,7 @@ document.querySelectorAll('#filtersPanel input[type="checkbox"]').forEach(cb => 
       openBtn.dataset.gdbBound = '1';
       openBtn.addEventListener('click', (ev) => {
         ev.preventDefault();
-        openCompareModal();
+        try{ openCompareModal(); }catch(e){ console.error(e); const mm=document.getElementById('compareModal'); if(mm){ mm.classList.add('show'); mm.setAttribute('aria-hidden','false'); } }
       });
     }
 
@@ -4406,13 +4988,35 @@ document.querySelectorAll('#filtersPanel input[type="checkbox"]').forEach(cb => 
       clearBtn.addEventListener('click', (ev) => {
         ev.preventDefault();
         if(compareSet.size === 0) return;
-        const ok = window.confirm('Clear all courses selected for comparison');
-        if(!ok) return;
+        openCompareConfirm();
+      });
+    }
+
+
+    // Confirm clear (bind once)
+    const yesBtn = document.getElementById('compareConfirmYes');
+    const noBtn = document.getElementById('compareConfirmNo');
+    const backdrop = document.querySelector('#compareConfirm [data-ccancel]');
+
+    if(yesBtn && !yesBtn.dataset.gdbBound){
+      yesBtn.dataset.gdbBound = '1';
+      yesBtn.addEventListener('click', (ev) => {
+        ev.preventDefault();
         compareSet.clear();
         saveCompare();
         updateCompareUi();
         closeCompareModal();
+        closeCompareConfirm();
       });
+    }
+    const closeConfirm = (ev) => { if(ev) ev.preventDefault(); closeCompareConfirm(); };
+    if(noBtn && !noBtn.dataset.gdbBound){
+      noBtn.dataset.gdbBound = '1';
+      noBtn.addEventListener('click', closeConfirm);
+    }
+    if(backdrop && !backdrop.dataset.gdbBound){
+      backdrop.dataset.gdbBound = '1';
+      backdrop.addEventListener('click', closeConfirm);
     }
 
     document.querySelectorAll('[data-compare-close]').forEach(el => {
@@ -4446,21 +5050,17 @@ document.querySelectorAll('#filtersPanel input[type="checkbox"]').forEach(cb => 
 
     if(t.closest('#compareOpenBtn')){
       ev.preventDefault();
-      openCompareModal();
+      try{ openCompareModal(); }catch(e){ console.error(e); const mm=document.getElementById('compareModal'); if(mm){ mm.classList.add('show'); mm.setAttribute('aria-hidden','false'); } }
       return;
     }
 
     if(t.closest('#compareClearAllBtn')){
       ev.preventDefault();
       if(compareSet.size === 0) return;
-      const ok = window.confirm('Clear all courses selected for comparison');
-      if(!ok) return;
-      compareSet.clear();
-      saveCompare();
-      updateCompareUi();
-      closeCompareModal();
+      openCompareConfirm();
       return;
     }
+
 
     if(t.closest('[data-compare-close]')){
       ev.preventDefault();
@@ -4487,6 +5087,7 @@ document.querySelectorAll('#filtersPanel input[type="checkbox"]').forEach(cb => 
       if(ev.target && ev.target.closest && (ev.target.closest('#compareOpenBtn') || ev.target.closest('#compareClearAllBtn'))) return;
       dragging = true;
       moved = false;
+      __cmpWidget.style.transform = 'none';
       __cmpWidget.style.cursor = 'grabbing';
       const rect = __cmpWidget.getBoundingClientRect();
       startLeft = rect.left;
@@ -4534,10 +5135,38 @@ document.querySelectorAll('#filtersPanel input[type="checkbox"]').forEach(cb => 
     window.addEventListener('touchend', onUp);
 
     // Make the whole widget open the modal (button still works)
-    __cmpWidget.addEventListener('click', (ev) => {
+    
+    // Explicit button wiring (do not rely on widget click/drag logic)
+    const __cmpViewBtn = document.getElementById('compareOpenBtn');
+    const __cmpClearBtn = document.getElementById('compareClearAllBtn');
+    if(__cmpViewBtn){
+      __cmpViewBtn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        try{ openCompareModal(); }catch(e){ console.error(e); const mm=document.getElementById('compareModal'); if(mm){ mm.classList.add('show'); mm.setAttribute('aria-hidden','false'); } }
+      });
+    }
+    if(__cmpClearBtn){
+      __cmpClearBtn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        // show existing black confirm modal
+        const cc = document.getElementById('compareConfirm');
+        if(cc){
+          cc.classList.add('show');
+          cc.setAttribute('aria-hidden','false');
+        } else {
+          compareSet.clear();
+          saveCompare();
+          updateCompareUi();
+        }
+      });
+    }
+
+__cmpWidget.addEventListener('click', (ev) => {
       if(ev.target && ev.target.closest && (ev.target.closest('#compareOpenBtn') || ev.target.closest('#compareClearAllBtn'))) return;
       if(moved) return;
-      openCompareModal();
+      try{ openCompareModal(); }catch(e){ console.error(e); const mm=document.getElementById('compareModal'); if(mm){ mm.classList.add('show'); mm.setAttribute('aria-hidden','false'); } }
     });
   }
 
